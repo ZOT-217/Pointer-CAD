@@ -1,0 +1,12 @@
+# Frozen B0 compatibility path. This selects the original PointerCAD class.
+mode: LEGACY_POINTERCAD
+model:
+  base_model: "Qwen/Qwen2.5-0.5B-Instruct"
+  bit: 8
+  pointer_size: 128
+  operations: [Extrude, Chamfer, Fillet]
+  pointer_types: [PTR_FACE, PTR_EDGE]
+dataset:
+  dataset_dir: "./data/pointercad/dataset"
+  split_filepath: "./data/pointercad/train_val_test.json"
+  prompt: [abs, exp]

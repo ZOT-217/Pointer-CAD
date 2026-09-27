@@ -1,0 +1,8 @@
+{
+  "status": "IMPLEMENTED_AND_TESTED",
+  "encoder": "Curve3DEncoder",
+  "order_mechanism": "typed field stream + positional index + GRU",
+  "supported": ["Line3D", "Arc3D", "Circle3D", "Ellipse3D", "EllipticalArc3D", "NurbsCurve3D", "Polyline3D"],
+  "variable_length_truncation": false,
+  "order_regressions": ["NURBS/control point order", "Polyline point order"]
+}

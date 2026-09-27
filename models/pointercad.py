@@ -10,9 +10,13 @@ from transformers.modeling_outputs import BaseModelOutputWithPast
 
 from misc import TOKEN, STANDARD_PLANES, MAX_VECTOR_LENGTH
 from .brep_embed import UVNetEmbedder
+# Explicit expanded entry point; importing it does not instantiate the legacy
+# Qwen backbone or change the B0 class below.
+from .crs_pointercad.model import CRSExpandedPointerCAD
 
 
 class PointerCAD(nn.Module):
+    mode = "LEGACY_POINTERCAD"
     base_model_prefix = ""
     _checkpoint_conversion_mapping = {"^model": "language_model"}
 
@@ -25,8 +29,16 @@ class PointerCAD(nn.Module):
         max_tau=100.0,
         bit=8,
         dtype=torch.bfloat16,
+        mode="LEGACY_POINTERCAD",
     ):
         super().__init__()
+
+        if mode != "LEGACY_POINTERCAD":
+            raise ValueError(
+                "PointerCAD is the legacy B0 implementation; use "
+                "models.crs_pointercad.CRSExpandedPointerCAD for CRS_EXPANDED_POINTERCAD"
+            )
+        self.mode = mode
 
         self.pointer_size = pointer_size
         self.dtype = dtype

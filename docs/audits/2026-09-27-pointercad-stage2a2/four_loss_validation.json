@@ -1,0 +1,8 @@
+{
+  "status": "IMPLEMENTED_AND_TESTED",
+  "formula": "L_grammar + L_pointer + L_scalar + L_record",
+  "weights": {"grammar": 1.0, "pointer": 1.0, "scalar": 1.0, "record": 1.0},
+  "all_components_from_predictions": true,
+  "zero_pointer_safe": true,
+  "canonical_entry": "CRSExpandedPointerCAD.training_loss"
+}

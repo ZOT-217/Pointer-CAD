@@ -1,0 +1,6 @@
+{
+  "status": "IMPLEMENTED_AND_TESTED",
+  "ownership": "slot j receives decoder_substates[example][j] only",
+  "production_paths": ["forward_ragged", "teacher_forced_decode", "inference_pointer_decode"],
+  "dynamic_rules": ["excluded keys", "owner consistency", "selected EDGE -> incident FACE", "Boolean target/tool role"]
+}

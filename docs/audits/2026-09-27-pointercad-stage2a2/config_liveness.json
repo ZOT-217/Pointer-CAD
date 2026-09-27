@@ -1,0 +1,6 @@
+{
+  "status": "IMPLEMENTED_AND_TESTED",
+  "live_fields": ["base_model", "batch_size", "gradient_accumulation_steps", "pointer_feedback", "autoregressive_pointer_feedback", "ragged_pointer_batching", "numeric_heads", "registry_context_mode", "typed_pointer_scales", "lambda_grammar", "lambda_pointer", "lambda_scalar", "lambda_record"],
+  "production_batch_size": 2,
+  "factory": "models/model_factory.py"
+}

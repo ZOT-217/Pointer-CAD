@@ -1,0 +1,6 @@
+{
+  "status": "IMPLEMENTED_AND_TESTED",
+  "encoder": "ProfileCandidateEncoder",
+  "preserved": ["outer/inner loop", "loop order", "ordered curves within loop", "profile frame/transform"],
+  "aggregation": "ordered curve GRU -> loop GRU -> frame fusion"
+}

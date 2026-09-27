@@ -1,0 +1,8 @@
+{
+  "status": "IMPLEMENTED_AND_TESTED",
+  "scalar_head": "NumericHeads.scalar -> one MODEL_OUTPUT_SCALAR per decoder state",
+  "record_heads": ["POINT3", "VECTOR3", "DIRECTION3", "AXIS3", "PLANE3", "FRAME3"],
+  "loss": "ExpandedLoss computes scalar MSE and per-record finite MSE when targets are supplied",
+  "gradient_test": "passed",
+  "canonical_training_loss_entry": "CRSExpandedPointerCAD.training_loss"
+}

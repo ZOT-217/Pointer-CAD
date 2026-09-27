@@ -1,0 +1,26 @@
+# Stage 2A plumbing smoke configuration. No optimizer/training is launched.
+mode: CRS_EXPANDED_POINTERCAD
+model:
+  base_model: null
+  hidden_dim: 256
+  pointer_dim: 128
+  grammar_vocab_size: 512
+  use_body_relative_age: true
+  body_pooling: mean
+  registry_context_mode: TYPE_POOLED
+  enable_historical_face: true
+  enable_historical_edge: true
+  pointer_feedback: true
+  typed_pointer_scales: true
+  numeric_heads: true
+  ragged_pointer_batching: true
+  autoregressive_pointer_feedback: true
+train:
+  batch_size: 2
+  gradient_accumulation_steps: 1
+  lambda_grammar: 1.0
+  lambda_pointer: 1.0
+  lambda_scalar: 1.0
+  lambda_record: 1.0
+runtime:
+  known_executor_tail_policy: record_and_continue

@@ -1,0 +1,7 @@
+{
+  "status": "IMPLEMENTED_AND_TESTED",
+  "production_method": "CRSExpandedPointerCAD.forward_ragged",
+  "supports": ["different slot counts", "different pointer types", "different candidate bank sizes", "zero-pointer examples", "different per-slot targets"],
+  "candidate_padding": false,
+  "loss_normalization": "mean legal-candidate BCE within each slot, then mean valid slots across batch"
+}

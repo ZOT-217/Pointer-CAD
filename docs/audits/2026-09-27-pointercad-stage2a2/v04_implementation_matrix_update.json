@@ -1,0 +1,10 @@
+{
+  "contract_version": "pointercad-architecture-v0.4",
+  "updates": [
+    {"contract": "pointer feedback in real training path", "code": "CRSExpandedPointerCAD.forward_ragged", "test": "test_real_training_feedback_changes_later_hidden_not_pointer_hidden", "status": "IMPLEMENTED_AND_TESTED"},
+    {"contract": "ragged batching", "code": "forward_ragged + nested pointer_bce_per_slot", "test": "test_ragged_batch_different_slot_and_bank_counts_works; test_ragged_pointer_loss_flattens_slots_and_keeps_zero_pointer_example", "status": "IMPLEMENTED_AND_TESTED"},
+    {"contract": "decoder substate masks", "code": "forward_ragged/teacher_forced_decode/inference_pointer_decode pass slot-local substate", "test": "test_decoder_substate_is_slot_local_in_teacher_and_inference_paths", "status": "IMPLEMENTED_AND_TESTED"},
+    {"contract": "ordered Curve3D/Profile semantics", "code": "Curve3DEncoder ordered stream/GRU; ProfileCandidateEncoder curve/loop GRU", "test": "test_ordered_curve_and_profile_changes_representation", "status": "IMPLEMENTED_AND_TESTED"},
+    {"contract": "scalar and structured record output heads", "code": "NumericHeads + ExpandedLoss numeric normalization", "test": "test_numeric_heads_and_four_component_loss_are_trainable", "status": "IMPLEMENTED_AND_TESTED"}
+  ]
+}

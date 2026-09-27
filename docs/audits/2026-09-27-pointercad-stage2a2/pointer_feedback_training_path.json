@@ -1,0 +1,8 @@
+{
+  "status": "IMPLEMENTED_AND_TESTED",
+  "production_method": "CRSExpandedPointerCAD.forward_ragged",
+  "semantics": "recompute prefix hidden state at each pointer slot, score typed bank, inject recorded GT candidate feedback only into later embeddings",
+  "own_pointer_hidden_unchanged": true,
+  "later_hidden_changes": true,
+  "inference_path": "inference_pointer_decode uses predicted candidate feedback"
+}
