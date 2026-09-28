@@ -1,0 +1,21 @@
+{
+  "status": "USER_CONFIRMED_VARIANT_LOCAL_IDENTITY",
+  "date": "2026-09-29",
+  "contract": "Opaque selection IDs are serialization-local to a materialized Trajectory Variant. Sequential first-use allocation and validation are preserved.",
+  "semantic_identity": [
+    "entity kind",
+    "immutable owner Body Node",
+    "stable entity locator"
+  ],
+  "invariant": "Within one materialized variant: opaque selection ID + source owner -> stable locator -> exactly one physical entity.",
+  "across_variants": "A in [A,B] and A in [B,A] may carry different opaque IDs. This alone is not a correctness regression.",
+  "valid_equivalent_variant_requirements": [
+    "same Source Sample and causal input geometry",
+    "same physical selected entities and owner binding",
+    "mechanically equivalent action outputs under authoritative STEP/geometry comparison"
+  ],
+  "schema_changed": false,
+  "allocator_changed": false,
+  "source_excluded_from_record_interning_preserved": true,
+  "collision_status": "Recording rejects owner-local locator ambiguity before kernel execution; reconstruction already rejects ambiguous matches."
+}

@@ -1,0 +1,33 @@
+{
+  "status": "PASSED",
+  "processes": 9,
+  "process_reuse": false,
+  "cases": [
+    {
+      "fixture": "low_fillet",
+      "edge_count": 2,
+      "runs": 3
+    },
+    {
+      "fixture": "high_chamfer",
+      "edge_count": 28,
+      "runs": 3
+    },
+    {
+      "fixture": "stable_fillet",
+      "edge_count": 4,
+      "runs": 3
+    }
+  ],
+  "assertions": [
+    "recorded sequence equals observed sequence",
+    "ID and owner resolve intended physical entity",
+    "causal pointer target matches runtime candidate",
+    "physical and locator sets unchanged",
+    "same ordered variant retains identity binding",
+    "STEP import/export bidirectional cut volume below 1e-5 mm^3"
+  ],
+  "paired_step_tolerance_mm3": 0.00001,
+  "exact_cci_36_edge_source_available": false,
+  "note": "Independent local equivalent fixtures, not copies of the exact CCI source. Exact sources were searched by SHA, not display row."
+}

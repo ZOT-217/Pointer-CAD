@@ -1,0 +1,23 @@
+{
+  "status": "PENDING_REMOTE_EXECUTION",
+  "release_claim": "No PIPELINE_V2_READY_FOR_100K claim from local tests.",
+  "runs": [
+    "Exact SHA-identified 36-edge Chamfer, independent fresh processes",
+    "Frozen FIRST_500 with separate output root and parent-only journals",
+    "workers=32 causal supervision preserving sample failure/infrastructure distinction",
+    "Exact SHA-identified 00135 through convert/reconstruct/supervise/STEP evaluation",
+    "Pairwise adjudication of all 61 selection-related OLD/NEW mismatches"
+  ],
+  "selection_gate": "Compare actual resolved entities per owner and feature, descriptor sets, action sequences, prefix geometry, and STEP geometry. Numeric IDs and bytes are not cross-variant identity.",
+  "variant_classification": [
+    "VALID_EQUIVALENT_SUPERVISION_VARIANTS only after shared prefix, physical set/binding, and geometry equivalence pass",
+    "ACTUAL_SELECTION_REGRESSION when physical set, owner/locator binding, or action result geometry changes",
+    "UNVERIFIED_EQUIVALENT_VARIANT_CANDIDATE if required artifacts or mechanical proofs are missing"
+  ],
+  "output_policy": "Distinct outputs per run. One journal writer per output directory.",
+  "cache_policy": "Invalidate old supervision/reconstruction successes by source-code provenance or use force/new output root; do not reuse pre-fix outcomes.",
+  "formal_metrics": {
+    "voxel_resolution": 64,
+    "chamfer_points": 10000
+  }
+}

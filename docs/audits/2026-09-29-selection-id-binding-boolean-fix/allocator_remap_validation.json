@@ -1,0 +1,10 @@
+{
+  "status": "FIRST_USE_ALLOCATOR_PRESERVED",
+  "allocator": "cadquery2crs.crs.contexts.ConversionContext.intern_selection",
+  "validator": "cadquery2crs.crs.validation.validate_v07_document",
+  "format": "selection_######",
+  "remap_introduced": false,
+  "regression": "test_first_use_contract_still_rejects_remapping_without_variant_local_reallocation",
+  "raw_candidate_permutation_regression": "test_fixed_materialized_ids_bind_the_same_entities_when_candidate_order_reverses",
+  "limitation": "No cross-variant numeric ID equality is required. Stable descriptor binding is the invariant."
+}

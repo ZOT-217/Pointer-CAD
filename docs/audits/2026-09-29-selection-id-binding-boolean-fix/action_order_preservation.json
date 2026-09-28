@@ -1,0 +1,12 @@
+{
+  "status": "PRESERVED",
+  "global_selection_sort_introduced": false,
+  "note": "Only locator support-surface metadata is normalized for collision comparison. EDGE/FACE action lists are never sorted.",
+  "tests": [
+    "test_equal_distance_chamfer_preserves_each_observed_edge_order",
+    "test_fillet_preserves_observed_edge_order",
+    "test_clockwise_profile_orientation_is_restored_before_downstream_fillet",
+    "fresh-process low/high/control regressions"
+  ],
+  "operation_invariance": "Not asserted globally. Tested forward/reversed order variants are individually checked through STEP; Fillet order-sensitive maintained fixture is retained."
+}

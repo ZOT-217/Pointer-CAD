@@ -1,0 +1,20 @@
+{
+  "status": "PROPOSAL_ONLY_NOT_IMPLEMENTED",
+  "identity": "Keep (Dataset ID, Source Sample ID, Variant ID) and existing monotonically allocated Variant IDs; opaque CRS IDs remain variant-local.",
+  "dedup": "Reuse order-preserving semantic_trajectory: expand selection descriptors/owner references and normalize opaque names. Never erase EDGE/FACE execution order.",
+  "fingerprint": "A versioned trajectory digest is an integrity/dedup field, not a replacement primary identity or a neural pointer target.",
+  "equivalence": "Maintain a separate equivalence record linking distinct trajectories after shared causal prefix, physical selected-set/owner binding, and authoritative STEP action/result comparison pass.",
+  "frozen_regeneration": "Regeneration targets a frozen manifest of approved trajectories and artifacts. Unexpected OCC order becomes an explicit new-variant candidate; it never silently replaces the requested frozen variant.",
+  "deterministic_admission": "For a newly frozen generation, sort verified trajectory fingerprints when allocating new manifest entries. Preserve already assigned Variant IDs and record append-only provenance. This sorts manifest entries, not selections.",
+  "required_provenance": [
+    "source and reference STEP SHA256",
+    "ordered trajectory fingerprint and version",
+    "conversion/runtime/supervision commits and configurations",
+    "CadQuery/OCP/OCCT versions",
+    "prefix geometry and locator/owner binding evidence",
+    "geometry validation settings/results",
+    "artifact hashes",
+    "equivalence decision and manifest generation"
+  ],
+  "scope": "A future dataset-level decision. This task preserves CRS ID and action contracts and does not implement a new variant scheduler."
+}

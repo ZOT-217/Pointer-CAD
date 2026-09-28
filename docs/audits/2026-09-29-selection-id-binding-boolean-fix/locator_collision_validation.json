@@ -1,0 +1,30 @@
+{
+  "status": "PASSED",
+  "production_function": "cadquery2crs.recording.selection_binding.validate_locator_bindings",
+  "scope": [
+    "Fillet EDGE",
+    "Chamfer EDGE",
+    "TwoDistances Chamfer FACE",
+    "Shell FACE",
+    "workplane support FACE",
+    "rebound workplane support FACE"
+  ],
+  "semantic_key": "entity kind + canonical stable locator, checked inside a uniquely resolved owner",
+  "collision_failure": "ambiguous_selection",
+  "missing_or_unowned_failure": "selection_not_found",
+  "same_entity_wrappers": "Deduplicated by isSame solely during validation; kernel objects are never persisted as identity.",
+  "forbidden_fallbacks": [
+    "OCC position",
+    "enumeration ordinal",
+    "Python id",
+    "memory address"
+  ],
+  "tests": [
+    "test_recording_rejects_locator_collision_before_kernel_execution",
+    "test_duplicate_wrappers_of_one_physical_entity_do_not_create_ambiguity",
+    "test_locator_binding_does_not_substitute_an_unowned_copy_at_the_same_position",
+    "test_locator_collision_never_binds_first_physical_candidate",
+    "test_face_workplane_keeps_physical_owner_when_two_body_locators_overlap"
+  ],
+  "physical_owner_fix": "FACE workplane now resolves its actual unique physical owner before using the registry; first geometric role match cannot bind a face to a coincident sibling body."
+}

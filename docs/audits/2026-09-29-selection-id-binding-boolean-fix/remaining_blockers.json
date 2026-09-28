@@ -1,0 +1,17 @@
+{
+  "status": "SELECTION_BOOLEAN_FIX_READY_FOR_CCI_REGATE",
+  "local_blockers": [],
+  "remote_pending": [
+    "Exact 36-edge source unavailable locally",
+    "Exact 00135 source unavailable locally",
+    "61 OLD/NEW CRS and STEP pairs unavailable locally; equivalence is not certified by hash diagnostics",
+    "FIRST_500 and workers=32 re-gate"
+  ],
+  "dataset_reproducibility_policy": "Proposal only, as instructed. A frozen variant manifest is needed to avoid arbitrary one-of-many regeneration.",
+  "forbidden_conclusions": [
+    "All 61 cases are correctness regressions",
+    "All 61 cases are proven equivalent",
+    "STEP stabilizes OCC order or opaque ID allocation"
+  ],
+  "gate_basis": "User-confirmed variant-local opaque-ID contract. Dataset reproducibility policy is a proposal, not an implemented scheduler."
+}

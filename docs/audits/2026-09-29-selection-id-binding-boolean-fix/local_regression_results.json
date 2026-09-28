@@ -1,0 +1,37 @@
+{
+  "status": "PASSED",
+  "independent_transport_suite": {
+    "passed": 5,
+    "failed": 0
+  },
+  "first_relevant_suite_before_face_support_checks": {
+    "passed": 111,
+    "failed": 0,
+    "subtests": 9
+  },
+  "focused_locator_suite": {
+    "passed": 33,
+    "failed": 0,
+    "subtests": 4
+  },
+  "final_fresh_process_suite": {
+    "passed": 3,
+    "failed": 0,
+    "processes": 9
+  },
+  "exact_cci_release_gate_run": false,
+  "broad_suite": {
+    "command": "conda run -n cadquery2crs python -m pytest -q tests/test_selection_boolean_production.py tests/test_crs_v07_operation_semantics.py tests/test_crs_v07_runtime.py tests/test_crs_v06_selection.py tests/test_crs_feature_edge_treatments.py tests/test_crs_feature_shell.py tests/test_crs_feature_sketch.py tests/test_crs_v06_runtime.py tests/test_crs_conversion.py tests/test_crs_reconstruction_validity.py tests/test_recording_adapter.py tests/test_recording_adapter_golden.py tests/test_runtime_phase3.py tests/test_supervision_phase4.py tests/test_supervision_serialization.py tests/test_pointercad_v04_causal.py tests/test_semantic_trajectory.py tests/test_pipeline_stage_contracts.py tests/test_supervision_exception_transport.py tests/test_pipeline.py tests/test_pipeline_references.py tests/test_corpus_pipeline.py",
+    "passed": 239,
+    "failed": 0,
+    "subtests": 67,
+    "seconds": 111.25
+  },
+  "final_owner_fix_affected_suite": {
+    "command": "conda run -n cadquery2crs python -m pytest -q tests/test_selection_boolean_production.py tests/test_crs_feature_sketch.py tests/test_crs_feature_edge_treatments.py tests/test_crs_feature_shell.py tests/test_crs_v07_operation_semantics.py tests/test_recording_adapter.py tests/test_recording_adapter_golden.py tests/test_corpus_pipeline.py",
+    "passed": 126,
+    "failed": 0,
+    "subtests": 62,
+    "seconds": 64.31
+  }
+}

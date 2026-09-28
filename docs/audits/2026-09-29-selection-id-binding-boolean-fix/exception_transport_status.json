@@ -1,0 +1,25 @@
+{
+  "status": "REMOTE_FIX_PRESENT_PRESERVED_AND_TESTED",
+  "pulled_commit": "24243418dec4bc3b72eabea9b10a93de80cc514a",
+  "production_function": "cadquery2crs.pipeline.supervision_stage._materialize_one_safe",
+  "plain_data_fields": [
+    "sample_id",
+    "failure_stage",
+    "failure_kind",
+    "failure_message",
+    "failure_traceback",
+    "duration_seconds"
+  ],
+  "infrastructure": "BrokenProcessPool still propagates; BaseException is not caught.",
+  "source_modified_in_this_task": false,
+  "local_command": "conda run -n cadquery2crs python -m pytest -q tests/test_supervision_exception_transport.py tests/test_pipeline_stage_contracts.py",
+  "local_tests_passed": 5,
+  "local_tests_failed": 0,
+  "prior_cci_validation": {
+    "successes": 460,
+    "explicit_runtime_failures": 7,
+    "upstream_conversion_failures": 33,
+    "broken_process_pool_events": 0
+  },
+  "prior_remote_results_are_not_local_regate": true
+}

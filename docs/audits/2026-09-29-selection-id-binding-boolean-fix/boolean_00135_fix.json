@@ -1,0 +1,22 @@
+{
+  "status": "SEMANTIC_CLASS_FIXED_EXACT_CCI_REPLAY_PENDING",
+  "dataset": "zero2cad100k-train",
+  "display_row": "00135",
+  "source_sha256": "31734a0507bea74e712bc025ebed80922847d4e227da9a7aa875bd3bcdd73611",
+  "crs_sha256": "d6a41d5fd83e3737017de6ac7db4d96bd031d16fbc45dbfe9dd776fe36deb207",
+  "old_commit": "c1e38a894c58d27f7fd101e6a953ca1e8f7b05bf",
+  "new_commit": "203bed7c38cb39b97fb50474edfdf53b867ee984",
+  "first_divergence": "boolean_000006: four targets, zero tools, UnionBooleanOperation; NEW returned no result before supervision.",
+  "root_cause": "Incorrect unconditional empty-result rule for multi-target stack-only union.",
+  "fix": "Fuse the actual prefix targets with current glue/tolerance, derive produced solids from kernel result, and retain cleanup behavior.",
+  "oracle_inputs_used": [],
+  "validation_only_fields": [
+    "body_outputs",
+    "bounding_box"
+  ],
+  "fixture": "Four separated boxes -> four bodies; four overlapping boxes -> one body; clean true/false; stripped and poisoned GT; future nonparticipant ignored.",
+  "local_row_00135_source_sha256": "0073fe1cd05ed6f8e9db704ce1610cad9eda41bee5bf982a8fb9c87e0eb4873b",
+  "local_row_is_exact_case": false,
+  "exact_cci_source_available": false,
+  "native_empty_union_limitation": "union(None) Compound quirks have no distinct current action fields. Empty GT declarations cannot select an empty result; complete replay reports mismatches explicitly. No new extension or oracle is introduced."
+}
