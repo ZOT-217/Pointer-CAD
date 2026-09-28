@@ -1,0 +1,5 @@
+{
+  "status": "PASS",
+  "rules": ["Chamfer selected EDGE -> incident FACE", "Shell owner consistency", "Boolean tool excludes target selections", "profile operation consumer metadata", "decoder excluded keys"],
+  "source": "ExecutionState + decoder_substate; no future GT"
+}

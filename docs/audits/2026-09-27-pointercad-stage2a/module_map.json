@@ -1,0 +1,10 @@
+{
+  "dataset_materialization": {"legacy": ["dataset/dataset.py", "preprocessing/json2vec.py"], "stage2a": ["models/crs_pointercad/materialization.py"]},
+  "state_registries": ["models/crs_pointercad/contracts.py"],
+  "candidate_view": ["models/crs_pointercad/candidates.py"],
+  "encoders": ["models/brep_embed.py", "models/crs_pointercad/encoders.py"],
+  "grammar_ast": ["cadmodel/model.py", "models/crs_pointercad/grammar.py"],
+  "decoder_pointer_heads": ["models/pointercad.py", "models/crs_pointercad/heads.py", "models/crs_pointercad/model.py"],
+  "loss": ["metrics/criterion.py", "models/crs_pointercad/heads.py"],
+  "evaluation": ["test.py", "metrics/metrics.py"]
+}

@@ -1,0 +1,6 @@
+{
+  "status": "PASS",
+  "path": "base model hidden states -> recorded bank target -> PointerFeedback -> later decoder embeddings",
+  "own_pointer_hidden_unchanged": true,
+  "later_hidden_changed": true
+}

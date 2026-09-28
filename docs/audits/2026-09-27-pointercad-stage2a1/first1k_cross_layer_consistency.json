@@ -1,0 +1,6 @@
+{
+  "status": "IMPLEMENTED_NOT_FULLY_TESTED",
+  "checks": ["operation role", "grammar pointer type", "CandidateView type", "external target", "local positive set", "future/declaration exclusion"],
+  "runner": "tools/stage2a1_first1k.py",
+  "unresolved_targets": "not measured in this environment"
+}

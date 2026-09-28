@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "dimension": 128,
+  "types": ["FACE(native UV-Net)", "EDGE(native UV-Net)", "BODY", "PROFILE", "SKETCH_REFERENCE", "RESOLVED_GEOMETRY"],
+  "curves": ["Line3D", "Arc3D", "Circle3D", "Ellipse3D", "EllipticalArc3D", "NurbsCurve3D", "Polyline3D"],
+  "hash_or_object_string_semantics": false,
+  "profile_order_and_loop_structure": true
+}

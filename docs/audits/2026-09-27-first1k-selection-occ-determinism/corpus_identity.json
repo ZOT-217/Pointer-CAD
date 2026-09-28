@@ -1,0 +1,11 @@
+{
+  "authoritative_source_gap": "The certified 1K source population is not fully present locally; source-backed fresh-process coverage is limited and explicitly reported.",
+  "certified_crs_root": "../cadquery2crs/outputs/current-1k-certification/crs",
+  "certified_sample_id_pattern": "sample-00000..sample-00999 (931 CRS artifacts present; failed rows absent)",
+  "crs_git_head": "203bed7c38cb39b97fb50474edfdf53b867ee984",
+  "local_source_count": 155,
+  "local_source_root": "../cadquery2crs/.local-data/zero2cad-test-mini",
+  "pointercad_git_head": "645209f605477d7aec5ad7ee43023b604cc52df3",
+  "repository": "/Users/wyyyy/my_ws/Pointer-CAD",
+  "status": "IDENTIFIED"
+}

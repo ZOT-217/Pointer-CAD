@@ -1,0 +1,8 @@
+{
+  "status": "IMPLEMENTED_NOT_FULLY_TESTED",
+  "production_path": "CRSExpandedPointerCAD.forward(input_ids, attention_mask, state, breps) -> configured base_model -> grammar/pointer heads",
+  "pretrained_loader": "transformers.models.qwen2.modeling_qwen2.Qwen2Model.from_pretrained(qwen_model)",
+  "config_field": "model.base_model -> qwen_model via models/model_factory.py",
+  "smoke": "injected tiny Qwen2Model forward passed",
+  "remote_checkpoint_load": "not launched"
+}

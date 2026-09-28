@@ -1,0 +1,7 @@
+{
+  "status": "NOT_RUN_IN_THIS_ENVIRONMENT",
+  "production_runner": "tools/stage2a1_first1k.py",
+  "authoritative_stage1_reference": {"pointer_positions": 35488, "candidate_banks": 17569, "materialization_failures": 0},
+  "note": "The installed cadquery2crs environment has CadQuery but no PyTorch, while the Pointer-CAD environment has PyTorch but no CadQuery. No Stage 1 count is relabeled as a Stage 2.1 result.",
+  "model_facing_blocker": false
+}

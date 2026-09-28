@@ -1,0 +1,12 @@
+{
+  "dimension": 128,
+  "semantic_types": {
+    "PTR_FACE": {"active": true, "historical": true, "separate_type": false},
+    "PTR_EDGE": {"active": true, "historical": true, "separate_type": false},
+    "PTR_BODY": {"active": true, "historical": true},
+    "PTR_PROFILE": {"active": true},
+    "PTR_SKETCH_REFERENCE": {"active": true},
+    "PTR_RESOLVED_GEOMETRY": {"active": true}
+  },
+  "forbidden_features": ["literal external id", "numeric id suffix", "candidate index", "future GT entity"]
+}

@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "contracts": ["prefix-only", "external-key-index-round-trip", "positive-set-remapping", "storage-permutation-invariance"],
+  "pointer_types": ["PTR_FACE", "PTR_EDGE", "PTR_BODY", "PTR_PROFILE", "PTR_SKETCH_REFERENCE", "PTR_RESOLVED_GEOMETRY"],
+  "literal_ids_as_features": false,
+  "historical_face_and_edge": "shared semantic bank with owner+locator metadata"
+}

@@ -1,0 +1,4 @@
+{
+  "reason": "No production semantics were changed; bounded permutation execution requires a separate explicitly selected diagnostic fixture.",
+  "status": "NOT_RUN"
+}

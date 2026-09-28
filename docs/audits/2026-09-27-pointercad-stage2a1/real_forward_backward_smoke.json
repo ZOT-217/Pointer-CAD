@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "path": "injected Qwen2Model -> CRSExpandedPointerCAD.forward -> grammar/pointer heads -> ExpandedLoss -> backward",
+  "pointer_types": ["PTR_FACE", "PTR_EDGE", "PTR_BODY", "PTR_PROFILE", "PTR_SKETCH_REFERENCE", "PTR_RESOLVED_GEOMETRY"],
+  "finite": true,
+  "nonzero_expected_modules": true,
+  "nonzero_gradient_count": 51,
+  "pretrained_checkpoint": "not loaded",
+  "local_expanded_test_count": 24
+}

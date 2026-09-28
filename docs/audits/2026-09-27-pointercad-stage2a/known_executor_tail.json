@@ -1,0 +1,14 @@
+{
+  "classification": "KNOWN_EXECUTOR_TAIL_PENDING",
+  "blocking_for_stage2a": false,
+  "blocking_before_large_scale_rollout": true,
+  "exceptions": [
+    {"sample_id": "sample-00045", "action_index": 16, "operation": "ShellFeature", "kind": "geometry_signature_mismatch"},
+    {"sample_id": "sample-00081", "action_index": 3, "operation": "ShellFeature", "kind": "geometry_signature_mismatch"},
+    {"sample_id": "sample-00322", "action_index": 13, "operation": "ShellFeature", "kind": "geometry_signature_mismatch"},
+    {"sample_id": "sample-00564", "action_index": 8, "operation": "ShellFeature", "kind": "geometry_signature_mismatch"},
+    {"sample_id": "sample-00656", "action_index": 3, "operation": "ShellFeature", "kind": "geometry_signature_mismatch"},
+    {"sample_id": "sample-00900", "action_index": 6, "operation": "BooleanFeature", "kind": "duplicate_or_geometry_mismatch"},
+    {"sample_id": "sample-00836", "action_index": null, "operation": "ShellFeature", "kind": "INVALID_BREP"}
+  ]
+}

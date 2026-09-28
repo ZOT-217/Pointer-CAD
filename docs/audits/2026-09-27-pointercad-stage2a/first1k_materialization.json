@@ -1,0 +1,11 @@
+{
+  "population": "FIRST_1K_DISCOVERY_ONLY",
+  "pointer_positions": 35488,
+  "candidate_banks": 17569,
+  "model_materialization_failures": 0,
+  "valid_gt_targets_unresolved": 0,
+  "known_executor_tail_failures": 7,
+  "unexpected_executor_failures": 0,
+  "known_executor_tail_status": "KNOWN_EXECUTOR_TAIL_PENDING",
+  "source": "cadquery2crs/docs/audits/2026-09-27-pointercad-final-local-closure/runtime_materializer_results.json"
+}

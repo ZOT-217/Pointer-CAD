@@ -1,0 +1,6 @@
+{
+  "status": "PASS",
+  "modes": ["NONE", "TYPE_POOLED"],
+  "path": "RegistryContextEncoder -> context_projection -> first decoder input embedding",
+  "ablation_test": "passed; non-empty TYPE_POOLED context changes decoder hidden states"
+}

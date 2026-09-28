@@ -1,0 +1,7 @@
+{
+  "body_pooling": ["mean", "max", "attention_future"],
+  "registry_context": ["NONE", "TYPE_POOLED", "entity_retrieval_future"],
+  "relative_age": ["WITH_AGE", "WITHOUT_AGE"],
+  "structured_numeric_head": "future CCI experiment",
+  "learned_memory_rl": "out of scope"
+}

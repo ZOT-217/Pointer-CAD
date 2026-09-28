@@ -1,0 +1,10 @@
+{
+  "cases": {
+    "00063": "not selection-audited locally; known CCI body-output mismatch is separate",
+    "00067": "not selection-audited locally; known CCI timeout is separate",
+    "00135": "not selection-audited locally; known CCI body-output mismatch is separate",
+    "00139": "not selection-audited locally; known CCI timeout is separate",
+    "sample-00000": "local 8-edge result; CCI reported 36-edge result not reproduced"
+  },
+  "status": "PARTIAL"
+}

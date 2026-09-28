@@ -1,0 +1,7 @@
+{
+  "note": "Physical sets remain stable in these local runs; the same selection IDs can bind to different physical entities when order changes.",
+  "sample00000": "BENIGN_STORAGE_ONLY_LOCALLY",
+  "sample00031": "LABEL_IDENTITY_DRIFT_AND_SEMANTIC_ORDER_DRIFT",
+  "sample00268": "LABEL_IDENTITY_DRIFT_AND_SEMANTIC_ORDER_DRIFT",
+  "status": "COMPLETED_FOR_AUDITED_CASES"
+}

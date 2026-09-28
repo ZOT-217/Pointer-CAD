@@ -1,0 +1,15 @@
+{
+  "finite_grammar": true,
+  "finite_loss": true,
+  "valid_pointer_slots": 6,
+  "backward": true,
+  "nonzero_gradients": 51,
+  "pointer_types": [
+    "PTR_FACE",
+    "PTR_EDGE",
+    "PTR_BODY",
+    "PTR_PROFILE",
+    "PTR_SKETCH_REFERENCE",
+    "PTR_RESOLVED_GEOMETRY"
+  ]
+}

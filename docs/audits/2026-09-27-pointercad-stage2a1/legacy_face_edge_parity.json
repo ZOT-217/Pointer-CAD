@@ -1,0 +1,7 @@
+{
+  "status": "IMPLEMENTED_NOT_FULLY_TESTED",
+  "native_components": ["models/brep_embed.py::UVNetEmbedder", "FaceCandidateEncoder", "EdgeCandidateEncoder"],
+  "legacy_class_unchanged": true,
+  "parity_fixture": "native 128-D active/historical bank-space test passed",
+  "checkpoint_level_logit_parity": "not run; no compatible checkpoint fixture in repository"
+}

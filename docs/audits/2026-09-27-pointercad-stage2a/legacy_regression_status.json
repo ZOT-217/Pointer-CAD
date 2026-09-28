@@ -1,0 +1,8 @@
+{
+  "status": "AVAILABLE",
+  "legacy_class": "models.pointercad.PointerCAD",
+  "legacy_mode": "LEGACY_POINTERCAD",
+  "legacy_face_edge_forward_path": "unchanged",
+  "expanded_path_isolation": true,
+  "parity_training_run": "not launched in Stage 2A"
+}

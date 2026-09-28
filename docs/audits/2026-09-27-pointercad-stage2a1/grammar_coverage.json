@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "operations": ["Sketch", "ExtrudeFeature", "RevolveFeature", "SweepFeature", "LoftFeature", "MirrorFeature", "ShellFeature", "FilletFeature", "ChamferFeature", "BooleanFeature", "TransformFeature", "SplitFeature"],
+  "field_level_specs": true,
+  "structured_branches": ["Shell BODY xor FACE", "Chamfer EqualDistance/TwoDistances EDGE->FACE", "Transform translate/rotate", "Boolean target/tool roles"],
+  "executor_derived_fields_excluded": true
+}

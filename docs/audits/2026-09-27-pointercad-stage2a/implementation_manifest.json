@@ -1,0 +1,10 @@
+{
+  "stage": "2A",
+  "implementation": "CRS-native expanded Pointer-CAD",
+  "legacy_mode": "LEGACY_POINTERCAD",
+  "expanded_mode": "CRS_EXPANDED_POINTERCAD",
+  "source_root": "models/crs_pointercad",
+  "tests": {"command": "PYTHONPATH=. python -m pytest -q tests/test_stage2a.py", "passed": 7, "failed": 0},
+  "training_launched": false,
+  "known_executor_tail_policy": "record_and_continue"
+}

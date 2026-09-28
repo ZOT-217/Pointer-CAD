@@ -1,0 +1,389 @@
+{
+  "cases": {
+    "features": [
+      {
+        "feature_type": "FilletFeature",
+        "layer_table": [
+          {
+            "physical_descriptors": {
+              "E1": {
+                "centroid": {
+                  "x": 0.012,
+                  "y": 0.08,
+                  "z": 0.005
+                },
+                "key": "791090bdb54e",
+                "length": 0.01
+              },
+              "E2": {
+                "centroid": {
+                  "x": 0.012,
+                  "y": 0.092,
+                  "z": 0.005
+                },
+                "key": "56ab75f2adb5",
+                "length": 0.01
+              }
+            },
+            "raw_order": [
+              "E1",
+              "E2"
+            ],
+            "run_id": 1,
+            "selection_ids": [
+              "selection_000010",
+              "selection_000011"
+            ],
+            "serialized_target_order": [
+              "E1",
+              "E2"
+            ]
+          },
+          {
+            "physical_descriptors": {
+              "E1": {
+                "centroid": {
+                  "x": 0.012,
+                  "y": 0.08,
+                  "z": 0.005
+                },
+                "key": "791090bdb54e",
+                "length": 0.01
+              },
+              "E2": {
+                "centroid": {
+                  "x": 0.012,
+                  "y": 0.092,
+                  "z": 0.005
+                },
+                "key": "56ab75f2adb5",
+                "length": 0.01
+              }
+            },
+            "raw_order": [
+              "E1",
+              "E2"
+            ],
+            "run_id": 2,
+            "selection_ids": [
+              "selection_000010",
+              "selection_000011"
+            ],
+            "serialized_target_order": [
+              "E1",
+              "E2"
+            ]
+          },
+          {
+            "physical_descriptors": {
+              "E1": {
+                "centroid": {
+                  "x": 0.012,
+                  "y": 0.08,
+                  "z": 0.005
+                },
+                "key": "791090bdb54e",
+                "length": 0.01
+              },
+              "E2": {
+                "centroid": {
+                  "x": 0.012,
+                  "y": 0.092,
+                  "z": 0.005
+                },
+                "key": "56ab75f2adb5",
+                "length": 0.01
+              }
+            },
+            "raw_order": [
+              "E2",
+              "E1"
+            ],
+            "run_id": 3,
+            "selection_ids": [
+              "selection_000010",
+              "selection_000011"
+            ],
+            "serialized_target_order": [
+              "E2",
+              "E1"
+            ]
+          },
+          {
+            "physical_descriptors": {
+              "E1": {
+                "centroid": {
+                  "x": 0.012,
+                  "y": 0.08,
+                  "z": 0.005
+                },
+                "key": "791090bdb54e",
+                "length": 0.01
+              },
+              "E2": {
+                "centroid": {
+                  "x": 0.012,
+                  "y": 0.092,
+                  "z": 0.005
+                },
+                "key": "56ab75f2adb5",
+                "length": 0.01
+              }
+            },
+            "raw_order": [
+              "E2",
+              "E1"
+            ],
+            "run_id": 4,
+            "selection_ids": [
+              "selection_000010",
+              "selection_000011"
+            ],
+            "serialized_target_order": [
+              "E2",
+              "E1"
+            ]
+          },
+          {
+            "physical_descriptors": {
+              "E1": {
+                "centroid": {
+                  "x": 0.012,
+                  "y": 0.08,
+                  "z": 0.005
+                },
+                "key": "791090bdb54e",
+                "length": 0.01
+              },
+              "E2": {
+                "centroid": {
+                  "x": 0.012,
+                  "y": 0.092,
+                  "z": 0.005
+                },
+                "key": "56ab75f2adb5",
+                "length": 0.01
+              }
+            },
+            "raw_order": [
+              "E2",
+              "E1"
+            ],
+            "run_id": 5,
+            "selection_ids": [
+              "selection_000010",
+              "selection_000011"
+            ],
+            "serialized_target_order": [
+              "E2",
+              "E1"
+            ]
+          }
+        ],
+        "locator_order_variants": 1,
+        "observed_equals_serialized_each_run": true,
+        "physical_signature_variants": 1,
+        "raw_order_variants": 2,
+        "run_count": 5,
+        "selection_count": 2,
+        "selection_id_to_physical_stable": false,
+        "serialized_order_variants": 2,
+        "serialized_supervision_stable": false
+      },
+      {
+        "feature_type": "FilletFeature",
+        "layer_table": [
+          {
+            "physical_descriptors": {
+              "E1": {
+                "centroid": {
+                  "x": 0.014,
+                  "y": 0.092,
+                  "z": 0.005
+                },
+                "key": "6d40c623c22a",
+                "length": 0.01
+              },
+              "E2": {
+                "centroid": {
+                  "x": 0.06,
+                  "y": 0.092,
+                  "z": 0.005
+                },
+                "key": "9e49278e7707",
+                "length": 0.01
+              }
+            },
+            "raw_order": [
+              "E2",
+              "E1"
+            ],
+            "run_id": 1,
+            "selection_ids": [
+              "selection_000012",
+              "selection_000013"
+            ],
+            "serialized_target_order": [
+              "E2",
+              "E1"
+            ]
+          },
+          {
+            "physical_descriptors": {
+              "E1": {
+                "centroid": {
+                  "x": 0.014,
+                  "y": 0.092,
+                  "z": 0.005
+                },
+                "key": "6d40c623c22a",
+                "length": 0.01
+              },
+              "E2": {
+                "centroid": {
+                  "x": 0.06,
+                  "y": 0.092,
+                  "z": 0.005
+                },
+                "key": "9e49278e7707",
+                "length": 0.01
+              }
+            },
+            "raw_order": [
+              "E1",
+              "E2"
+            ],
+            "run_id": 2,
+            "selection_ids": [
+              "selection_000012",
+              "selection_000013"
+            ],
+            "serialized_target_order": [
+              "E1",
+              "E2"
+            ]
+          },
+          {
+            "physical_descriptors": {
+              "E1": {
+                "centroid": {
+                  "x": 0.014,
+                  "y": 0.092,
+                  "z": 0.005
+                },
+                "key": "6d40c623c22a",
+                "length": 0.01
+              },
+              "E2": {
+                "centroid": {
+                  "x": 0.06,
+                  "y": 0.092,
+                  "z": 0.005
+                },
+                "key": "9e49278e7707",
+                "length": 0.01
+              }
+            },
+            "raw_order": [
+              "E2",
+              "E1"
+            ],
+            "run_id": 3,
+            "selection_ids": [
+              "selection_000012",
+              "selection_000013"
+            ],
+            "serialized_target_order": [
+              "E2",
+              "E1"
+            ]
+          },
+          {
+            "physical_descriptors": {
+              "E1": {
+                "centroid": {
+                  "x": 0.014,
+                  "y": 0.092,
+                  "z": 0.005
+                },
+                "key": "6d40c623c22a",
+                "length": 0.01
+              },
+              "E2": {
+                "centroid": {
+                  "x": 0.06,
+                  "y": 0.092,
+                  "z": 0.005
+                },
+                "key": "9e49278e7707",
+                "length": 0.01
+              }
+            },
+            "raw_order": [
+              "E1",
+              "E2"
+            ],
+            "run_id": 4,
+            "selection_ids": [
+              "selection_000012",
+              "selection_000013"
+            ],
+            "serialized_target_order": [
+              "E1",
+              "E2"
+            ]
+          },
+          {
+            "physical_descriptors": {
+              "E1": {
+                "centroid": {
+                  "x": 0.014,
+                  "y": 0.092,
+                  "z": 0.005
+                },
+                "key": "6d40c623c22a",
+                "length": 0.01
+              },
+              "E2": {
+                "centroid": {
+                  "x": 0.06,
+                  "y": 0.092,
+                  "z": 0.005
+                },
+                "key": "9e49278e7707",
+                "length": 0.01
+              }
+            },
+            "raw_order": [
+              "E2",
+              "E1"
+            ],
+            "run_id": 5,
+            "selection_ids": [
+              "selection_000012",
+              "selection_000013"
+            ],
+            "serialized_target_order": [
+              "E2",
+              "E1"
+            ]
+          }
+        ],
+        "locator_order_variants": 1,
+        "observed_equals_serialized_each_run": true,
+        "physical_signature_variants": 1,
+        "raw_order_variants": 2,
+        "run_count": 5,
+        "selection_count": 2,
+        "selection_id_to_physical_stable": false,
+        "serialized_order_variants": 2,
+        "serialized_supervision_stable": false
+      }
+    ],
+    "prefix": "sample00031",
+    "reconstruction_successes": 0,
+    "run_count": 5
+  },
+  "comparison": "sample00031 2-edge Fillet has stable physical signatures and selection IDs but two raw/serialized orders across five processes; it is not stable under the requested layer-by-layer definition.",
+  "status": "INSTABILITY_OBSERVED_IN_LOCAL_CASE"
+}

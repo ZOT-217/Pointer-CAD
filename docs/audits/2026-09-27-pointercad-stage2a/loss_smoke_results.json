@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "formula": "L_grammar + L_pointer + L_scalar + L_record",
+  "lambdas": {"grammar": 1.0, "pointer": 1.0, "scalar": 1.0, "record": 1.0},
+  "pointer_normalization": "mean candidates within slot, then mean pointer slots",
+  "multi_positive": true,
+  "zero_pointer_slots": "finite zero with valid_pointer_slots=0"
+}

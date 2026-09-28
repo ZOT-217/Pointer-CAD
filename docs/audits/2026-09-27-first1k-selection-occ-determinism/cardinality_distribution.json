@@ -1,0 +1,15 @@
+{
+  "counts": {
+    "ChamferFeature:17-32": 99,
+    "ChamferFeature:2-4": 220,
+    "ChamferFeature:5-8": 173,
+    "ChamferFeature:9-16": 139,
+    "ChamferFeature:>32": 43,
+    "FilletFeature:17-32": 24,
+    "FilletFeature:2-4": 151,
+    "FilletFeature:5-8": 95,
+    "FilletFeature:9-16": 44,
+    "FilletFeature:>32": 9
+  },
+  "status": "COMPLETED_FROM_CRS"
+}

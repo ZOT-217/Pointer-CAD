@@ -1,0 +1,3550 @@
+{
+  "policy": {
+    "other_deep_cases": 5,
+    "sample00000": 10
+  },
+  "results": {
+    "sample00000": {
+      "features": [
+        {
+          "feature_type": "ChamferFeature",
+          "layer_table": [
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": -0.0075,
+                    "y": -0.002,
+                    "z": 0.0125
+                  },
+                  "key": "646b003e6f51",
+                  "length": 0.005
+                },
+                "E2": {
+                  "centroid": {
+                    "x": -0.0075,
+                    "y": 0.002,
+                    "z": 0.0125
+                  },
+                  "key": "e06cdd2ba13d",
+                  "length": 0.005
+                },
+                "E3": {
+                  "centroid": {
+                    "x": -0.035,
+                    "y": -0.01,
+                    "z": 0.005
+                  },
+                  "key": "19d36459e319",
+                  "length": 0.01
+                },
+                "E4": {
+                  "centroid": {
+                    "x": -0.035,
+                    "y": 0.01,
+                    "z": 0.005
+                  },
+                  "key": "afa829fc378d",
+                  "length": 0.01
+                },
+                "E5": {
+                  "centroid": {
+                    "x": 0.0075,
+                    "y": -0.002,
+                    "z": 0.0125
+                  },
+                  "key": "3e5ad6bf4e9b",
+                  "length": 0.005
+                },
+                "E6": {
+                  "centroid": {
+                    "x": 0.0075,
+                    "y": 0.002,
+                    "z": 0.0125
+                  },
+                  "key": "b49f86922f2c",
+                  "length": 0.005
+                },
+                "E7": {
+                  "centroid": {
+                    "x": 0.035,
+                    "y": -0.01,
+                    "z": 0.005
+                  },
+                  "key": "628aaa3bbcd3",
+                  "length": 0.01
+                },
+                "E8": {
+                  "centroid": {
+                    "x": 0.035,
+                    "y": 0.01,
+                    "z": 0.005
+                  },
+                  "key": "f78620961b17",
+                  "length": 0.01
+                }
+              },
+              "raw_order": [
+                "E3",
+                "E7",
+                "E4",
+                "E8",
+                "E1",
+                "E5",
+                "E6",
+                "E2"
+              ],
+              "run_id": 1,
+              "selection_ids": [
+                "selection_000006",
+                "selection_000007",
+                "selection_000008",
+                "selection_000009",
+                "selection_000010",
+                "selection_000011",
+                "selection_000012",
+                "selection_000013"
+              ],
+              "serialized_target_order": [
+                "E3",
+                "E7",
+                "E4",
+                "E8",
+                "E1",
+                "E5",
+                "E6",
+                "E2"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": -0.0075,
+                    "y": -0.002,
+                    "z": 0.0125
+                  },
+                  "key": "646b003e6f51",
+                  "length": 0.005
+                },
+                "E2": {
+                  "centroid": {
+                    "x": -0.0075,
+                    "y": 0.002,
+                    "z": 0.0125
+                  },
+                  "key": "e06cdd2ba13d",
+                  "length": 0.005
+                },
+                "E3": {
+                  "centroid": {
+                    "x": -0.035,
+                    "y": -0.01,
+                    "z": 0.005
+                  },
+                  "key": "19d36459e319",
+                  "length": 0.01
+                },
+                "E4": {
+                  "centroid": {
+                    "x": -0.035,
+                    "y": 0.01,
+                    "z": 0.005
+                  },
+                  "key": "afa829fc378d",
+                  "length": 0.01
+                },
+                "E5": {
+                  "centroid": {
+                    "x": 0.0075,
+                    "y": -0.002,
+                    "z": 0.0125
+                  },
+                  "key": "3e5ad6bf4e9b",
+                  "length": 0.005
+                },
+                "E6": {
+                  "centroid": {
+                    "x": 0.0075,
+                    "y": 0.002,
+                    "z": 0.0125
+                  },
+                  "key": "b49f86922f2c",
+                  "length": 0.005
+                },
+                "E7": {
+                  "centroid": {
+                    "x": 0.035,
+                    "y": -0.01,
+                    "z": 0.005
+                  },
+                  "key": "628aaa3bbcd3",
+                  "length": 0.01
+                },
+                "E8": {
+                  "centroid": {
+                    "x": 0.035,
+                    "y": 0.01,
+                    "z": 0.005
+                  },
+                  "key": "f78620961b17",
+                  "length": 0.01
+                }
+              },
+              "raw_order": [
+                "E3",
+                "E7",
+                "E4",
+                "E8",
+                "E1",
+                "E5",
+                "E6",
+                "E2"
+              ],
+              "run_id": 2,
+              "selection_ids": [
+                "selection_000006",
+                "selection_000007",
+                "selection_000008",
+                "selection_000009",
+                "selection_000010",
+                "selection_000011",
+                "selection_000012",
+                "selection_000013"
+              ],
+              "serialized_target_order": [
+                "E3",
+                "E7",
+                "E4",
+                "E8",
+                "E1",
+                "E5",
+                "E6",
+                "E2"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": -0.0075,
+                    "y": -0.002,
+                    "z": 0.0125
+                  },
+                  "key": "646b003e6f51",
+                  "length": 0.005
+                },
+                "E2": {
+                  "centroid": {
+                    "x": -0.0075,
+                    "y": 0.002,
+                    "z": 0.0125
+                  },
+                  "key": "e06cdd2ba13d",
+                  "length": 0.005
+                },
+                "E3": {
+                  "centroid": {
+                    "x": -0.035,
+                    "y": -0.01,
+                    "z": 0.005
+                  },
+                  "key": "19d36459e319",
+                  "length": 0.01
+                },
+                "E4": {
+                  "centroid": {
+                    "x": -0.035,
+                    "y": 0.01,
+                    "z": 0.005
+                  },
+                  "key": "afa829fc378d",
+                  "length": 0.01
+                },
+                "E5": {
+                  "centroid": {
+                    "x": 0.0075,
+                    "y": -0.002,
+                    "z": 0.0125
+                  },
+                  "key": "3e5ad6bf4e9b",
+                  "length": 0.005
+                },
+                "E6": {
+                  "centroid": {
+                    "x": 0.0075,
+                    "y": 0.002,
+                    "z": 0.0125
+                  },
+                  "key": "b49f86922f2c",
+                  "length": 0.005
+                },
+                "E7": {
+                  "centroid": {
+                    "x": 0.035,
+                    "y": -0.01,
+                    "z": 0.005
+                  },
+                  "key": "628aaa3bbcd3",
+                  "length": 0.01
+                },
+                "E8": {
+                  "centroid": {
+                    "x": 0.035,
+                    "y": 0.01,
+                    "z": 0.005
+                  },
+                  "key": "f78620961b17",
+                  "length": 0.01
+                }
+              },
+              "raw_order": [
+                "E3",
+                "E7",
+                "E4",
+                "E8",
+                "E1",
+                "E5",
+                "E6",
+                "E2"
+              ],
+              "run_id": 3,
+              "selection_ids": [
+                "selection_000006",
+                "selection_000007",
+                "selection_000008",
+                "selection_000009",
+                "selection_000010",
+                "selection_000011",
+                "selection_000012",
+                "selection_000013"
+              ],
+              "serialized_target_order": [
+                "E3",
+                "E7",
+                "E4",
+                "E8",
+                "E1",
+                "E5",
+                "E6",
+                "E2"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": -0.0075,
+                    "y": -0.002,
+                    "z": 0.0125
+                  },
+                  "key": "646b003e6f51",
+                  "length": 0.005
+                },
+                "E2": {
+                  "centroid": {
+                    "x": -0.0075,
+                    "y": 0.002,
+                    "z": 0.0125
+                  },
+                  "key": "e06cdd2ba13d",
+                  "length": 0.005
+                },
+                "E3": {
+                  "centroid": {
+                    "x": -0.035,
+                    "y": -0.01,
+                    "z": 0.005
+                  },
+                  "key": "19d36459e319",
+                  "length": 0.01
+                },
+                "E4": {
+                  "centroid": {
+                    "x": -0.035,
+                    "y": 0.01,
+                    "z": 0.005
+                  },
+                  "key": "afa829fc378d",
+                  "length": 0.01
+                },
+                "E5": {
+                  "centroid": {
+                    "x": 0.0075,
+                    "y": -0.002,
+                    "z": 0.0125
+                  },
+                  "key": "3e5ad6bf4e9b",
+                  "length": 0.005
+                },
+                "E6": {
+                  "centroid": {
+                    "x": 0.0075,
+                    "y": 0.002,
+                    "z": 0.0125
+                  },
+                  "key": "b49f86922f2c",
+                  "length": 0.005
+                },
+                "E7": {
+                  "centroid": {
+                    "x": 0.035,
+                    "y": -0.01,
+                    "z": 0.005
+                  },
+                  "key": "628aaa3bbcd3",
+                  "length": 0.01
+                },
+                "E8": {
+                  "centroid": {
+                    "x": 0.035,
+                    "y": 0.01,
+                    "z": 0.005
+                  },
+                  "key": "f78620961b17",
+                  "length": 0.01
+                }
+              },
+              "raw_order": [
+                "E3",
+                "E7",
+                "E4",
+                "E8",
+                "E1",
+                "E5",
+                "E6",
+                "E2"
+              ],
+              "run_id": 4,
+              "selection_ids": [
+                "selection_000006",
+                "selection_000007",
+                "selection_000008",
+                "selection_000009",
+                "selection_000010",
+                "selection_000011",
+                "selection_000012",
+                "selection_000013"
+              ],
+              "serialized_target_order": [
+                "E3",
+                "E7",
+                "E4",
+                "E8",
+                "E1",
+                "E5",
+                "E6",
+                "E2"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": -0.0075,
+                    "y": -0.002,
+                    "z": 0.0125
+                  },
+                  "key": "646b003e6f51",
+                  "length": 0.005
+                },
+                "E2": {
+                  "centroid": {
+                    "x": -0.0075,
+                    "y": 0.002,
+                    "z": 0.0125
+                  },
+                  "key": "e06cdd2ba13d",
+                  "length": 0.005
+                },
+                "E3": {
+                  "centroid": {
+                    "x": -0.035,
+                    "y": -0.01,
+                    "z": 0.005
+                  },
+                  "key": "19d36459e319",
+                  "length": 0.01
+                },
+                "E4": {
+                  "centroid": {
+                    "x": -0.035,
+                    "y": 0.01,
+                    "z": 0.005
+                  },
+                  "key": "afa829fc378d",
+                  "length": 0.01
+                },
+                "E5": {
+                  "centroid": {
+                    "x": 0.0075,
+                    "y": -0.002,
+                    "z": 0.0125
+                  },
+                  "key": "3e5ad6bf4e9b",
+                  "length": 0.005
+                },
+                "E6": {
+                  "centroid": {
+                    "x": 0.0075,
+                    "y": 0.002,
+                    "z": 0.0125
+                  },
+                  "key": "b49f86922f2c",
+                  "length": 0.005
+                },
+                "E7": {
+                  "centroid": {
+                    "x": 0.035,
+                    "y": -0.01,
+                    "z": 0.005
+                  },
+                  "key": "628aaa3bbcd3",
+                  "length": 0.01
+                },
+                "E8": {
+                  "centroid": {
+                    "x": 0.035,
+                    "y": 0.01,
+                    "z": 0.005
+                  },
+                  "key": "f78620961b17",
+                  "length": 0.01
+                }
+              },
+              "raw_order": [
+                "E3",
+                "E7",
+                "E4",
+                "E8",
+                "E1",
+                "E5",
+                "E6",
+                "E2"
+              ],
+              "run_id": 5,
+              "selection_ids": [
+                "selection_000006",
+                "selection_000007",
+                "selection_000008",
+                "selection_000009",
+                "selection_000010",
+                "selection_000011",
+                "selection_000012",
+                "selection_000013"
+              ],
+              "serialized_target_order": [
+                "E3",
+                "E7",
+                "E4",
+                "E8",
+                "E1",
+                "E5",
+                "E6",
+                "E2"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": -0.0075,
+                    "y": -0.002,
+                    "z": 0.0125
+                  },
+                  "key": "646b003e6f51",
+                  "length": 0.005
+                },
+                "E2": {
+                  "centroid": {
+                    "x": -0.0075,
+                    "y": 0.002,
+                    "z": 0.0125
+                  },
+                  "key": "e06cdd2ba13d",
+                  "length": 0.005
+                },
+                "E3": {
+                  "centroid": {
+                    "x": -0.035,
+                    "y": -0.01,
+                    "z": 0.005
+                  },
+                  "key": "19d36459e319",
+                  "length": 0.01
+                },
+                "E4": {
+                  "centroid": {
+                    "x": -0.035,
+                    "y": 0.01,
+                    "z": 0.005
+                  },
+                  "key": "afa829fc378d",
+                  "length": 0.01
+                },
+                "E5": {
+                  "centroid": {
+                    "x": 0.0075,
+                    "y": -0.002,
+                    "z": 0.0125
+                  },
+                  "key": "3e5ad6bf4e9b",
+                  "length": 0.005
+                },
+                "E6": {
+                  "centroid": {
+                    "x": 0.0075,
+                    "y": 0.002,
+                    "z": 0.0125
+                  },
+                  "key": "b49f86922f2c",
+                  "length": 0.005
+                },
+                "E7": {
+                  "centroid": {
+                    "x": 0.035,
+                    "y": -0.01,
+                    "z": 0.005
+                  },
+                  "key": "628aaa3bbcd3",
+                  "length": 0.01
+                },
+                "E8": {
+                  "centroid": {
+                    "x": 0.035,
+                    "y": 0.01,
+                    "z": 0.005
+                  },
+                  "key": "f78620961b17",
+                  "length": 0.01
+                }
+              },
+              "raw_order": [
+                "E3",
+                "E7",
+                "E4",
+                "E8",
+                "E1",
+                "E5",
+                "E6",
+                "E2"
+              ],
+              "run_id": 6,
+              "selection_ids": [
+                "selection_000006",
+                "selection_000007",
+                "selection_000008",
+                "selection_000009",
+                "selection_000010",
+                "selection_000011",
+                "selection_000012",
+                "selection_000013"
+              ],
+              "serialized_target_order": [
+                "E3",
+                "E7",
+                "E4",
+                "E8",
+                "E1",
+                "E5",
+                "E6",
+                "E2"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": -0.0075,
+                    "y": -0.002,
+                    "z": 0.0125
+                  },
+                  "key": "646b003e6f51",
+                  "length": 0.005
+                },
+                "E2": {
+                  "centroid": {
+                    "x": -0.0075,
+                    "y": 0.002,
+                    "z": 0.0125
+                  },
+                  "key": "e06cdd2ba13d",
+                  "length": 0.005
+                },
+                "E3": {
+                  "centroid": {
+                    "x": -0.035,
+                    "y": -0.01,
+                    "z": 0.005
+                  },
+                  "key": "19d36459e319",
+                  "length": 0.01
+                },
+                "E4": {
+                  "centroid": {
+                    "x": -0.035,
+                    "y": 0.01,
+                    "z": 0.005
+                  },
+                  "key": "afa829fc378d",
+                  "length": 0.01
+                },
+                "E5": {
+                  "centroid": {
+                    "x": 0.0075,
+                    "y": -0.002,
+                    "z": 0.0125
+                  },
+                  "key": "3e5ad6bf4e9b",
+                  "length": 0.005
+                },
+                "E6": {
+                  "centroid": {
+                    "x": 0.0075,
+                    "y": 0.002,
+                    "z": 0.0125
+                  },
+                  "key": "b49f86922f2c",
+                  "length": 0.005
+                },
+                "E7": {
+                  "centroid": {
+                    "x": 0.035,
+                    "y": -0.01,
+                    "z": 0.005
+                  },
+                  "key": "628aaa3bbcd3",
+                  "length": 0.01
+                },
+                "E8": {
+                  "centroid": {
+                    "x": 0.035,
+                    "y": 0.01,
+                    "z": 0.005
+                  },
+                  "key": "f78620961b17",
+                  "length": 0.01
+                }
+              },
+              "raw_order": [
+                "E3",
+                "E7",
+                "E4",
+                "E8",
+                "E1",
+                "E5",
+                "E6",
+                "E2"
+              ],
+              "run_id": 7,
+              "selection_ids": [
+                "selection_000006",
+                "selection_000007",
+                "selection_000008",
+                "selection_000009",
+                "selection_000010",
+                "selection_000011",
+                "selection_000012",
+                "selection_000013"
+              ],
+              "serialized_target_order": [
+                "E3",
+                "E7",
+                "E4",
+                "E8",
+                "E1",
+                "E5",
+                "E6",
+                "E2"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": -0.0075,
+                    "y": -0.002,
+                    "z": 0.0125
+                  },
+                  "key": "646b003e6f51",
+                  "length": 0.005
+                },
+                "E2": {
+                  "centroid": {
+                    "x": -0.0075,
+                    "y": 0.002,
+                    "z": 0.0125
+                  },
+                  "key": "e06cdd2ba13d",
+                  "length": 0.005
+                },
+                "E3": {
+                  "centroid": {
+                    "x": -0.035,
+                    "y": -0.01,
+                    "z": 0.005
+                  },
+                  "key": "19d36459e319",
+                  "length": 0.01
+                },
+                "E4": {
+                  "centroid": {
+                    "x": -0.035,
+                    "y": 0.01,
+                    "z": 0.005
+                  },
+                  "key": "afa829fc378d",
+                  "length": 0.01
+                },
+                "E5": {
+                  "centroid": {
+                    "x": 0.0075,
+                    "y": -0.002,
+                    "z": 0.0125
+                  },
+                  "key": "3e5ad6bf4e9b",
+                  "length": 0.005
+                },
+                "E6": {
+                  "centroid": {
+                    "x": 0.0075,
+                    "y": 0.002,
+                    "z": 0.0125
+                  },
+                  "key": "b49f86922f2c",
+                  "length": 0.005
+                },
+                "E7": {
+                  "centroid": {
+                    "x": 0.035,
+                    "y": -0.01,
+                    "z": 0.005
+                  },
+                  "key": "628aaa3bbcd3",
+                  "length": 0.01
+                },
+                "E8": {
+                  "centroid": {
+                    "x": 0.035,
+                    "y": 0.01,
+                    "z": 0.005
+                  },
+                  "key": "f78620961b17",
+                  "length": 0.01
+                }
+              },
+              "raw_order": [
+                "E3",
+                "E7",
+                "E4",
+                "E8",
+                "E1",
+                "E5",
+                "E6",
+                "E2"
+              ],
+              "run_id": 8,
+              "selection_ids": [
+                "selection_000006",
+                "selection_000007",
+                "selection_000008",
+                "selection_000009",
+                "selection_000010",
+                "selection_000011",
+                "selection_000012",
+                "selection_000013"
+              ],
+              "serialized_target_order": [
+                "E3",
+                "E7",
+                "E4",
+                "E8",
+                "E1",
+                "E5",
+                "E6",
+                "E2"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": -0.0075,
+                    "y": -0.002,
+                    "z": 0.0125
+                  },
+                  "key": "646b003e6f51",
+                  "length": 0.005
+                },
+                "E2": {
+                  "centroid": {
+                    "x": -0.0075,
+                    "y": 0.002,
+                    "z": 0.0125
+                  },
+                  "key": "e06cdd2ba13d",
+                  "length": 0.005
+                },
+                "E3": {
+                  "centroid": {
+                    "x": -0.035,
+                    "y": -0.01,
+                    "z": 0.005
+                  },
+                  "key": "19d36459e319",
+                  "length": 0.01
+                },
+                "E4": {
+                  "centroid": {
+                    "x": -0.035,
+                    "y": 0.01,
+                    "z": 0.005
+                  },
+                  "key": "afa829fc378d",
+                  "length": 0.01
+                },
+                "E5": {
+                  "centroid": {
+                    "x": 0.0075,
+                    "y": -0.002,
+                    "z": 0.0125
+                  },
+                  "key": "3e5ad6bf4e9b",
+                  "length": 0.005
+                },
+                "E6": {
+                  "centroid": {
+                    "x": 0.0075,
+                    "y": 0.002,
+                    "z": 0.0125
+                  },
+                  "key": "b49f86922f2c",
+                  "length": 0.005
+                },
+                "E7": {
+                  "centroid": {
+                    "x": 0.035,
+                    "y": -0.01,
+                    "z": 0.005
+                  },
+                  "key": "628aaa3bbcd3",
+                  "length": 0.01
+                },
+                "E8": {
+                  "centroid": {
+                    "x": 0.035,
+                    "y": 0.01,
+                    "z": 0.005
+                  },
+                  "key": "f78620961b17",
+                  "length": 0.01
+                }
+              },
+              "raw_order": [
+                "E3",
+                "E7",
+                "E4",
+                "E8",
+                "E1",
+                "E5",
+                "E6",
+                "E2"
+              ],
+              "run_id": 9,
+              "selection_ids": [
+                "selection_000006",
+                "selection_000007",
+                "selection_000008",
+                "selection_000009",
+                "selection_000010",
+                "selection_000011",
+                "selection_000012",
+                "selection_000013"
+              ],
+              "serialized_target_order": [
+                "E3",
+                "E7",
+                "E4",
+                "E8",
+                "E1",
+                "E5",
+                "E6",
+                "E2"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": -0.0075,
+                    "y": -0.002,
+                    "z": 0.0125
+                  },
+                  "key": "646b003e6f51",
+                  "length": 0.005
+                },
+                "E2": {
+                  "centroid": {
+                    "x": -0.0075,
+                    "y": 0.002,
+                    "z": 0.0125
+                  },
+                  "key": "e06cdd2ba13d",
+                  "length": 0.005
+                },
+                "E3": {
+                  "centroid": {
+                    "x": -0.035,
+                    "y": -0.01,
+                    "z": 0.005
+                  },
+                  "key": "19d36459e319",
+                  "length": 0.01
+                },
+                "E4": {
+                  "centroid": {
+                    "x": -0.035,
+                    "y": 0.01,
+                    "z": 0.005
+                  },
+                  "key": "afa829fc378d",
+                  "length": 0.01
+                },
+                "E5": {
+                  "centroid": {
+                    "x": 0.0075,
+                    "y": -0.002,
+                    "z": 0.0125
+                  },
+                  "key": "3e5ad6bf4e9b",
+                  "length": 0.005
+                },
+                "E6": {
+                  "centroid": {
+                    "x": 0.0075,
+                    "y": 0.002,
+                    "z": 0.0125
+                  },
+                  "key": "b49f86922f2c",
+                  "length": 0.005
+                },
+                "E7": {
+                  "centroid": {
+                    "x": 0.035,
+                    "y": -0.01,
+                    "z": 0.005
+                  },
+                  "key": "628aaa3bbcd3",
+                  "length": 0.01
+                },
+                "E8": {
+                  "centroid": {
+                    "x": 0.035,
+                    "y": 0.01,
+                    "z": 0.005
+                  },
+                  "key": "f78620961b17",
+                  "length": 0.01
+                }
+              },
+              "raw_order": [
+                "E3",
+                "E7",
+                "E4",
+                "E8",
+                "E1",
+                "E5",
+                "E6",
+                "E2"
+              ],
+              "run_id": 10,
+              "selection_ids": [
+                "selection_000006",
+                "selection_000007",
+                "selection_000008",
+                "selection_000009",
+                "selection_000010",
+                "selection_000011",
+                "selection_000012",
+                "selection_000013"
+              ],
+              "serialized_target_order": [
+                "E3",
+                "E7",
+                "E4",
+                "E8",
+                "E1",
+                "E5",
+                "E6",
+                "E2"
+              ]
+            }
+          ],
+          "locator_order_variants": 1,
+          "observed_equals_serialized_each_run": true,
+          "physical_signature_variants": 1,
+          "raw_order_variants": 1,
+          "run_count": 10,
+          "selection_count": 8,
+          "selection_id_to_physical_stable": true,
+          "serialized_order_variants": 1,
+          "serialized_supervision_stable": true
+        }
+      ],
+      "prefix": "sample00000",
+      "reconstruction_successes": 10,
+      "run_count": 10
+    },
+    "sample00031": {
+      "features": [
+        {
+          "feature_type": "FilletFeature",
+          "layer_table": [
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": 0.012,
+                    "y": 0.08,
+                    "z": 0.005
+                  },
+                  "key": "791090bdb54e",
+                  "length": 0.01
+                },
+                "E2": {
+                  "centroid": {
+                    "x": 0.012,
+                    "y": 0.092,
+                    "z": 0.005
+                  },
+                  "key": "56ab75f2adb5",
+                  "length": 0.01
+                }
+              },
+              "raw_order": [
+                "E1",
+                "E2"
+              ],
+              "run_id": 1,
+              "selection_ids": [
+                "selection_000010",
+                "selection_000011"
+              ],
+              "serialized_target_order": [
+                "E1",
+                "E2"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": 0.012,
+                    "y": 0.08,
+                    "z": 0.005
+                  },
+                  "key": "791090bdb54e",
+                  "length": 0.01
+                },
+                "E2": {
+                  "centroid": {
+                    "x": 0.012,
+                    "y": 0.092,
+                    "z": 0.005
+                  },
+                  "key": "56ab75f2adb5",
+                  "length": 0.01
+                }
+              },
+              "raw_order": [
+                "E1",
+                "E2"
+              ],
+              "run_id": 2,
+              "selection_ids": [
+                "selection_000010",
+                "selection_000011"
+              ],
+              "serialized_target_order": [
+                "E1",
+                "E2"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": 0.012,
+                    "y": 0.08,
+                    "z": 0.005
+                  },
+                  "key": "791090bdb54e",
+                  "length": 0.01
+                },
+                "E2": {
+                  "centroid": {
+                    "x": 0.012,
+                    "y": 0.092,
+                    "z": 0.005
+                  },
+                  "key": "56ab75f2adb5",
+                  "length": 0.01
+                }
+              },
+              "raw_order": [
+                "E2",
+                "E1"
+              ],
+              "run_id": 3,
+              "selection_ids": [
+                "selection_000010",
+                "selection_000011"
+              ],
+              "serialized_target_order": [
+                "E2",
+                "E1"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": 0.012,
+                    "y": 0.08,
+                    "z": 0.005
+                  },
+                  "key": "791090bdb54e",
+                  "length": 0.01
+                },
+                "E2": {
+                  "centroid": {
+                    "x": 0.012,
+                    "y": 0.092,
+                    "z": 0.005
+                  },
+                  "key": "56ab75f2adb5",
+                  "length": 0.01
+                }
+              },
+              "raw_order": [
+                "E2",
+                "E1"
+              ],
+              "run_id": 4,
+              "selection_ids": [
+                "selection_000010",
+                "selection_000011"
+              ],
+              "serialized_target_order": [
+                "E2",
+                "E1"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": 0.012,
+                    "y": 0.08,
+                    "z": 0.005
+                  },
+                  "key": "791090bdb54e",
+                  "length": 0.01
+                },
+                "E2": {
+                  "centroid": {
+                    "x": 0.012,
+                    "y": 0.092,
+                    "z": 0.005
+                  },
+                  "key": "56ab75f2adb5",
+                  "length": 0.01
+                }
+              },
+              "raw_order": [
+                "E2",
+                "E1"
+              ],
+              "run_id": 5,
+              "selection_ids": [
+                "selection_000010",
+                "selection_000011"
+              ],
+              "serialized_target_order": [
+                "E2",
+                "E1"
+              ]
+            }
+          ],
+          "locator_order_variants": 1,
+          "observed_equals_serialized_each_run": true,
+          "physical_signature_variants": 1,
+          "raw_order_variants": 2,
+          "run_count": 5,
+          "selection_count": 2,
+          "selection_id_to_physical_stable": false,
+          "serialized_order_variants": 2,
+          "serialized_supervision_stable": false
+        },
+        {
+          "feature_type": "FilletFeature",
+          "layer_table": [
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": 0.014,
+                    "y": 0.092,
+                    "z": 0.005
+                  },
+                  "key": "6d40c623c22a",
+                  "length": 0.01
+                },
+                "E2": {
+                  "centroid": {
+                    "x": 0.06,
+                    "y": 0.092,
+                    "z": 0.005
+                  },
+                  "key": "9e49278e7707",
+                  "length": 0.01
+                }
+              },
+              "raw_order": [
+                "E2",
+                "E1"
+              ],
+              "run_id": 1,
+              "selection_ids": [
+                "selection_000012",
+                "selection_000013"
+              ],
+              "serialized_target_order": [
+                "E2",
+                "E1"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": 0.014,
+                    "y": 0.092,
+                    "z": 0.005
+                  },
+                  "key": "6d40c623c22a",
+                  "length": 0.01
+                },
+                "E2": {
+                  "centroid": {
+                    "x": 0.06,
+                    "y": 0.092,
+                    "z": 0.005
+                  },
+                  "key": "9e49278e7707",
+                  "length": 0.01
+                }
+              },
+              "raw_order": [
+                "E1",
+                "E2"
+              ],
+              "run_id": 2,
+              "selection_ids": [
+                "selection_000012",
+                "selection_000013"
+              ],
+              "serialized_target_order": [
+                "E1",
+                "E2"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": 0.014,
+                    "y": 0.092,
+                    "z": 0.005
+                  },
+                  "key": "6d40c623c22a",
+                  "length": 0.01
+                },
+                "E2": {
+                  "centroid": {
+                    "x": 0.06,
+                    "y": 0.092,
+                    "z": 0.005
+                  },
+                  "key": "9e49278e7707",
+                  "length": 0.01
+                }
+              },
+              "raw_order": [
+                "E2",
+                "E1"
+              ],
+              "run_id": 3,
+              "selection_ids": [
+                "selection_000012",
+                "selection_000013"
+              ],
+              "serialized_target_order": [
+                "E2",
+                "E1"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": 0.014,
+                    "y": 0.092,
+                    "z": 0.005
+                  },
+                  "key": "6d40c623c22a",
+                  "length": 0.01
+                },
+                "E2": {
+                  "centroid": {
+                    "x": 0.06,
+                    "y": 0.092,
+                    "z": 0.005
+                  },
+                  "key": "9e49278e7707",
+                  "length": 0.01
+                }
+              },
+              "raw_order": [
+                "E1",
+                "E2"
+              ],
+              "run_id": 4,
+              "selection_ids": [
+                "selection_000012",
+                "selection_000013"
+              ],
+              "serialized_target_order": [
+                "E1",
+                "E2"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": 0.014,
+                    "y": 0.092,
+                    "z": 0.005
+                  },
+                  "key": "6d40c623c22a",
+                  "length": 0.01
+                },
+                "E2": {
+                  "centroid": {
+                    "x": 0.06,
+                    "y": 0.092,
+                    "z": 0.005
+                  },
+                  "key": "9e49278e7707",
+                  "length": 0.01
+                }
+              },
+              "raw_order": [
+                "E2",
+                "E1"
+              ],
+              "run_id": 5,
+              "selection_ids": [
+                "selection_000012",
+                "selection_000013"
+              ],
+              "serialized_target_order": [
+                "E2",
+                "E1"
+              ]
+            }
+          ],
+          "locator_order_variants": 1,
+          "observed_equals_serialized_each_run": true,
+          "physical_signature_variants": 1,
+          "raw_order_variants": 2,
+          "run_count": 5,
+          "selection_count": 2,
+          "selection_id_to_physical_stable": false,
+          "serialized_order_variants": 2,
+          "serialized_supervision_stable": false
+        }
+      ],
+      "prefix": "sample00031",
+      "reconstruction_successes": 0,
+      "run_count": 5
+    },
+    "sample00268": {
+      "features": [
+        {
+          "feature_type": "FilletFeature",
+          "layer_table": [
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": -0.015,
+                    "z": 0.0
+                  },
+                  "key": "237c046b10f9",
+                  "length": 0.015
+                },
+                "E2": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": -0.0075
+                  },
+                  "key": "73b67818d2fc",
+                  "length": 0.03
+                },
+                "E3": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0075
+                  },
+                  "key": "289e1dad426c",
+                  "length": 0.03
+                },
+                "E4": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": 0.015,
+                    "z": 0.0
+                  },
+                  "key": "76551b15e683",
+                  "length": 0.015
+                }
+              },
+              "raw_order": [
+                "E1",
+                "E4",
+                "E3",
+                "E2"
+              ],
+              "run_id": 1,
+              "selection_ids": [
+                "selection_000002",
+                "selection_000003",
+                "selection_000004",
+                "selection_000005"
+              ],
+              "serialized_target_order": [
+                "E1",
+                "E4",
+                "E3",
+                "E2"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": -0.015,
+                    "z": 0.0
+                  },
+                  "key": "237c046b10f9",
+                  "length": 0.015
+                },
+                "E2": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": -0.0075
+                  },
+                  "key": "73b67818d2fc",
+                  "length": 0.03
+                },
+                "E3": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0075
+                  },
+                  "key": "289e1dad426c",
+                  "length": 0.03
+                },
+                "E4": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": 0.015,
+                    "z": 0.0
+                  },
+                  "key": "76551b15e683",
+                  "length": 0.015
+                }
+              },
+              "raw_order": [
+                "E1",
+                "E4",
+                "E3",
+                "E2"
+              ],
+              "run_id": 2,
+              "selection_ids": [
+                "selection_000002",
+                "selection_000003",
+                "selection_000004",
+                "selection_000005"
+              ],
+              "serialized_target_order": [
+                "E1",
+                "E4",
+                "E3",
+                "E2"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": -0.015,
+                    "z": 0.0
+                  },
+                  "key": "237c046b10f9",
+                  "length": 0.015
+                },
+                "E2": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": -0.0075
+                  },
+                  "key": "73b67818d2fc",
+                  "length": 0.03
+                },
+                "E3": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0075
+                  },
+                  "key": "289e1dad426c",
+                  "length": 0.03
+                },
+                "E4": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": 0.015,
+                    "z": 0.0
+                  },
+                  "key": "76551b15e683",
+                  "length": 0.015
+                }
+              },
+              "raw_order": [
+                "E1",
+                "E4",
+                "E3",
+                "E2"
+              ],
+              "run_id": 3,
+              "selection_ids": [
+                "selection_000002",
+                "selection_000003",
+                "selection_000004",
+                "selection_000005"
+              ],
+              "serialized_target_order": [
+                "E1",
+                "E4",
+                "E3",
+                "E2"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": -0.015,
+                    "z": 0.0
+                  },
+                  "key": "237c046b10f9",
+                  "length": 0.015
+                },
+                "E2": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": -0.0075
+                  },
+                  "key": "73b67818d2fc",
+                  "length": 0.03
+                },
+                "E3": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0075
+                  },
+                  "key": "289e1dad426c",
+                  "length": 0.03
+                },
+                "E4": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": 0.015,
+                    "z": 0.0
+                  },
+                  "key": "76551b15e683",
+                  "length": 0.015
+                }
+              },
+              "raw_order": [
+                "E1",
+                "E4",
+                "E3",
+                "E2"
+              ],
+              "run_id": 4,
+              "selection_ids": [
+                "selection_000002",
+                "selection_000003",
+                "selection_000004",
+                "selection_000005"
+              ],
+              "serialized_target_order": [
+                "E1",
+                "E4",
+                "E3",
+                "E2"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": -0.015,
+                    "z": 0.0
+                  },
+                  "key": "237c046b10f9",
+                  "length": 0.015
+                },
+                "E2": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": -0.0075
+                  },
+                  "key": "73b67818d2fc",
+                  "length": 0.03
+                },
+                "E3": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0075
+                  },
+                  "key": "289e1dad426c",
+                  "length": 0.03
+                },
+                "E4": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": 0.015,
+                    "z": 0.0
+                  },
+                  "key": "76551b15e683",
+                  "length": 0.015
+                }
+              },
+              "raw_order": [
+                "E1",
+                "E4",
+                "E3",
+                "E2"
+              ],
+              "run_id": 5,
+              "selection_ids": [
+                "selection_000002",
+                "selection_000003",
+                "selection_000004",
+                "selection_000005"
+              ],
+              "serialized_target_order": [
+                "E1",
+                "E4",
+                "E3",
+                "E2"
+              ]
+            }
+          ],
+          "locator_order_variants": 1,
+          "observed_equals_serialized_each_run": true,
+          "physical_signature_variants": 1,
+          "raw_order_variants": 1,
+          "run_count": 5,
+          "selection_count": 4,
+          "selection_id_to_physical_stable": true,
+          "serialized_order_variants": 1,
+          "serialized_supervision_stable": true
+        },
+        {
+          "feature_type": "ChamferFeature",
+          "layer_table": [
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": -0.05,
+                    "y": -0.015,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "056bb60c1618",
+                  "length": 0.01
+                },
+                "E10": {
+                  "centroid": {
+                    "x": 0.002,
+                    "y": -0.013000000000000001,
+                    "z": 4.440892098500626e-19
+                  },
+                  "key": "643727c44b2b",
+                  "length": 0.011
+                },
+                "E11": {
+                  "centroid": {
+                    "x": 0.002,
+                    "y": 0.0075,
+                    "z": 0.004
+                  },
+                  "key": "838481fcb5c0",
+                  "length": 0.003
+                },
+                "E12": {
+                  "centroid": {
+                    "x": 0.002,
+                    "y": 0.013000000000000001,
+                    "z": 4.440892098500626e-19
+                  },
+                  "key": "c82b1e36f39f",
+                  "length": 0.011
+                },
+                "E13": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": -0.015,
+                    "z": -0.00625
+                  },
+                  "key": "3e32e66a69ac",
+                  "length": 0.0025
+                },
+                "E14": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": -0.015,
+                    "z": 0.0
+                  },
+                  "key": "df5abf6e67b7",
+                  "length": 0.01
+                },
+                "E15": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": -0.015,
+                    "z": 0.00625
+                  },
+                  "key": "65172723b07d",
+                  "length": 0.0025
+                },
+                "E16": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": 0.015,
+                    "z": -0.00625
+                  },
+                  "key": "29135eae7fba",
+                  "length": 0.0025
+                },
+                "E17": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": 0.015,
+                    "z": 0.0
+                  },
+                  "key": "e3a866bfe1d5",
+                  "length": 0.01
+                },
+                "E18": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": 0.015,
+                    "z": 0.00625
+                  },
+                  "key": "21c3a628b71b",
+                  "length": 0.0025
+                },
+                "E19": {
+                  "centroid": {
+                    "x": 0.006,
+                    "y": -0.0075,
+                    "z": 0.006500000000000001
+                  },
+                  "key": "1ada51d45a20",
+                  "length": 0.002
+                },
+                "E2": {
+                  "centroid": {
+                    "x": -0.05,
+                    "y": -0.019,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "4564cf6205d1",
+                  "length": 0.01
+                },
+                "E20": {
+                  "centroid": {
+                    "x": 0.006,
+                    "y": 0.0075,
+                    "z": 0.006500000000000001
+                  },
+                  "key": "bb3169323cb6",
+                  "length": 0.002
+                },
+                "E21": {
+                  "centroid": {
+                    "x": 0.05,
+                    "y": -0.015,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "71f96e7f61a2",
+                  "length": 0.01
+                },
+                "E22": {
+                  "centroid": {
+                    "x": 0.05,
+                    "y": -0.019,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "4e3803aef946",
+                  "length": 0.01
+                },
+                "E23": {
+                  "centroid": {
+                    "x": 0.05,
+                    "y": 0.015,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "f9d4bc7a2225",
+                  "length": 0.01
+                },
+                "E24": {
+                  "centroid": {
+                    "x": 0.05,
+                    "y": 0.019,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "512f49b4d520",
+                  "length": 0.01
+                },
+                "E25": {
+                  "centroid": {
+                    "x": 0.098,
+                    "y": -0.013000000000000001,
+                    "z": 4.440892098500626e-19
+                  },
+                  "key": "04bc2e677453",
+                  "length": 0.011
+                },
+                "E26": {
+                  "centroid": {
+                    "x": 0.098,
+                    "y": 0.013000000000000001,
+                    "z": 4.440892098500626e-19
+                  },
+                  "key": "d42bf7515013",
+                  "length": 0.011
+                },
+                "E27": {
+                  "centroid": {
+                    "x": 0.1,
+                    "y": -0.015,
+                    "z": 0.0
+                  },
+                  "key": "a7a3a9dfb21f",
+                  "length": 0.015
+                },
+                "E28": {
+                  "centroid": {
+                    "x": 0.1,
+                    "y": 0.015,
+                    "z": 0.0
+                  },
+                  "key": "0278e41a3b4e",
+                  "length": 0.015
+                },
+                "E3": {
+                  "centroid": {
+                    "x": -0.05,
+                    "y": 0.015,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "85e52e3b30ad",
+                  "length": 0.01
+                },
+                "E4": {
+                  "centroid": {
+                    "x": -0.05,
+                    "y": 0.019,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "f1c1433f5b8a",
+                  "length": 0.01
+                },
+                "E5": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": -0.0075,
+                    "z": 0.003
+                  },
+                  "key": "f3a24a5776ee",
+                  "length": 0.001
+                },
+                "E6": {
+                  "centroid": {
+                    "x": -8.881784197001253e-19,
+                    "y": -0.011,
+                    "z": -4.440892098500626e-19
+                  },
+                  "key": "7c65b6eb6955",
+                  "length": 0.007000000000000001
+                },
+                "E7": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": 0.0075,
+                    "z": 0.003
+                  },
+                  "key": "d6c4d6aaf0de",
+                  "length": 0.001
+                },
+                "E8": {
+                  "centroid": {
+                    "x": -8.881784197001253e-19,
+                    "y": 0.011,
+                    "z": -4.440892098500626e-19
+                  },
+                  "key": "002446315902",
+                  "length": 0.007000000000000001
+                },
+                "E9": {
+                  "centroid": {
+                    "x": 0.002,
+                    "y": -0.0075,
+                    "z": 0.004
+                  },
+                  "key": "b8bc199b7a1e",
+                  "length": 0.003
+                }
+              },
+              "raw_order": [
+                "E15",
+                "E21",
+                "E13",
+                "E27",
+                "E14",
+                "E6",
+                "E22",
+                "E28",
+                "E1",
+                "E5",
+                "E7",
+                "E8",
+                "E2",
+                "E16",
+                "E23",
+                "E18",
+                "E19",
+                "E9",
+                "E20",
+                "E11",
+                "E17",
+                "E24",
+                "E10",
+                "E12",
+                "E3",
+                "E4",
+                "E26",
+                "E25"
+              ],
+              "run_id": 1,
+              "selection_ids": [
+                "selection_000008",
+                "selection_000009",
+                "selection_000010",
+                "selection_000011",
+                "selection_000012",
+                "selection_000013",
+                "selection_000014",
+                "selection_000015",
+                "selection_000016",
+                "selection_000017",
+                "selection_000018",
+                "selection_000019",
+                "selection_000020",
+                "selection_000021",
+                "selection_000022",
+                "selection_000023",
+                "selection_000024",
+                "selection_000025",
+                "selection_000026",
+                "selection_000027",
+                "selection_000028",
+                "selection_000029",
+                "selection_000030",
+                "selection_000031",
+                "selection_000032",
+                "selection_000033",
+                "selection_000034",
+                "selection_000035"
+              ],
+              "serialized_target_order": [
+                "E15",
+                "E21",
+                "E13",
+                "E27",
+                "E14",
+                "E6",
+                "E22",
+                "E28",
+                "E1",
+                "E5",
+                "E7",
+                "E8",
+                "E2",
+                "E16",
+                "E23",
+                "E18",
+                "E19",
+                "E9",
+                "E20",
+                "E11",
+                "E17",
+                "E24",
+                "E10",
+                "E12",
+                "E3",
+                "E4",
+                "E26",
+                "E25"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": -0.05,
+                    "y": -0.015,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "056bb60c1618",
+                  "length": 0.01
+                },
+                "E10": {
+                  "centroid": {
+                    "x": 0.002,
+                    "y": -0.013000000000000001,
+                    "z": 4.440892098500626e-19
+                  },
+                  "key": "643727c44b2b",
+                  "length": 0.011
+                },
+                "E11": {
+                  "centroid": {
+                    "x": 0.002,
+                    "y": 0.0075,
+                    "z": 0.004
+                  },
+                  "key": "838481fcb5c0",
+                  "length": 0.003
+                },
+                "E12": {
+                  "centroid": {
+                    "x": 0.002,
+                    "y": 0.013000000000000001,
+                    "z": 4.440892098500626e-19
+                  },
+                  "key": "c82b1e36f39f",
+                  "length": 0.011
+                },
+                "E13": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": -0.015,
+                    "z": -0.00625
+                  },
+                  "key": "3e32e66a69ac",
+                  "length": 0.0025
+                },
+                "E14": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": -0.015,
+                    "z": 0.0
+                  },
+                  "key": "df5abf6e67b7",
+                  "length": 0.01
+                },
+                "E15": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": -0.015,
+                    "z": 0.00625
+                  },
+                  "key": "65172723b07d",
+                  "length": 0.0025
+                },
+                "E16": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": 0.015,
+                    "z": -0.00625
+                  },
+                  "key": "29135eae7fba",
+                  "length": 0.0025
+                },
+                "E17": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": 0.015,
+                    "z": 0.0
+                  },
+                  "key": "e3a866bfe1d5",
+                  "length": 0.01
+                },
+                "E18": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": 0.015,
+                    "z": 0.00625
+                  },
+                  "key": "21c3a628b71b",
+                  "length": 0.0025
+                },
+                "E19": {
+                  "centroid": {
+                    "x": 0.006,
+                    "y": -0.0075,
+                    "z": 0.006500000000000001
+                  },
+                  "key": "1ada51d45a20",
+                  "length": 0.002
+                },
+                "E2": {
+                  "centroid": {
+                    "x": -0.05,
+                    "y": -0.019,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "4564cf6205d1",
+                  "length": 0.01
+                },
+                "E20": {
+                  "centroid": {
+                    "x": 0.006,
+                    "y": 0.0075,
+                    "z": 0.006500000000000001
+                  },
+                  "key": "bb3169323cb6",
+                  "length": 0.002
+                },
+                "E21": {
+                  "centroid": {
+                    "x": 0.05,
+                    "y": -0.015,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "71f96e7f61a2",
+                  "length": 0.01
+                },
+                "E22": {
+                  "centroid": {
+                    "x": 0.05,
+                    "y": -0.019,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "4e3803aef946",
+                  "length": 0.01
+                },
+                "E23": {
+                  "centroid": {
+                    "x": 0.05,
+                    "y": 0.015,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "f9d4bc7a2225",
+                  "length": 0.01
+                },
+                "E24": {
+                  "centroid": {
+                    "x": 0.05,
+                    "y": 0.019,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "512f49b4d520",
+                  "length": 0.01
+                },
+                "E25": {
+                  "centroid": {
+                    "x": 0.098,
+                    "y": -0.013000000000000001,
+                    "z": 4.440892098500626e-19
+                  },
+                  "key": "04bc2e677453",
+                  "length": 0.011
+                },
+                "E26": {
+                  "centroid": {
+                    "x": 0.098,
+                    "y": 0.013000000000000001,
+                    "z": 4.440892098500626e-19
+                  },
+                  "key": "d42bf7515013",
+                  "length": 0.011
+                },
+                "E27": {
+                  "centroid": {
+                    "x": 0.1,
+                    "y": -0.015,
+                    "z": 0.0
+                  },
+                  "key": "a7a3a9dfb21f",
+                  "length": 0.015
+                },
+                "E28": {
+                  "centroid": {
+                    "x": 0.1,
+                    "y": 0.015,
+                    "z": 0.0
+                  },
+                  "key": "0278e41a3b4e",
+                  "length": 0.015
+                },
+                "E3": {
+                  "centroid": {
+                    "x": -0.05,
+                    "y": 0.015,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "85e52e3b30ad",
+                  "length": 0.01
+                },
+                "E4": {
+                  "centroid": {
+                    "x": -0.05,
+                    "y": 0.019,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "f1c1433f5b8a",
+                  "length": 0.01
+                },
+                "E5": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": -0.0075,
+                    "z": 0.003
+                  },
+                  "key": "f3a24a5776ee",
+                  "length": 0.001
+                },
+                "E6": {
+                  "centroid": {
+                    "x": -8.881784197001253e-19,
+                    "y": -0.011,
+                    "z": -4.440892098500626e-19
+                  },
+                  "key": "7c65b6eb6955",
+                  "length": 0.007000000000000001
+                },
+                "E7": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": 0.0075,
+                    "z": 0.003
+                  },
+                  "key": "d6c4d6aaf0de",
+                  "length": 0.001
+                },
+                "E8": {
+                  "centroid": {
+                    "x": -8.881784197001253e-19,
+                    "y": 0.011,
+                    "z": -4.440892098500626e-19
+                  },
+                  "key": "002446315902",
+                  "length": 0.007000000000000001
+                },
+                "E9": {
+                  "centroid": {
+                    "x": 0.002,
+                    "y": -0.0075,
+                    "z": 0.004
+                  },
+                  "key": "b8bc199b7a1e",
+                  "length": 0.003
+                }
+              },
+              "raw_order": [
+                "E15",
+                "E21",
+                "E13",
+                "E27",
+                "E14",
+                "E6",
+                "E22",
+                "E28",
+                "E1",
+                "E5",
+                "E7",
+                "E8",
+                "E2",
+                "E16",
+                "E23",
+                "E18",
+                "E19",
+                "E9",
+                "E20",
+                "E11",
+                "E17",
+                "E24",
+                "E10",
+                "E12",
+                "E3",
+                "E4",
+                "E25",
+                "E26"
+              ],
+              "run_id": 2,
+              "selection_ids": [
+                "selection_000008",
+                "selection_000009",
+                "selection_000010",
+                "selection_000011",
+                "selection_000012",
+                "selection_000013",
+                "selection_000014",
+                "selection_000015",
+                "selection_000016",
+                "selection_000017",
+                "selection_000018",
+                "selection_000019",
+                "selection_000020",
+                "selection_000021",
+                "selection_000022",
+                "selection_000023",
+                "selection_000024",
+                "selection_000025",
+                "selection_000026",
+                "selection_000027",
+                "selection_000028",
+                "selection_000029",
+                "selection_000030",
+                "selection_000031",
+                "selection_000032",
+                "selection_000033",
+                "selection_000034",
+                "selection_000035"
+              ],
+              "serialized_target_order": [
+                "E15",
+                "E21",
+                "E13",
+                "E27",
+                "E14",
+                "E6",
+                "E22",
+                "E28",
+                "E1",
+                "E5",
+                "E7",
+                "E8",
+                "E2",
+                "E16",
+                "E23",
+                "E18",
+                "E19",
+                "E9",
+                "E20",
+                "E11",
+                "E17",
+                "E24",
+                "E10",
+                "E12",
+                "E3",
+                "E4",
+                "E25",
+                "E26"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": -0.05,
+                    "y": -0.015,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "056bb60c1618",
+                  "length": 0.01
+                },
+                "E10": {
+                  "centroid": {
+                    "x": 0.002,
+                    "y": -0.013000000000000001,
+                    "z": 4.440892098500626e-19
+                  },
+                  "key": "643727c44b2b",
+                  "length": 0.011
+                },
+                "E11": {
+                  "centroid": {
+                    "x": 0.002,
+                    "y": 0.0075,
+                    "z": 0.004
+                  },
+                  "key": "838481fcb5c0",
+                  "length": 0.003
+                },
+                "E12": {
+                  "centroid": {
+                    "x": 0.002,
+                    "y": 0.013000000000000001,
+                    "z": 4.440892098500626e-19
+                  },
+                  "key": "c82b1e36f39f",
+                  "length": 0.011
+                },
+                "E13": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": -0.015,
+                    "z": -0.00625
+                  },
+                  "key": "3e32e66a69ac",
+                  "length": 0.0025
+                },
+                "E14": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": -0.015,
+                    "z": 0.0
+                  },
+                  "key": "df5abf6e67b7",
+                  "length": 0.01
+                },
+                "E15": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": -0.015,
+                    "z": 0.00625
+                  },
+                  "key": "65172723b07d",
+                  "length": 0.0025
+                },
+                "E16": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": 0.015,
+                    "z": -0.00625
+                  },
+                  "key": "29135eae7fba",
+                  "length": 0.0025
+                },
+                "E17": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": 0.015,
+                    "z": 0.0
+                  },
+                  "key": "e3a866bfe1d5",
+                  "length": 0.01
+                },
+                "E18": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": 0.015,
+                    "z": 0.00625
+                  },
+                  "key": "21c3a628b71b",
+                  "length": 0.0025
+                },
+                "E19": {
+                  "centroid": {
+                    "x": 0.006,
+                    "y": -0.0075,
+                    "z": 0.006500000000000001
+                  },
+                  "key": "1ada51d45a20",
+                  "length": 0.002
+                },
+                "E2": {
+                  "centroid": {
+                    "x": -0.05,
+                    "y": -0.019,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "4564cf6205d1",
+                  "length": 0.01
+                },
+                "E20": {
+                  "centroid": {
+                    "x": 0.006,
+                    "y": 0.0075,
+                    "z": 0.006500000000000001
+                  },
+                  "key": "bb3169323cb6",
+                  "length": 0.002
+                },
+                "E21": {
+                  "centroid": {
+                    "x": 0.05,
+                    "y": -0.015,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "71f96e7f61a2",
+                  "length": 0.01
+                },
+                "E22": {
+                  "centroid": {
+                    "x": 0.05,
+                    "y": -0.019,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "4e3803aef946",
+                  "length": 0.01
+                },
+                "E23": {
+                  "centroid": {
+                    "x": 0.05,
+                    "y": 0.015,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "f9d4bc7a2225",
+                  "length": 0.01
+                },
+                "E24": {
+                  "centroid": {
+                    "x": 0.05,
+                    "y": 0.019,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "512f49b4d520",
+                  "length": 0.01
+                },
+                "E25": {
+                  "centroid": {
+                    "x": 0.098,
+                    "y": -0.013000000000000001,
+                    "z": 4.440892098500626e-19
+                  },
+                  "key": "04bc2e677453",
+                  "length": 0.011
+                },
+                "E26": {
+                  "centroid": {
+                    "x": 0.098,
+                    "y": 0.013000000000000001,
+                    "z": 4.440892098500626e-19
+                  },
+                  "key": "d42bf7515013",
+                  "length": 0.011
+                },
+                "E27": {
+                  "centroid": {
+                    "x": 0.1,
+                    "y": -0.015,
+                    "z": 0.0
+                  },
+                  "key": "a7a3a9dfb21f",
+                  "length": 0.015
+                },
+                "E28": {
+                  "centroid": {
+                    "x": 0.1,
+                    "y": 0.015,
+                    "z": 0.0
+                  },
+                  "key": "0278e41a3b4e",
+                  "length": 0.015
+                },
+                "E3": {
+                  "centroid": {
+                    "x": -0.05,
+                    "y": 0.015,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "85e52e3b30ad",
+                  "length": 0.01
+                },
+                "E4": {
+                  "centroid": {
+                    "x": -0.05,
+                    "y": 0.019,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "f1c1433f5b8a",
+                  "length": 0.01
+                },
+                "E5": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": -0.0075,
+                    "z": 0.003
+                  },
+                  "key": "f3a24a5776ee",
+                  "length": 0.001
+                },
+                "E6": {
+                  "centroid": {
+                    "x": -8.881784197001253e-19,
+                    "y": -0.011,
+                    "z": -4.440892098500626e-19
+                  },
+                  "key": "7c65b6eb6955",
+                  "length": 0.007000000000000001
+                },
+                "E7": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": 0.0075,
+                    "z": 0.003
+                  },
+                  "key": "d6c4d6aaf0de",
+                  "length": 0.001
+                },
+                "E8": {
+                  "centroid": {
+                    "x": -8.881784197001253e-19,
+                    "y": 0.011,
+                    "z": -4.440892098500626e-19
+                  },
+                  "key": "002446315902",
+                  "length": 0.007000000000000001
+                },
+                "E9": {
+                  "centroid": {
+                    "x": 0.002,
+                    "y": -0.0075,
+                    "z": 0.004
+                  },
+                  "key": "b8bc199b7a1e",
+                  "length": 0.003
+                }
+              },
+              "raw_order": [
+                "E15",
+                "E21",
+                "E13",
+                "E27",
+                "E14",
+                "E6",
+                "E22",
+                "E28",
+                "E1",
+                "E5",
+                "E7",
+                "E8",
+                "E2",
+                "E16",
+                "E23",
+                "E18",
+                "E19",
+                "E9",
+                "E20",
+                "E11",
+                "E17",
+                "E24",
+                "E10",
+                "E12",
+                "E3",
+                "E4",
+                "E26",
+                "E25"
+              ],
+              "run_id": 3,
+              "selection_ids": [
+                "selection_000008",
+                "selection_000009",
+                "selection_000010",
+                "selection_000011",
+                "selection_000012",
+                "selection_000013",
+                "selection_000014",
+                "selection_000015",
+                "selection_000016",
+                "selection_000017",
+                "selection_000018",
+                "selection_000019",
+                "selection_000020",
+                "selection_000021",
+                "selection_000022",
+                "selection_000023",
+                "selection_000024",
+                "selection_000025",
+                "selection_000026",
+                "selection_000027",
+                "selection_000028",
+                "selection_000029",
+                "selection_000030",
+                "selection_000031",
+                "selection_000032",
+                "selection_000033",
+                "selection_000034",
+                "selection_000035"
+              ],
+              "serialized_target_order": [
+                "E15",
+                "E21",
+                "E13",
+                "E27",
+                "E14",
+                "E6",
+                "E22",
+                "E28",
+                "E1",
+                "E5",
+                "E7",
+                "E8",
+                "E2",
+                "E16",
+                "E23",
+                "E18",
+                "E19",
+                "E9",
+                "E20",
+                "E11",
+                "E17",
+                "E24",
+                "E10",
+                "E12",
+                "E3",
+                "E4",
+                "E26",
+                "E25"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": -0.05,
+                    "y": -0.015,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "056bb60c1618",
+                  "length": 0.01
+                },
+                "E10": {
+                  "centroid": {
+                    "x": 0.002,
+                    "y": -0.013000000000000001,
+                    "z": 4.440892098500626e-19
+                  },
+                  "key": "643727c44b2b",
+                  "length": 0.011
+                },
+                "E11": {
+                  "centroid": {
+                    "x": 0.002,
+                    "y": 0.0075,
+                    "z": 0.004
+                  },
+                  "key": "838481fcb5c0",
+                  "length": 0.003
+                },
+                "E12": {
+                  "centroid": {
+                    "x": 0.002,
+                    "y": 0.013000000000000001,
+                    "z": 4.440892098500626e-19
+                  },
+                  "key": "c82b1e36f39f",
+                  "length": 0.011
+                },
+                "E13": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": -0.015,
+                    "z": -0.00625
+                  },
+                  "key": "3e32e66a69ac",
+                  "length": 0.0025
+                },
+                "E14": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": -0.015,
+                    "z": 0.0
+                  },
+                  "key": "df5abf6e67b7",
+                  "length": 0.01
+                },
+                "E15": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": -0.015,
+                    "z": 0.00625
+                  },
+                  "key": "65172723b07d",
+                  "length": 0.0025
+                },
+                "E16": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": 0.015,
+                    "z": -0.00625
+                  },
+                  "key": "29135eae7fba",
+                  "length": 0.0025
+                },
+                "E17": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": 0.015,
+                    "z": 0.0
+                  },
+                  "key": "e3a866bfe1d5",
+                  "length": 0.01
+                },
+                "E18": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": 0.015,
+                    "z": 0.00625
+                  },
+                  "key": "21c3a628b71b",
+                  "length": 0.0025
+                },
+                "E19": {
+                  "centroid": {
+                    "x": 0.006,
+                    "y": -0.0075,
+                    "z": 0.006500000000000001
+                  },
+                  "key": "1ada51d45a20",
+                  "length": 0.002
+                },
+                "E2": {
+                  "centroid": {
+                    "x": -0.05,
+                    "y": -0.019,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "4564cf6205d1",
+                  "length": 0.01
+                },
+                "E20": {
+                  "centroid": {
+                    "x": 0.006,
+                    "y": 0.0075,
+                    "z": 0.006500000000000001
+                  },
+                  "key": "bb3169323cb6",
+                  "length": 0.002
+                },
+                "E21": {
+                  "centroid": {
+                    "x": 0.05,
+                    "y": -0.015,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "71f96e7f61a2",
+                  "length": 0.01
+                },
+                "E22": {
+                  "centroid": {
+                    "x": 0.05,
+                    "y": -0.019,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "4e3803aef946",
+                  "length": 0.01
+                },
+                "E23": {
+                  "centroid": {
+                    "x": 0.05,
+                    "y": 0.015,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "f9d4bc7a2225",
+                  "length": 0.01
+                },
+                "E24": {
+                  "centroid": {
+                    "x": 0.05,
+                    "y": 0.019,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "512f49b4d520",
+                  "length": 0.01
+                },
+                "E25": {
+                  "centroid": {
+                    "x": 0.098,
+                    "y": -0.013000000000000001,
+                    "z": 4.440892098500626e-19
+                  },
+                  "key": "04bc2e677453",
+                  "length": 0.011
+                },
+                "E26": {
+                  "centroid": {
+                    "x": 0.098,
+                    "y": 0.013000000000000001,
+                    "z": 4.440892098500626e-19
+                  },
+                  "key": "d42bf7515013",
+                  "length": 0.011
+                },
+                "E27": {
+                  "centroid": {
+                    "x": 0.1,
+                    "y": -0.015,
+                    "z": 0.0
+                  },
+                  "key": "a7a3a9dfb21f",
+                  "length": 0.015
+                },
+                "E28": {
+                  "centroid": {
+                    "x": 0.1,
+                    "y": 0.015,
+                    "z": 0.0
+                  },
+                  "key": "0278e41a3b4e",
+                  "length": 0.015
+                },
+                "E3": {
+                  "centroid": {
+                    "x": -0.05,
+                    "y": 0.015,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "85e52e3b30ad",
+                  "length": 0.01
+                },
+                "E4": {
+                  "centroid": {
+                    "x": -0.05,
+                    "y": 0.019,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "f1c1433f5b8a",
+                  "length": 0.01
+                },
+                "E5": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": -0.0075,
+                    "z": 0.003
+                  },
+                  "key": "f3a24a5776ee",
+                  "length": 0.001
+                },
+                "E6": {
+                  "centroid": {
+                    "x": -8.881784197001253e-19,
+                    "y": -0.011,
+                    "z": -4.440892098500626e-19
+                  },
+                  "key": "7c65b6eb6955",
+                  "length": 0.007000000000000001
+                },
+                "E7": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": 0.0075,
+                    "z": 0.003
+                  },
+                  "key": "d6c4d6aaf0de",
+                  "length": 0.001
+                },
+                "E8": {
+                  "centroid": {
+                    "x": -8.881784197001253e-19,
+                    "y": 0.011,
+                    "z": -4.440892098500626e-19
+                  },
+                  "key": "002446315902",
+                  "length": 0.007000000000000001
+                },
+                "E9": {
+                  "centroid": {
+                    "x": 0.002,
+                    "y": -0.0075,
+                    "z": 0.004
+                  },
+                  "key": "b8bc199b7a1e",
+                  "length": 0.003
+                }
+              },
+              "raw_order": [
+                "E15",
+                "E21",
+                "E13",
+                "E27",
+                "E14",
+                "E6",
+                "E22",
+                "E28",
+                "E1",
+                "E5",
+                "E7",
+                "E8",
+                "E2",
+                "E16",
+                "E23",
+                "E18",
+                "E19",
+                "E9",
+                "E20",
+                "E11",
+                "E17",
+                "E24",
+                "E10",
+                "E12",
+                "E3",
+                "E4",
+                "E26",
+                "E25"
+              ],
+              "run_id": 4,
+              "selection_ids": [
+                "selection_000008",
+                "selection_000009",
+                "selection_000010",
+                "selection_000011",
+                "selection_000012",
+                "selection_000013",
+                "selection_000014",
+                "selection_000015",
+                "selection_000016",
+                "selection_000017",
+                "selection_000018",
+                "selection_000019",
+                "selection_000020",
+                "selection_000021",
+                "selection_000022",
+                "selection_000023",
+                "selection_000024",
+                "selection_000025",
+                "selection_000026",
+                "selection_000027",
+                "selection_000028",
+                "selection_000029",
+                "selection_000030",
+                "selection_000031",
+                "selection_000032",
+                "selection_000033",
+                "selection_000034",
+                "selection_000035"
+              ],
+              "serialized_target_order": [
+                "E15",
+                "E21",
+                "E13",
+                "E27",
+                "E14",
+                "E6",
+                "E22",
+                "E28",
+                "E1",
+                "E5",
+                "E7",
+                "E8",
+                "E2",
+                "E16",
+                "E23",
+                "E18",
+                "E19",
+                "E9",
+                "E20",
+                "E11",
+                "E17",
+                "E24",
+                "E10",
+                "E12",
+                "E3",
+                "E4",
+                "E26",
+                "E25"
+              ]
+            },
+            {
+              "physical_descriptors": {
+                "E1": {
+                  "centroid": {
+                    "x": -0.05,
+                    "y": -0.015,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "056bb60c1618",
+                  "length": 0.01
+                },
+                "E10": {
+                  "centroid": {
+                    "x": 0.002,
+                    "y": -0.013000000000000001,
+                    "z": 4.440892098500626e-19
+                  },
+                  "key": "643727c44b2b",
+                  "length": 0.011
+                },
+                "E11": {
+                  "centroid": {
+                    "x": 0.002,
+                    "y": 0.0075,
+                    "z": 0.004
+                  },
+                  "key": "838481fcb5c0",
+                  "length": 0.003
+                },
+                "E12": {
+                  "centroid": {
+                    "x": 0.002,
+                    "y": 0.013000000000000001,
+                    "z": 4.440892098500626e-19
+                  },
+                  "key": "c82b1e36f39f",
+                  "length": 0.011
+                },
+                "E13": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": -0.015,
+                    "z": -0.00625
+                  },
+                  "key": "3e32e66a69ac",
+                  "length": 0.0025
+                },
+                "E14": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": -0.015,
+                    "z": 0.0
+                  },
+                  "key": "df5abf6e67b7",
+                  "length": 0.01
+                },
+                "E15": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": -0.015,
+                    "z": 0.00625
+                  },
+                  "key": "65172723b07d",
+                  "length": 0.0025
+                },
+                "E16": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": 0.015,
+                    "z": -0.00625
+                  },
+                  "key": "29135eae7fba",
+                  "length": 0.0025
+                },
+                "E17": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": 0.015,
+                    "z": 0.0
+                  },
+                  "key": "e3a866bfe1d5",
+                  "length": 0.01
+                },
+                "E18": {
+                  "centroid": {
+                    "x": 0.003999999999999999,
+                    "y": 0.015,
+                    "z": 0.00625
+                  },
+                  "key": "21c3a628b71b",
+                  "length": 0.0025
+                },
+                "E19": {
+                  "centroid": {
+                    "x": 0.006,
+                    "y": -0.0075,
+                    "z": 0.006500000000000001
+                  },
+                  "key": "1ada51d45a20",
+                  "length": 0.002
+                },
+                "E2": {
+                  "centroid": {
+                    "x": -0.05,
+                    "y": -0.019,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "4564cf6205d1",
+                  "length": 0.01
+                },
+                "E20": {
+                  "centroid": {
+                    "x": 0.006,
+                    "y": 0.0075,
+                    "z": 0.006500000000000001
+                  },
+                  "key": "bb3169323cb6",
+                  "length": 0.002
+                },
+                "E21": {
+                  "centroid": {
+                    "x": 0.05,
+                    "y": -0.015,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "71f96e7f61a2",
+                  "length": 0.01
+                },
+                "E22": {
+                  "centroid": {
+                    "x": 0.05,
+                    "y": -0.019,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "4e3803aef946",
+                  "length": 0.01
+                },
+                "E23": {
+                  "centroid": {
+                    "x": 0.05,
+                    "y": 0.015,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "f9d4bc7a2225",
+                  "length": 0.01
+                },
+                "E24": {
+                  "centroid": {
+                    "x": 0.05,
+                    "y": 0.019,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "512f49b4d520",
+                  "length": 0.01
+                },
+                "E25": {
+                  "centroid": {
+                    "x": 0.098,
+                    "y": -0.013000000000000001,
+                    "z": 4.440892098500626e-19
+                  },
+                  "key": "04bc2e677453",
+                  "length": 0.011
+                },
+                "E26": {
+                  "centroid": {
+                    "x": 0.098,
+                    "y": 0.013000000000000001,
+                    "z": 4.440892098500626e-19
+                  },
+                  "key": "d42bf7515013",
+                  "length": 0.011
+                },
+                "E27": {
+                  "centroid": {
+                    "x": 0.1,
+                    "y": -0.015,
+                    "z": 0.0
+                  },
+                  "key": "a7a3a9dfb21f",
+                  "length": 0.015
+                },
+                "E28": {
+                  "centroid": {
+                    "x": 0.1,
+                    "y": 0.015,
+                    "z": 0.0
+                  },
+                  "key": "0278e41a3b4e",
+                  "length": 0.015
+                },
+                "E3": {
+                  "centroid": {
+                    "x": -0.05,
+                    "y": 0.015,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "85e52e3b30ad",
+                  "length": 0.01
+                },
+                "E4": {
+                  "centroid": {
+                    "x": -0.05,
+                    "y": 0.019,
+                    "z": 2.220446049250313e-19
+                  },
+                  "key": "f1c1433f5b8a",
+                  "length": 0.01
+                },
+                "E5": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": -0.0075,
+                    "z": 0.003
+                  },
+                  "key": "f3a24a5776ee",
+                  "length": 0.001
+                },
+                "E6": {
+                  "centroid": {
+                    "x": -8.881784197001253e-19,
+                    "y": -0.011,
+                    "z": -4.440892098500626e-19
+                  },
+                  "key": "7c65b6eb6955",
+                  "length": 0.007000000000000001
+                },
+                "E7": {
+                  "centroid": {
+                    "x": 0.0,
+                    "y": 0.0075,
+                    "z": 0.003
+                  },
+                  "key": "d6c4d6aaf0de",
+                  "length": 0.001
+                },
+                "E8": {
+                  "centroid": {
+                    "x": -8.881784197001253e-19,
+                    "y": 0.011,
+                    "z": -4.440892098500626e-19
+                  },
+                  "key": "002446315902",
+                  "length": 0.007000000000000001
+                },
+                "E9": {
+                  "centroid": {
+                    "x": 0.002,
+                    "y": -0.0075,
+                    "z": 0.004
+                  },
+                  "key": "b8bc199b7a1e",
+                  "length": 0.003
+                }
+              },
+              "raw_order": [
+                "E15",
+                "E21",
+                "E13",
+                "E27",
+                "E14",
+                "E6",
+                "E22",
+                "E28",
+                "E1",
+                "E5",
+                "E7",
+                "E8",
+                "E2",
+                "E16",
+                "E23",
+                "E18",
+                "E19",
+                "E9",
+                "E20",
+                "E11",
+                "E17",
+                "E24",
+                "E12",
+                "E10",
+                "E3",
+                "E4",
+                "E26",
+                "E25"
+              ],
+              "run_id": 5,
+              "selection_ids": [
+                "selection_000008",
+                "selection_000009",
+                "selection_000010",
+                "selection_000011",
+                "selection_000012",
+                "selection_000013",
+                "selection_000014",
+                "selection_000015",
+                "selection_000016",
+                "selection_000017",
+                "selection_000018",
+                "selection_000019",
+                "selection_000020",
+                "selection_000021",
+                "selection_000022",
+                "selection_000023",
+                "selection_000024",
+                "selection_000025",
+                "selection_000026",
+                "selection_000027",
+                "selection_000028",
+                "selection_000029",
+                "selection_000030",
+                "selection_000031",
+                "selection_000032",
+                "selection_000033",
+                "selection_000034",
+                "selection_000035"
+              ],
+              "serialized_target_order": [
+                "E15",
+                "E21",
+                "E13",
+                "E27",
+                "E14",
+                "E6",
+                "E22",
+                "E28",
+                "E1",
+                "E5",
+                "E7",
+                "E8",
+                "E2",
+                "E16",
+                "E23",
+                "E18",
+                "E19",
+                "E9",
+                "E20",
+                "E11",
+                "E17",
+                "E24",
+                "E12",
+                "E10",
+                "E3",
+                "E4",
+                "E26",
+                "E25"
+              ]
+            }
+          ],
+          "locator_order_variants": 1,
+          "observed_equals_serialized_each_run": true,
+          "physical_signature_variants": 1,
+          "raw_order_variants": 3,
+          "run_count": 5,
+          "selection_count": 28,
+          "selection_id_to_physical_stable": false,
+          "serialized_order_variants": 3,
+          "serialized_supervision_stable": false
+        }
+      ],
+      "prefix": "sample00268",
+      "reconstruction_successes": 0,
+      "run_count": 5
+    }
+  },
+  "status": "PARTIAL_SOURCE_COVERAGE"
+}

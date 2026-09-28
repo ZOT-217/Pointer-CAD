@@ -1,0 +1,14 @@
+{
+  "cci_reported_selected_count": 36,
+  "final_geometry_stable": true,
+  "fresh_process_runs": 10,
+  "interpretation": "The 36-edge CCI pathology is not reproduced by the locally available certified source; this is an environment/population discrepancy, not evidence that the CCI case is benign.",
+  "local_selected_count": 8,
+  "locator_set_stable": true,
+  "physical_set_stable": true,
+  "raw_order_stable": true,
+  "selection_id_to_physical_stable": true,
+  "serialized_supervision_stable": true,
+  "source_hash_matches_certified_manifest": true,
+  "status": "LOCAL_RESULT_DIFFERS_FROM_CCI_DESCRIPTION"
+}

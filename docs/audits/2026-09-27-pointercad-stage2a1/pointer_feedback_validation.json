@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "training": "teacher_forced_decode uses recorded target index",
+  "inference": "inference_pointer_decode uses model-selected index",
+  "timing": "feedback is added only to embeddings after pointer position",
+  "forbidden": ["external id embedding", "candidate index embedding", "positive averaging"]
+}

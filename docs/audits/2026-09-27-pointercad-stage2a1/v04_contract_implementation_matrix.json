@@ -1,0 +1,20 @@
+{
+  "contract_version": "pointercad-architecture-v0.4",
+  "rows": [
+    {"contract": "one authoritative causal ExecutionState", "code": "models/crs_pointercad/contracts.py::ExecutionState; CandidateView", "test": "test_prefix_candidate_bank_and_round_trip; test_execution_state_uses_real_creation_lineage", "status": "IMPLEMENTED_AND_TESTED"},
+    {"contract": "identity != neural representation != local index", "code": "ExternalKey; CandidateBank mapping; encoders omit ids", "test": "test_storage_permutation_preserves_targets; encoder tests", "status": "IMPLEMENTED_AND_TESTED"},
+    {"contract": "prefix-only candidate visibility and declaration timing", "code": "ExecutionState.commit; CandidateView; materialize_causal_supervision", "test": "test_same_action_declaration_is_not_committed", "status": "IMPLEMENTED_AND_TESTED"},
+    {"contract": "native active/historical FACE and EDGE embeddings", "code": "CRSExpandedPointerCAD._native_maps; FaceCandidateEncoder; EdgeCandidateEncoder", "test": "test_native_face_edge_embeddings_and_historical_share_bank_space", "status": "IMPLEMENTED_NOT_FULLY_TESTED"},
+    {"contract": "BODY geometry pooling and causal age toggle", "code": "BodyCandidateEncoder; runtime BodyNode creation_action_index", "test": "test_body_geometry_and_age_ablation_are_real; test_execution_state_uses_real_creation_lineage", "status": "IMPLEMENTED_AND_TESTED"},
+    {"contract": "typed PROFILE/REFERENCE/RESOLVED_GEOMETRY semantics", "code": "Curve3DEncoder; ProfileCandidateEncoder; SketchReferenceCandidateEncoder; ResolvedGeometryCandidateEncoder", "test": "test_profile_preserves_loop_and_nurbs_structure", "status": "IMPLEMENTED_AND_TESTED"},
+    {"contract": "real base LLM/Qwen path", "code": "CRSExpandedPointerCAD.base_model; Qwen2Model.from_pretrained; model_factory base_model mapping", "test": "test_qwen_base_model_path_and_real_forward", "status": "IMPLEMENTED_NOT_FULLY_TESTED"},
+    {"contract": "registry context NONE/TYPE_POOLED reaches LLM", "code": "RegistryContextEncoder; CRSExpandedPointerCAD.forward context injection", "test": "test_context_summary_reaches_decoder_input", "status": "IMPLEMENTED_AND_TESTED"},
+    {"contract": "field-complete grammar and structured branches", "code": "grammar.py::GRAMMAR, ActionAST.validate, StructuredRecord", "test": "test_field_complete_grammar_branches_and_dynamic_masks", "status": "IMPLEMENTED_AND_TESTED"},
+    {"contract": "dynamic state/substate masks", "code": "CandidateView._apply_masks", "test": "test_dynamic_face_mask_uses_selected_edge_incidence; test_dynamic_body_role_mask_keeps_boolean_targets_and_tools_distinct", "status": "IMPLEMENTED_AND_TESTED"},
+    {"contract": "causal pointer feedback teacher/inference", "code": "teacher_forced_decode; inference_pointer_decode; PointerFeedback", "test": "test_teacher_feedback_uses_recorded_candidate_and_changes_only_future; test_inference_pointer_selection_and_predicted_feedback_path", "status": "IMPLEMENTED_AND_TESTED"},
+    {"contract": "multi-positive per-slot loss and zero-pointer safety", "code": "pointer_bce_per_slot; ExpandedLoss", "test": "test_multi_positive_and_zero_pointer_loss_are_finite", "status": "IMPLEMENTED_AND_TESTED"},
+    {"contract": "real causal lineage and executor boundary", "code": "cadquery2crs runtime BodyNode lineage; execute_decoded", "test": "CRS focused causal suite; test_execution_state_uses_real_creation_lineage", "status": "IMPLEMENTED_NOT_FULLY_TESTED"},
+    {"contract": "legacy B0 selectable", "code": "models.pointercad.PointerCAD; build_pointercad; legacy_b0.yaml", "test": "test_expanded_config_flags_are_live_on_model", "status": "IMPLEMENTED_NOT_FULLY_TESTED"},
+    {"contract": "FIRST_1K through new Stage2 path", "code": "tools/stage2a1_first1k.py; materialize_causal_supervision", "test": "full run requires environment with cadquery2crs + torch", "status": "IMPLEMENTED_NOT_FULLY_TESTED"}
+  ]
+}

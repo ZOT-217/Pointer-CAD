@@ -1,0 +1,6 @@
+{
+  "status": "PASS",
+  "path": "base model -> typed query -> argmax bank selection -> predicted embedding feedback",
+  "malformed_ast_fail_closed": true,
+  "bounded_method": "CRSExpandedPointerCAD.bounded_decode_and_execute"
+}

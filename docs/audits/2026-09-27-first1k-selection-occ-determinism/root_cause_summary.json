@@ -1,0 +1,14 @@
+{
+  "evidence": "Local sample00031 and sample00268 preserve physical sets and locator sets but vary raw and serialized order, with selection IDs stable by position.",
+  "labels": [
+    "OCC_ENUMERATION_ORDER",
+    "SELECTION_ID_ALLOCATION",
+    "SERIALIZATION_ORDER"
+  ],
+  "not_supported_by_evidence": [
+    "CQ_SELECTOR_RESULT_SET",
+    "LOCATOR_AMBIGUITY",
+    "STEP_NORMALIZATION_EFFECT"
+  ],
+  "status": "ROOT_CAUSE_PARTIALLY_RESOLVED"
+}

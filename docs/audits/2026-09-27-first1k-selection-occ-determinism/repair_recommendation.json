@@ -1,0 +1,5 @@
+{
+  "recommendation": "ID-BINDING_FIX plus a separate decision on semantic order preservation",
+  "status": "DIAGNOSIS_ONLY",
+  "why": "The narrowest observed defect is binding selection identity/order to enumeration position despite stable physical sets and locator sets. Do not implement from this report; the missing certified source and unreproduced 36-edge case require closure first."
+}

@@ -1,0 +1,6 @@
+{
+  "status": "PASS",
+  "configs": ["legacy_b0.yaml", "crs_expanded_smoke.yaml", "crs_expanded_9k.yaml"],
+  "live_fields": ["base_model", "use_body_relative_age", "body_pooling", "registry_context_mode", "enable_historical_face", "enable_historical_edge", "pointer_feedback", "typed_pointer_scales"],
+  "factory": "models/model_factory.py"
+}

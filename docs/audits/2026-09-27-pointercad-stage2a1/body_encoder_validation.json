@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "geometry_source": "actual body face embeddings, typed face geometry records, or CadQuery Faces()/Area/Center descriptors",
+  "pooling": ["mean", "mean-max", "max"],
+  "age_source": "BodyNode.creation_action_index and ExecutionState.action_index",
+  "age_toggle_test": "passed; changing age has no effect when disabled",
+  "literal_ids": false
+}

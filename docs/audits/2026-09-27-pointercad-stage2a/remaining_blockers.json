@@ -1,0 +1,11 @@
+{
+  "stage2a_model_facing_blockers": [],
+  "known_executor_tail_pending": [
+    "5 Shell geometry-signature mismatches",
+    "sample-00900 action 6 Boolean duplicate/mismatch",
+    "sample-00836 Shell INVALID_BREP trajectory"
+  ],
+  "blocking_for_stage2a": false,
+  "blocking_before_large_scale_rollout": true,
+  "verdict": "POINTERCAD_STAGE2A_IMPLEMENTATION_READY_FOR_CCI_SMOKE_TRAINING"
+}
