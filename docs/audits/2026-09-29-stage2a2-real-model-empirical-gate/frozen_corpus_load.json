@@ -1,0 +1,29 @@
+{
+  "explicit_multi_positive_targets": 0,
+  "limitation": "FrozenStage2Corpus.materialization_smoke maps targets but does not produce Qwen ids, numeric target tensors, or UVNet features.",
+  "manifest_sha256": "8f20e1e9e76a239fdd0fa40c5753e3393af2eda08345b9a57fd897a377e3d8d1",
+  "multi_pointer_actions": 911,
+  "natural_clean_records_loaded": 80,
+  "pointer_targets": 3432,
+  "pointer_type_counts": {
+    "BODY": 949,
+    "EDGE": 1259,
+    "FACE": 98,
+    "PROFILE": 631,
+    "RESOLVED_GEOMETRY": 123,
+    "SKETCH_REFERENCE": 372
+  },
+  "real_prefix_brep": {
+    "edges": 12,
+    "faces": 6,
+    "sample_id": "00002",
+    "snapshot_step": 2
+  },
+  "root": "/mnt/afs/L202500475/cadquery2crs-corpus/stage2-clean-validation-v1",
+  "scalar_targets": 945,
+  "source_regeneration": false,
+  "status": "PASS",
+  "structured_record_targets": 662,
+  "synthetic_fixtures": 0,
+  "zero_pointer_actions": 386
+}

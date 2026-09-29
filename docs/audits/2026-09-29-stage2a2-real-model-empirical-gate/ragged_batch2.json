@@ -1,0 +1,5 @@
+{
+  "existing_unit_test": "test_ragged_batch_different_slot_and_bank_counts_works",
+  "reason": "No frozen command/Qwen alignment and native candidate graph bridge; batch=2 natural loss-bearing test remains required. Unit tests use tiny backbone and constructed states.",
+  "status": "NOT_RUN_ON_NATURAL_RECORDS"
+}

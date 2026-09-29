@@ -1,0 +1,25 @@
+{
+  "PointerCAD_env": {
+    "dgl": "2.4.0+cu124",
+    "python": "3.9.25",
+    "torch": "2.4.1+cu124",
+    "transformers": "4.51.3"
+  },
+  "cadquery2crs_env": {
+    "python": "3.11.15",
+    "torch": "2.13.0+cu130"
+  },
+  "commands": [
+    "LD_LIBRARY_PATH=/root/miniconda/envs/cadquery2crs/lib PYTHONPATH=/mnt/afs/L202500475/cadquery2crs/src /root/miniconda/envs/cadquery2crs/bin/python tools/stage2a2_empirical_probe.py corpus",
+    "PYTHONPATH=/mnt/afs/L202500475/Pointer-CAD /root/miniconda/envs/PointerCAD/bin/python tools/stage2a2_empirical_probe.py qwen"
+  ],
+  "date_utc": "2026-09-29",
+  "environment_modified": false,
+  "git_sync": "fetch --all --prune and pull --ff-only succeeded in both repositories",
+  "gpu": "NVIDIA H100 80GB HBM3 MIG 3g.40gb",
+  "start_heads": {
+    "Pointer-CAD": "92ae330c279bb27391d269fb1c3836db7f8db73b",
+    "cadquery2crs": "7286d7b4b2da0bb34e9818bc84a772033c9f87d5"
+  },
+  "visible_gpu_memory_bytes": 42412802048
+}

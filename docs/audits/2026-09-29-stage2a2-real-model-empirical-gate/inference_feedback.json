@@ -1,0 +1,6 @@
+{
+  "existing_code_path": "inference_pointer_decode scores candidate bank, selects argmax, and applies feedback to future embeddings",
+  "existing_unit_test": "test_decoder_substate_is_slot_local_in_teacher_and_inference_paths",
+  "status": "NOT_RUN_WITH_REAL_NATURAL_BANK",
+  "unverified": "Predicted candidate through real Qwen with real native BRep and causal executor update."
+}

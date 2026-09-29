@@ -1,0 +1,14 @@
+{
+  "buckets": {
+    "17-32": 125,
+    "33-64": 48,
+    "65-128": 45,
+    "<=16": 1544,
+    ">128": 48
+  },
+  "finite_model_logits_by_bucket": null,
+  "max_bank_size": 531,
+  "pointer_accuracy_by_bucket": null,
+  "reason": "Native FACE/EDGE embeddings are missing from real model path; no valid natural-bank logits were produced.",
+  "status": "FROZEN_BANK_COUNTS_ONLY"
+}

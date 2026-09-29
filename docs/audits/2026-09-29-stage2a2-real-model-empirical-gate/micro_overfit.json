@@ -1,0 +1,12 @@
+{
+  "curves": {
+    "grammar": null,
+    "pointer": null,
+    "record": null,
+    "scalar": null,
+    "total": null
+  },
+  "reason": "No production collator and native candidate bridge; a diagnostic numeric-only single step cannot answer four-component learnability.",
+  "status": "NOT_RUN",
+  "subset_trajectories": 0
+}

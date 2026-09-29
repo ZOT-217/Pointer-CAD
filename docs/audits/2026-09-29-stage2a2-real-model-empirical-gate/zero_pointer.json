@@ -1,0 +1,10 @@
+{
+  "limitation": "Natural action text was used, but the model state was empty and loss positions were diagnostic.",
+  "natural_zero_pointer_actions": 386,
+  "no_divide_by_zero_observed": true,
+  "other_present_losses_finite": true,
+  "pointer_component_present": false,
+  "pointer_loss_internal_value": 0.0,
+  "real_qwen_empty_pointer_batch_forward_backward_step": true,
+  "status": "PARTIAL_PASS"
+}

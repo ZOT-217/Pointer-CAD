@@ -1,0 +1,20 @@
+{
+  "L_g": null,
+  "L_p": null,
+  "L_r": 19.25551986694336,
+  "L_s": 19.866716384887695,
+  "all_present_components_finite": true,
+  "grad_norm_examples": {
+    "grammar_head": null,
+    "language_model": 6645.794921875,
+    "numeric_scalar_head": 2145.25634765625,
+    "pointer_projection_temperature": null,
+    "registry_context_adapters": null,
+    "structured_FRAME3_head_group": 609.681640625
+  },
+  "note": "Loss belongs to a partial zero-pointer probe; scalar and FRAME3 values came from the frozen record, but were placed at a diagnostic final Qwen position because token alignment is unavailable. The null fields were not measured.",
+  "optimizer_step": true,
+  "status": "PARTIAL",
+  "total_loss": 39.12223815917969,
+  "zero_grad": true
+}

@@ -1,0 +1,28 @@
+{
+  "findings": [
+    {
+      "classification": "BLOCK_BEFORE_9K",
+      "finding": "Frozen command token positions have no production Qwen token alignment/collator or complete grammar/record target placement."
+    },
+    {
+      "classification": "BLOCK_BEFORE_9K",
+      "finding": "Real native BRep FACE/EDGE candidate embeddings cannot be built from frozen snapshots across the two unchanged environments; observed native PTR_EDGE embedding error."
+    },
+    {
+      "classification": "BLOCK_BEFORE_9K",
+      "finding": "Natural batch=2, real pointer feedback/inference, real FACE/EDGE parity, and four-component micro-overfit are unmeasured because of the input bridge."
+    },
+    {
+      "classification": "BLOCK_BEFORE_9K",
+      "finding": "High pointer Qwen rerun lower bound failed in CUDA allocator on 40 GB MIG; full training cost remains infeasible or unproven."
+    },
+    {
+      "classification": "MEASURE_DURING_9K",
+      "finding": "Candidate bank size effects and early accuracy by bucket."
+    },
+    {
+      "classification": "DEFER_UNTIL_9K_RESULTS",
+      "finding": "SplitFeature and historical EDGE absent from frozen clean corpus."
+    }
+  ]
+}

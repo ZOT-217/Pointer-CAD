@@ -1,0 +1,12 @@
+{
+  "configured_model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "device": "cuda:0",
+  "dtype": "torch.float32",
+  "frozen_parameters": 0,
+  "hidden_size": 896,
+  "local_checkpoint": "/mnt/afs/L202500475/hf-data/models/Qwen2.5-0.5B-Instruct",
+  "peft_lora": false,
+  "source": "pretrained Qwen2Model.from_pretrained",
+  "status": "REAL_CHECKPOINT_LOADED",
+  "trainable_parameters": 505424056
+}

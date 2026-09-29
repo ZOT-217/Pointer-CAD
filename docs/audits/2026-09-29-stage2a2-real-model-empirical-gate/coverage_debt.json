@@ -1,0 +1,17 @@
+{
+  "SplitFeature": {
+    "basis": "Operation grammar support exists; absence from this 80-record diagnostic does not prevent interpreting covered 9K cases.",
+    "classification": "SAFE_TO_OBSERVE_NATURALLY_DURING_EXPANSION",
+    "clean_corpus_coverage": 0
+  },
+  "historical EDGE": {
+    "basis": "Historical native encoder path has a unit fixture, but real checkpoint parity and historical EDGE end-to-end evidence are absent. This does not by itself block 9K.",
+    "classification": "REQUIRED_BEFORE_100K",
+    "clean_corpus_coverage": 0
+  },
+  "multi_positive pointer": {
+    "basis": "Frozen supervision records only one target candidate per slot; existing multi-positive loss unit test is the available evidence.",
+    "classification": "MEASURE_DURING_9K",
+    "clean_corpus_coverage": 0
+  }
+}

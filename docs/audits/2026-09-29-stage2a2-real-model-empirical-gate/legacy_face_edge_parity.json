@@ -1,0 +1,14 @@
+{
+  "conclusion": "No unintended regression demonstrated, but feature/logit/ranking parity on real BRep has not been established. Context differences remain expected.",
+  "existing_unit_fixture": "test_native_face_edge_embeddings_and_historical_share_bank_space",
+  "legacy_checkpoint_compatible_comparison": false,
+  "real_snapshot_probe": {
+    "error": "ValueError: native PTR_EDGE embedding is required",
+    "model_brep_module_in_cadquery2crs_env": false,
+    "pointer_type": "EDGE",
+    "sample_id": "00002",
+    "snapshot_step": 2
+  },
+  "shared_component": "UVNetEmbedder and native 128-D FACE/EDGE embeddings",
+  "status": "NOT_ESTABLISHED"
+}

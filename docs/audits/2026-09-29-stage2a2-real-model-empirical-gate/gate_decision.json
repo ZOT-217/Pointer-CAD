@@ -1,0 +1,46 @@
+{
+  "cost_classification": "BACKBONE_RERUN_IS_TRAINING_BLOCKER",
+  "failed_or_unmeasured": [
+    "Real six-type loss-bearing forward",
+    "All intended module gradients",
+    "Natural ragged batch=2",
+    "Natural GT and predicted pointer feedback",
+    "Real FACE/EDGE parity",
+    "Representative full training cost",
+    "Four-component bounded micro-overfit"
+  ],
+  "findings": [
+    {
+      "classification": "BLOCK_BEFORE_9K",
+      "finding": "Frozen command token positions have no production Qwen token alignment/collator or complete grammar/record target placement."
+    },
+    {
+      "classification": "BLOCK_BEFORE_9K",
+      "finding": "Real native BRep FACE/EDGE candidate embeddings cannot be built from frozen snapshots across the two unchanged environments; observed native PTR_EDGE embedding error."
+    },
+    {
+      "classification": "BLOCK_BEFORE_9K",
+      "finding": "Natural batch=2, real pointer feedback/inference, real FACE/EDGE parity, and four-component micro-overfit are unmeasured because of the input bridge."
+    },
+    {
+      "classification": "BLOCK_BEFORE_9K",
+      "finding": "High pointer Qwen rerun lower bound failed in CUDA allocator on 40 GB MIG; full training cost remains infeasible or unproven."
+    },
+    {
+      "classification": "MEASURE_DURING_9K",
+      "finding": "Candidate bank size effects and early accuracy by bucket."
+    },
+    {
+      "classification": "DEFER_UNTIL_9K_RESULTS",
+      "finding": "SplitFeature and historical EDGE absent from frozen clean corpus."
+    }
+  ],
+  "passed": [
+    "Frozen 80 natural records load without source regeneration",
+    "Real pretrained Qwen checkpoint loads",
+    "Partial zero-pointer scalar and FRAME3 forward/backward/optimizer step is finite"
+  ],
+  "ready_for_expanded_9k": false,
+  "scope_note": "No dummy LM or synthetic fixture is counted as empirical gate evidence. Partial probes are explicitly labeled.",
+  "verdict": "STAGE2A2_EMPIRICAL_GATE_HAS_BLOCKERS"
+}

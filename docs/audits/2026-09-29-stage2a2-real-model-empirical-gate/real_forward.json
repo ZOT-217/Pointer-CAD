@@ -1,0 +1,14 @@
+{
+  "all_six_pointer_types_forward": false,
+  "frozen_command_text_used": true,
+  "grammar_loss_present": false,
+  "input_source": "first 48 frozen command tokens serialized as text",
+  "native_brep_forward": false,
+  "pointer_loss_present": false,
+  "pretrained_qwen_forward": true,
+  "qwen_tokens": 96,
+  "reason": "No production frozen-token to Qwen-token collator; frozen pointer positions cannot be applied to Qwen subword positions. Native FACE/EDGE banks also lack UVNet embeddings.",
+  "record_loss_finite": true,
+  "scalar_loss_finite": true,
+  "status": "PARTIAL"
+}

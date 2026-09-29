@@ -1,0 +1,6 @@
+{
+  "existing_unit_test": "test_real_training_feedback_changes_later_hidden_not_pointer_hidden",
+  "mechanical_code_path": "forward_ragged scores h_j, then adds GT candidate feedback only to embeddings[:, position+1:, :]",
+  "status": "NOT_RUN_WITH_REAL_QWEN_AND_NATURAL_BANK",
+  "unverified": "Ablation comparison on a real natural multi-pointer action and its valid native bank."
+}
