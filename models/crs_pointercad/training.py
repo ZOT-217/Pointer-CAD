@@ -1,0 +1,145 @@
+"""Loss-bearing action-level training from frozen Stage2 sequences."""
+from __future__ import annotations
+
+import hashlib
+import json
+from pathlib import Path
+from typing import Any, Mapping
+
+import torch
+
+from .brep_bridge import FrozenCandidateKey, load_prepared_state
+from .contracts import ExternalKey, PointerType
+from .heads import RECORD_DIMS
+from .sequence import Stage2Sequence
+
+
+_RECORD_FIELDS = {
+    "POINT3": ("x", "y", "z"),
+    "VECTOR3": ("x", "y", "z"),
+    "DIRECTION3": ("x", "y", "z"),
+    "AXIS3": ("origin", "direction", "length"),
+    "PLANE3": ("origin", "normal", "x_axis"),
+    "FRAME3": ("origin", "x_axis", "y_axis", "z_axis"),
+}
+
+
+def _record_values(record: Mapping[str, Any]) -> list[float]:
+    kind = str(record["record_type"])
+    fields = record["fields"]
+    if kind not in _RECORD_FIELDS:
+        raise ValueError(f"unsupported numeric record type {kind!r}")
+
+    def flatten(value):
+        if isinstance(value, Mapping):
+            keys = ("x", "y", "z") if set(value) == {"x", "y", "z"} else tuple(sorted(value))
+            return [number for key in keys for number in flatten(value[key])]
+        if isinstance(value, (tuple, list)):
+            return [number for item in value for number in flatten(item)]
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            raise ValueError("structured numeric target contains a nonnumeric field")
+        return [float(value)]
+
+    values = [number for field in _RECORD_FIELDS[kind] for number in flatten(fields[field])]
+    if len(values) != RECORD_DIMS[kind]:
+        raise ValueError(f"{kind} target has {len(values)} components; expected {RECORD_DIMS[kind]}")
+    return values
+
+
+def _target_key(value: Mapping[str, Any]):
+    kind = str(value["kind"])
+    if kind in {"FACE", "EDGE"}:
+        return FrozenCandidateKey.from_dict(value)
+    return ExternalKey(str(value["owner"]))
+
+
+class PreparedStage2Corpus:
+    """Index a prepared sidecar against the exact frozen manifest hash."""
+
+    def __init__(self, frozen_root: str | Path, prepared_root: str | Path):
+        self.frozen_root = Path(frozen_root).resolve()
+        self.prepared_root = Path(prepared_root).resolve()
+        manifest = json.loads((self.prepared_root / "manifest.json").read_text(encoding="utf-8"))
+        if manifest.get("format") != "stage2a3-native-input-v1":
+            raise ValueError("unsupported prepared Stage2 geometry format")
+        frozen_sha = hashlib.sha256((self.frozen_root / "manifest.json").read_bytes()).hexdigest()
+        if manifest["frozen_manifest_sha256"] != frozen_sha:
+            raise ValueError("prepared geometry belongs to a different frozen manifest")
+        self.entries = {tuple(item["identity"]): item for item in manifest["entries"]}
+
+    def state_for(self, identity: tuple[str, str, str, str], action_index: int):
+        entry = self.entries[identity]
+        step = next(item for item in entry["steps"] if item["action_index"] == action_index)
+        path = (self.prepared_root / step["path"]).resolve()
+        if not path.is_relative_to(self.prepared_root):
+            raise ValueError("prepared step path escapes sidecar root")
+        return load_prepared_state(path)
+
+
+def training_action_loss(model, sequence: Stage2Sequence, supervision: Mapping[str, Any],
+                         action_index: int, state, prepared_brep):
+    """Run one causal action and score only its explicitly mapped targets."""
+    action = next(item for item in sequence.action_boundaries if item.action_index == action_index)
+    device = next(model.parameters()).device
+    bos = sequence.input_ids[:1]
+    ids = torch.cat((bos, sequence.input_ids[action.start:action.end])).unsqueeze(0).to(device)
+    mask = torch.ones_like(ids)
+
+    def local(position: int) -> int:
+        result = position - action.start + 1
+        if not 0 <= result < ids.shape[1]:
+            raise ValueError("target model position is outside its causal action")
+        return result
+
+    pointer_targets = [target for target in sequence.pointer_positions if target.action_index == action_index]
+    specs = []
+    for target in pointer_targets:
+        key = target.target_candidate
+        if key is None:
+            raise ValueError("pointer target has no CandidateKey")
+        pointer_type = PointerType("PTR_" + str(key["kind"]))
+        source = next(item for item in supervision["pointer_targets"]
+                      if item["action_index"] == action_index and item["position"] == target.command_position
+                      and item["target_candidate"] == key)
+        specs.append({
+            "position": local(target.model_position),
+            "pointer_type": pointer_type,
+            "target_key": _target_key(key),
+            "decoder_substate": source.get("decoder_substate", {}),
+        })
+    output = model.forward_ragged(input_ids=ids, attention_mask=mask, states=[state],
+                                  pointer_specs=[specs], breps=[prepared_brep])
+
+    grammar_indices = [index for index, target in enumerate(sequence.grammar_positions)
+                       if target.action_index == action_index]
+    grammar_logits = torch.stack([output.grammar_logits[0, local(sequence.grammar_positions[index].model_position)]
+                                  for index in grammar_indices]) if grammar_indices else None
+    grammar_targets = sequence.grammar_targets[grammar_indices].to(device) if grammar_indices else None
+
+    positives = []
+    for target, bank in zip(pointer_targets, output.candidate_banks_by_example[0]):
+        positives.append(bank.positive_mask((_target_key(target.target_candidate),), device=device))
+
+    scalar_indices = [index for index, target in enumerate(sequence.scalar_positions)
+                      if target.action_index == action_index]
+    scalar_predictions = torch.stack([output.scalar_predictions[0, local(sequence.scalar_positions[index].model_position)]
+                                      for index in scalar_indices]) if scalar_indices else None
+    scalar_targets = torch.tensor([sequence.scalar_targets[index] for index in scalar_indices], device=device,
+                                  dtype=scalar_predictions.dtype) if scalar_indices else None
+
+    record_predictions = {}
+    record_targets = {}
+    for target, source in zip(sequence.structured_record_positions, sequence.structured_record_targets):
+        if target.action_index != action_index:
+            continue
+        kind = str(source["record_type"])
+        record_predictions.setdefault(kind, []).append(output.record_predictions[kind][0, local(target.model_position)])
+        record_targets.setdefault(kind, []).append(_record_values(source))
+    record_predictions = {key: torch.stack(values) for key, values in record_predictions.items()}
+    record_targets = {key: torch.tensor(values, device=device, dtype=record_predictions[key].dtype)
+                      for key, values in record_targets.items()}
+
+    return model.loss(grammar_logits=grammar_logits, grammar_targets=grammar_targets,
+                      pointer_logits=output.pointer_logits_by_example[0], pointer_positive=positives,
+                      scalar_predictions=scalar_predictions, scalar_targets=scalar_targets,
+                      record_predictions=record_predictions, record_targets=record_targets)

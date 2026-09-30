@@ -5,6 +5,7 @@
   "position_map": ["command atom", "tokenizer span", "Qwen model position", "loss head"],
   "target_routes": ["grammar", "pointer", "scalar", "structured_record"],
   "feedback_positions": "immediately after the producing pointer atom span",
+  "action_training": "models/crs_pointercad/training.py::training_action_loss slices one causal action and routes only mapped targets",
   "target_lookup": "explicit command position; decoded-text search forbidden",
   "batch_padding": "attention_mask and position_ids are padded per row",
   "vocabulary": "frozen contiguous grammar vocabulary required before batching",

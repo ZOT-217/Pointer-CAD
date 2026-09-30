@@ -167,6 +167,7 @@ class CRSExpandedPointerCAD(nn.Module):
                     owner = getattr(key, "owner", None)
                     if owner is not None:
                         maps[batch_index][2].setdefault(owner, []).append(embedding)
+                        maps[batch_index][2].setdefault(ExternalKey(str(owner)), []).append(embedding)
             return maps
         if breps is None or self.brep is None:
             for batch_index, state in enumerate(states):
@@ -364,13 +365,21 @@ class CRSExpandedPointerCAD(nn.Module):
                     pointer_type = slot["pointer_type"]
                     substate = slot.get("decoder_substate")
                     target_index = slot.get("target_index")
+                    target_key = slot.get("target_key")
                 else:
                     position, pointer_type = slot
                     substate = substates[slot_index] if slot_index < len(substates) else None
                     target_index = targets[slot_index] if slot_index < len(targets) else None
+                    target_key = None
                 pointer_type = pointer_type if isinstance(pointer_type, PointerType) else PointerType(pointer_type)
+                if not 0 <= position < ids.shape[1]:
+                    raise ValueError("pointer slot position is outside action sequence")
                 bank = self.candidate_view(state, pointer_type, substate, native_maps=native_maps)
                 banks.append((position, pointer_type, bank))
+                if target_key is not None:
+                    if target_index is not None:
+                        raise ValueError("pointer slot cannot specify both target_key and target_index")
+                    target_index = bank.external_to_index(target_key)
                 if target_index is not None:
                     if not 0 <= int(target_index) < len(bank):
                         raise IndexError(f"teacher target {target_index} is outside {pointer_type.value} bank")

@@ -101,6 +101,8 @@ class Stage2QwenCollator:
         action_index = target.get("action_index")
         if not isinstance(action_index, int):
             raise ValueError(f"{kind} target has no integer action index")
+        if span.action_index != action_index:
+            raise ValueError(f"{kind} target action index does not match command boundary")
         return TargetPosition(
             kind=kind,
             command_position=command_position,
@@ -171,8 +173,10 @@ class Stage2QwenCollator:
             if isinstance(target.get("position"), int)
         }
         for span in spans:
-            if span.command_position in supervised_atoms or span.token not in self.grammar_vocabulary:
+            if span.command_position in supervised_atoms or _numeric_atom(span.token):
                 continue
+            if span.token not in self.grammar_vocabulary:
+                raise ValueError(f"grammar atom is absent from frozen vocabulary: {span.token!r}")
             grammar.append(TargetPosition("grammar", span.command_position, span.start - 1, span.action_index if span.action_index is not None else len(boundaries), span.token))
             grammar_labels.append(self.grammar_vocabulary[span.token])
         pointers = tuple(self._position(target, spans, kind="pointer") for target in record.get("pointer_targets", ()))

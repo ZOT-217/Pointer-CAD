@@ -11,6 +11,8 @@ selection semantics and expanded 9K execution are unchanged.
 - `Stage2QwenCollator` converts frozen command atoms into one explicit Qwen
   sequence and retains tokenizer spans, action boundaries, grammar/pointer/
   scalar/record positions, decoder substates and feedback insertion positions.
+- `training_action_loss` uses those maps to slice a causal action and resolves
+  GT candidates by `CandidateKey` in the prepared prefix bank.
 - `forward_ragged` builds all teacher-forced GT feedback before one causal
   backbone call per example. Later slots see earlier feedback; a producing slot
   cannot see its own feedback.
