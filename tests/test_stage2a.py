@@ -361,6 +361,51 @@ def test_canonical_training_loss_consumes_ragged_forward_output():
     loss.backward()
 
 
+def test_stage2_collator_retains_explicit_qwen_spans_and_feedback_positions():
+    from models.crs_pointercad import Stage2QwenCollator
+
+    class Tokenizer:
+        bos_token_id = 99
+        eos_token_id = 100
+        pad_token_id = 0
+
+        def __call__(self, value, add_special_tokens=False):
+            del add_special_tokens
+            return {"input_ids": [[10 + index for index, _ in enumerate(value.split())]]}
+
+    record = {
+        "command": {"tokens": ["SKETCH", "<pe>", "<sv>", "1.0"], "action_boundaries": [{"action_index": 0, "start": 0, "end": 4}]},
+        "pointer_targets": [{"action_index": 0, "position": 1, "slot": "reference_plane", "target_index": 0}],
+        "parameter_targets": [{"action_index": 0, "position": 2, "slot": "radius", "value": 1.0}],
+        "structured_record_targets": [],
+    }
+    sequence = Stage2QwenCollator(Tokenizer(), grammar_vocabulary={"SKETCH": 0})(record)
+    assert sequence.input_ids[0].item() == 99
+    assert sequence.pointer_positions[0].model_position == sequence.token_spans[1].start
+    assert sequence.feedback_positions[0] == sequence.token_spans[1].end
+    assert sequence.scalar_positions[0].model_position == sequence.token_spans[2].start
+
+
+def test_teacher_forced_ragged_uses_one_backbone_forward_per_example():
+    model = CRSExpandedPointerCAD(hidden_dim=16, grammar_vocab_size=16, use_native_brep=False).eval()
+    state = _ragged_body_states()[1]
+    ids = torch.randint(0, 128, (1, 8))
+    calls = []
+    original = model.base_model.forward
+
+    def counted(*args, **kwargs):
+        calls.append(1)
+        return original(*args, **kwargs)
+
+    model.base_model.forward = counted
+    model.forward_ragged(
+        input_ids=ids, attention_mask=torch.ones_like(ids), states=[state],
+        pointer_specs=[[(1, PointerType.BODY), (3, PointerType.BODY), (5, PointerType.BODY)]],
+        teacher_indices=[[0, 1, 0]],
+    )
+    assert len(calls) == 1
+
+
 def test_grammar_routes_pointer_scalar_and_record_fields():
     action = ActionAST(Operation.EXTRUDE, {
         "profiles": [], "operation": "NewBodyFeatureOperation", "participant_bodies": [],

@@ -1,0 +1,18 @@
+{
+  "status": "LOCAL_STRUCTURAL_PASS_WITH_ENVIRONMENT_LIMIT",
+  "cadquery2crs": {
+    "tests": "tests/test_stage2a3_brep_bridge.py",
+    "result": "2 passed",
+    "syntax": "stage2_brep.py py_compile passed"
+  },
+  "pointercad": {
+    "syntax": "models/crs_pointercad/*.py py_compile passed",
+    "diff_check": "passed",
+    "model_tests": "not run: local environment lacks torch, DGL, Transformers and PEFT"
+  },
+  "existing_regression": {
+    "pointercad_adapter": "22 passed, 2 skipped, 1 pre-existing provenance-pin failure because checkout is newer than audited commit",
+    "failure": "verify_official_checkout expects a5c32d702f9569565d89a94de44b3af0020bcab0; synchronized checkout is 53aff6d"
+  },
+  "frozen_corpus": "not present locally; natural 80-record coverage is CCI_REQUIRED"
+}

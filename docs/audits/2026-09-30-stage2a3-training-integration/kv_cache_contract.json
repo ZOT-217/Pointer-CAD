@@ -1,0 +1,9 @@
+{
+  "status": "IMPLEMENTED_LOCAL_STRUCTURAL",
+  "implementation": "models/crs_pointercad/model.py::inference_pointer_decode",
+  "mode": "incremental one-token decoding with past_key_values when a Qwen-like backbone is present",
+  "feedback": "predicted candidate feedback is applied to the next causal input before cache append",
+  "fallback": "tiny smoke backbone uses uncached reference path only",
+  "mask_policy": "CandidateView decoder_substate is recomputed per pointer slot without backbone reset",
+  "numerical_cached_vs_uncached": "CCI_REQUIRED; Qwen/Transformers unavailable locally"
+}

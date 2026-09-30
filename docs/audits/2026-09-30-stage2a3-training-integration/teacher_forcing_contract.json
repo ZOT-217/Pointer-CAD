@@ -1,0 +1,12 @@
+{
+  "status": "IMPLEMENTED_LOCAL_STRUCTURAL",
+  "implementation": "models/crs_pointercad/model.py::CRSExpandedPointerCAD.forward_ragged",
+  "architecture": "P(A_t | S_t, X)",
+  "teacher_feedback": "recorded GT candidate embedding prepared before Qwen forward",
+  "causal_rule": "feedback_j is added only to embeddings after pointer_j; hidden_j cannot see feedback_j",
+  "dynamic_masks": "CandidateView(state, pointer_type, decoder_substate) is built per slot before scoring",
+  "full_backbone_calls": "one per example/action forward, independent of pointer slot count",
+  "old_behavior_removed": "per-pointer full-prefix rerun",
+  "test_added": "test_teacher_forced_ragged_uses_one_backbone_forward_per_example",
+  "real_qwen_measurement": "CCI_REQUIRED"
+}

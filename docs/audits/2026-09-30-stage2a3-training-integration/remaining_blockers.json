@@ -1,0 +1,11 @@
+{
+  "verdict": "STAGE2A3_TRAINING_INTEGRATION_HAS_BLOCKERS",
+  "blockers": [
+    "real Qwen/UVNet forward and backward not runnable in the local environment",
+    "natural frozen 80-record corpus is a persistent CCI artifact and is not present locally",
+    "cached versus uncached Qwen numerical agreement is unverified",
+    "real FACE/EDGE parity, natural ragged batch and four-component overfit remain CCI gates",
+    "Pointer-CAD official provenance test still pins an older audit commit and fails on the synchronized newer checkout"
+  ],
+  "implemented_but_unverified": ["single-forward teacher forcing", "Qwen KV-cache path", "LoRA/bf16 production configuration"]
+}

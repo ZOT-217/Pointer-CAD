@@ -1,0 +1,16 @@
+{
+  "status": "IMPLEMENTED_LOCAL_STRUCTURAL",
+  "cadquery2crs": "adapters.pointercad.stage2_brep::prepare_native_snapshot",
+  "pointercad": "models/crs_pointercad/brep_bridge.py::PreparedBRep",
+  "native_shapes": {
+    "FACE": "(F, surface_u, surface_v, 8)",
+    "EDGE": "(E, curve_u, 12)",
+    "graph": "face adjacency with reverse edges created by official DGL adapter"
+  },
+  "identity": "owner-qualified CandidateKey and canonical locator; row index is transient",
+  "historical_face": "owner snapshot geometry, same native encoder space",
+  "historical_edge": "same owner snapshot path; coverage remains clean-corpus debt",
+  "online_cadquery_training": false,
+  "local_test": "tests/test_stage2a3_brep_bridge.py: 2 passed",
+  "real_uvnet_forward": "CCI_REQUIRED; DGL/Torch unavailable locally"
+}

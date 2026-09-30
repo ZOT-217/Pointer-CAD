@@ -2,6 +2,11 @@
 mode: CRS_EXPANDED_POINTERCAD
 model:
   base_model: "Qwen/Qwen2.5-0.5B-Instruct"
+  dtype: bf16
+  use_lora: true
+  lora_rank: 8
+  lora_alpha: 32
+  lora_dropout: 0.1
   hidden_dim: 896
   pointer_dim: 128
   grammar_vocab_size: 1024

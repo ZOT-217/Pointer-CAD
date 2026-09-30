@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
 from pathlib import Path
 from typing import Any, Iterator
 
@@ -20,17 +21,36 @@ class FrozenStage2Corpus:
     """Read fixed membership and targets; no source recording or OCC enumeration."""
 
     def __init__(self, root: str | Path):
-        from cadquery2crs.pipeline.approved_variants import ApprovedVariantManifest
-
-        self.root = Path(root)
-        self.manifest = ApprovedVariantManifest.load(self.root)
+        self.root = Path(root).resolve()
+        manifest = json.loads((self.root / "manifest.json").read_text(encoding="utf-8"))
+        if manifest.get("format") != "stage2-clean-validation-v1":
+            raise ValueError("unsupported frozen Stage2 manifest")
+        self.entries = tuple(manifest["entries"])
+        keys = [(row["dataset"], row["sample_id"], row["source_variant_id"], row["approved_variant_id"]) for row in self.entries]
+        if len(keys) != len(set(keys)):
+            raise ValueError("duplicate frozen Stage2 identity")
 
     def __len__(self) -> int:
-        return len(self.manifest.entries)
+        return len(self.entries)
+
+    def _json(self, relative: str) -> dict[str, Any]:
+        path = (self.root / relative).resolve()
+        if not path.is_relative_to(self.root):
+            raise ValueError("frozen artifact path escapes corpus root")
+        return json.loads(path.read_text(encoding="utf-8"))
 
     def __iter__(self) -> Iterator[FrozenStage2Record]:
-        for entry in self.manifest.entries:
-            program, supervision = self.manifest.load_frozen(self.root, entry)
+        for entry in self.entries:
+            if entry.get("partition") != "NATURAL_CLEAN" or entry.get("admission_status") != "APPROVED":
+                continue
+            program = self._json(entry["crs_artifact"])
+            if program != entry["trajectory"]:
+                raise ValueError("frozen CRS differs from approved trajectory")
+            supervision = self._json(entry["supervision_artifact"])
+            for target in supervision["pointer_targets"]:
+                bank = supervision["candidate_banks"][target["candidate_bank"]]
+                if bank["candidates"].count(target["target_candidate"]) != 1 or bank["candidates"][target["target_index"]] != target["target_candidate"]:
+                    raise ValueError("frozen pointer target does not match candidate bank")
             yield FrozenStage2Record(
                 (entry["dataset"], entry["sample_id"], entry["source_variant_id"], entry["approved_variant_id"]),
                 program, supervision,
@@ -39,6 +59,8 @@ class FrozenStage2Corpus:
     @staticmethod
     def materialization_smoke(record: FrozenStage2Record) -> dict[str, int]:
         """Verify a frozen record reaches Stage2 prefix views and target banks."""
+        if not hasattr(record.program, "trace"):
+            raise RuntimeError("materialization_smoke requires a CadQuery runtime program; use prepared sidecars for GPU training")
         trace = record.program.trace()
         supervision = record.supervision
         context_count = 0

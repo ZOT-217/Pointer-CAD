@@ -27,6 +27,8 @@ from .grammar import ActionAST, Operation, PointerLeaf, RecordType, StructuredRe
 from .heads import ExpandedLoss, PointerFeedback, TypedPointerHeads, pointer_bce_per_slot
 from .materialization import KNOWN_EXECUTOR_TAIL, MaterializationReport, materialize_causal_supervision, materialize_prefixes
 from .model import CRSExpandedPointerCAD, build_pointercad
+from .sequence import Stage2QwenCollator, Stage2Sequence, TargetPosition, frozen_grammar_vocabulary
+from .brep_bridge import PreparedBRep, PreparedSnapshot, FrozenCandidateKey, load_prepared_brep, load_prepared_state, save_prepared_brep, validate_candidate_alignment
 
 __all__ = [
     "ActionAST", "BodyCandidateEncoder", "BodyRecord", "BodyVersionRegistry", "CRSExpandedPointerCAD", "Curve3DEncoder",
@@ -37,4 +39,7 @@ __all__ = [
     "PointerLeaf", "PointerType", "ProfileCandidateEncoder", "RecordType", "RegistryContextEncoder",
     "ResolvedGeometryCandidateEncoder", "SketchReferenceCandidateEncoder", "StructuredRecord", "TypedPointerHeads",
     "build_pointercad", "materialize_causal_supervision", "materialize_prefixes", "pointer_bce_per_slot",
+    "Stage2QwenCollator", "Stage2Sequence", "TargetPosition", "frozen_grammar_vocabulary",
+    "PreparedBRep", "load_prepared_brep", "save_prepared_brep", "validate_candidate_alignment",
+    "PreparedSnapshot", "FrozenCandidateKey", "load_prepared_state",
 ]

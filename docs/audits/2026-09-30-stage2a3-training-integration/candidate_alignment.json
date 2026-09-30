@@ -1,0 +1,9 @@
+{
+  "status": "IMPLEMENTED_LOCAL_STRUCTURAL",
+  "mapping": "CandidateKey <-> native FACE row or EDGE row",
+  "validation": ["one key per row", "one row per key", "owner preserved", "locator mismatch fails closed", "ambiguous isSame match fails closed"],
+  "model_consumption": "PreparedBRep face_keys/edge_keys are used to populate native embedding maps",
+  "persistent_identity": "never inferred from OCC enumeration or array position",
+  "native_encoder": "UVNetEmbedder remains trainable; sidecar stores deterministic tensors only",
+  "natural_frozen_records": "CCI_REQUIRED"
+}

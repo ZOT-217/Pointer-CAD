@@ -16,6 +16,15 @@ from .grammar import ActionAST
 from .heads import ExpandedLoss, NumericHeads, PointerFeedback, TypedPointerHeads
 
 
+def _resolve_dtype(value: str | torch.dtype) -> torch.dtype:
+    if isinstance(value, torch.dtype):
+        return value
+    values = {"bf16": torch.bfloat16, "float16": torch.float16, "float32": torch.float32}
+    if value not in values:
+        raise ValueError(f"unsupported Qwen dtype {value!r}")
+    return values[value]
+
+
 class _TinyBackbone(nn.Module):
     """Dependency-light local backbone used only when no Qwen is requested."""
 
@@ -57,6 +66,8 @@ class CRSExpandedPointerCAD(nn.Module):
     def __init__(self, hidden_dim: int = 256, grammar_vocab_size: int = 512, pointer_dim: int = 128,
                  qwen_model: str | None = None, base_model: nn.Module | None = None,
                  load_base_model: bool = True, vocab_size: int = 2048,
+                 dtype: str | torch.dtype = "bf16", use_lora: bool = True,
+                 lora_rank: int = 8, lora_alpha: int = 32, lora_dropout: float = 0.1,
                  use_body_relative_age: bool = True, body_pooling: str = "mean",
                  registry_context_mode: str = "NONE", enable_historical_face: bool = True,
                  enable_historical_edge: bool = True, pointer_feedback: bool = True,
@@ -69,16 +80,32 @@ class CRSExpandedPointerCAD(nn.Module):
         if base_model is not None:
             self.base_model = base_model
             self.base_model_source = "injected"
+            self.base_model_dtype = str(next(base_model.parameters()).dtype)
+            self.peft_lora = False
         elif qwen_model is not None and load_base_model:
             try:
                 from transformers.models.qwen2.modeling_qwen2 import Qwen2Model
-                self.base_model = Qwen2Model.from_pretrained(qwen_model)
+                torch_dtype = _resolve_dtype(dtype)
+                self.base_model = Qwen2Model.from_pretrained(qwen_model, torch_dtype=torch_dtype)
+                self.base_model_dtype = str(torch_dtype)
+                self.peft_lora = False
+                if use_lora:
+                    from peft import LoraConfig, TaskType, get_peft_model
+                    self.base_model = get_peft_model(self.base_model, LoraConfig(
+                        task_type=TaskType.CAUSAL_LM,
+                        target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
+                        inference_mode=False, r=lora_rank, lora_alpha=lora_alpha,
+                        lora_dropout=lora_dropout,
+                    ))
+                    self.peft_lora = True
                 self.base_model_source = "pretrained"
             except Exception as exc:
                 raise RuntimeError(f"failed to load configured base_model {qwen_model!r}") from exc
         else:
             self.base_model = _TinyBackbone(vocab_size, hidden_dim)
             self.base_model_source = "tiny_smoke"
+            self.base_model_dtype = str(next(self.base_model.parameters()).dtype)
+            self.peft_lora = False
         self.hidden_dim = int(self.base_model.config.hidden_size)
         self.grammar_head = nn.Linear(self.hidden_dim, grammar_vocab_size)
         self.hidden_projection = nn.Identity()
@@ -109,8 +136,38 @@ class CRSExpandedPointerCAD(nn.Module):
                 # configs with a DGL graph fail closed in _native_maps.
                 self.brep = None
 
+    def training_config(self) -> dict[str, Any]:
+        return {
+            "dtype": self.base_model_dtype,
+            "peft_lora": self.peft_lora,
+            "trainable_parameters": sum(parameter.numel() for parameter in self.parameters() if parameter.requires_grad),
+            "frozen_parameters": sum(parameter.numel() for parameter in self.parameters() if not parameter.requires_grad),
+            "lora_target_modules": ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"] if self.peft_lora else [],
+        }
+
     def _native_maps(self, states: Sequence[ExecutionState], breps=None):
         maps = [(dict(state.native_face_embeddings), dict(state.native_edge_embeddings), dict(state.native_body_face_embeddings)) for state in states]
+        prepared = breps if isinstance(breps, (list, tuple)) and breps and hasattr(breps[0], "face_keys") else None
+        if prepared is not None:
+            if self.brep is None:
+                raise RuntimeError("native Pointer-CAD UV-Net encoder is unavailable")
+            if len(prepared) != len(states):
+                raise ValueError("prepared BRep batch does not align with execution states")
+            import dgl
+            graphs = [item.graph for item in prepared]
+            pointer_edge, pointer_face, _, _ = self.brep(dgl.batch(graphs))
+            for batch_index, (state, item) in enumerate(zip(states, prepared)):
+                if len(item.face_keys) != len(pointer_face[batch_index]) or len(item.edge_keys) != len(pointer_edge[batch_index]):
+                    raise ValueError("prepared BRep rows do not match UV-Net output rows")
+                face_rows = {key: pointer_face[batch_index][index] for index, key in enumerate(item.face_keys)}
+                edge_rows = {key: pointer_edge[batch_index][index] for index, key in enumerate(item.edge_keys)}
+                maps[batch_index][0].update(face_rows)
+                maps[batch_index][1].update(edge_rows)
+                for key, embedding in face_rows.items():
+                    owner = getattr(key, "owner", None)
+                    if owner is not None:
+                        maps[batch_index][2].setdefault(owner, []).append(embedding)
+            return maps
         if breps is None or self.brep is None:
             for batch_index, state in enumerate(states):
                 snapshot = state.active_brep_state
@@ -168,6 +225,9 @@ class CRSExpandedPointerCAD(nn.Module):
 
     def _inject_native_brep_tokens(self, embeddings: torch.Tensor, input_ids: torch.Tensor, breps) -> torch.Tensor:
         """Preserve legacy Pointer-CAD graph-aware face/edge token context."""
+        if isinstance(breps, (list, tuple)) and breps and hasattr(breps[0], "face_keys"):
+            # Prepared graphs have already passed through UV-Net in _native_maps.
+            return embeddings
         if breps is None or self.brep is None:
             return embeddings
         edge_pointer, face_pointer, _, _ = self.brep(breps)
@@ -286,12 +346,18 @@ class CRSExpandedPointerCAD(nn.Module):
         for batch_index, state in enumerate(states):
             ids = input_ids[batch_index:batch_index + 1]
             mask = attention_mask[batch_index:batch_index + 1] if attention_mask is not None else None
-            native_maps = self._native_maps((state,), breps)[0] if breps is not None else self._native_maps((state,))[0]
-            embeddings, context = self._prepare_embeddings(ids, state, attention_mask=mask, breps=breps, native_maps=native_maps)
+            example_breps = [breps[batch_index]] if isinstance(breps, (list, tuple)) and breps and hasattr(breps[0], "face_keys") else breps
+            native_maps = self._native_maps((state,), example_breps)[0] if example_breps is not None else self._native_maps((state,))[0]
+            embeddings, context = self._prepare_embeddings(ids, state, attention_mask=mask, breps=example_breps, native_maps=native_maps)
             slots = pointer_specs[batch_index]
             substates = decoder_substates[batch_index] if batch_index < len(decoder_substates) else ()
             targets = teacher_indices[batch_index] if batch_index < len(teacher_indices) else ()
             example_logits, example_banks, example_hidden = [], [], []
+            # Banks and teacher feedback are known before the training forward.
+            # Build the complete causal embedding stream first, then execute the
+            # backbone once. This removes the old one-forward-per-pointer loop.
+            banks = []
+            feedback_by_position = {}
             for slot_index, slot in enumerate(slots):
                 if isinstance(slot, Mapping):
                     position = int(slot["position"])
@@ -303,21 +369,24 @@ class CRSExpandedPointerCAD(nn.Module):
                     substate = substates[slot_index] if slot_index < len(substates) else None
                     target_index = targets[slot_index] if slot_index < len(targets) else None
                 pointer_type = pointer_type if isinstance(pointer_type, PointerType) else PointerType(pointer_type)
-                hidden = self.base_model(inputs_embeds=embeddings, attention_mask=mask).last_hidden_state
-                h_j = hidden[:, position, :].squeeze(0)
-                example_hidden.append(h_j)
                 bank = self.candidate_view(state, pointer_type, substate, native_maps=native_maps)
-                logits = self.query_heads.score(h_j, bank, pointer_type)
-                example_logits.append(logits)
-                example_banks.append(bank)
+                banks.append((position, pointer_type, bank))
                 if target_index is not None:
                     if not 0 <= int(target_index) < len(bank):
                         raise IndexError(f"teacher target {target_index} is outside {pointer_type.value} bank")
                     feedback = self.feedback_for(pointer_type, bank, int(target_index))
                     if self.feedback is not None:
-                        embeddings = embeddings.clone()
-                        embeddings[:, position + 1:, :] = embeddings[:, position + 1:, :] + feedback.to(embeddings.dtype)
+                        feedback_by_position[position + 1] = feedback_by_position.get(position + 1, 0) + feedback.to(embeddings.dtype)
+            if feedback_by_position:
+                embeddings = embeddings.clone()
+            for start, feedback in feedback_by_position.items():
+                embeddings[:, start:, :] = embeddings[:, start:, :] + feedback
             final_hidden = self.base_model(inputs_embeds=embeddings, attention_mask=mask).last_hidden_state
+            for position, pointer_type, bank in banks:
+                h_j = final_hidden[:, position, :].squeeze(0)
+                example_hidden.append(h_j)
+                example_logits.append(self.query_heads.score(h_j, bank, pointer_type))
+                example_banks.append(bank)
             hidden_rows.append(final_hidden.squeeze(0))
             grammar_rows.append(self.grammar_head(final_hidden.squeeze(0)))
             scalar_prediction, record_prediction = self.numeric_heads(final_hidden.squeeze(0))
@@ -358,22 +427,57 @@ class CRSExpandedPointerCAD(nn.Module):
         return {"hidden_before": before, "hidden_after": after, "feedback": tuple(selected)}
 
     @torch.no_grad()
-    def inference_pointer_decode(self, input_ids, attention_mask, state: ExecutionState, pointer_positions: Sequence[int], pointer_types: Sequence[PointerType], decoder_substates=(), breps=None):
-        """Bounded inference path using model-selected candidates and feedback."""
+    def inference_pointer_decode(self, input_ids, attention_mask, state: ExecutionState, pointer_positions: Sequence[int], pointer_types: Sequence[PointerType], decoder_substates=(), breps=None, *, use_cache: bool | None = None, return_logits: bool = False):
+        """Incremental inference using ``past_key_values`` when available."""
         embeddings = self.base_model.get_input_embeddings()(input_ids)
         native_maps = self._native_maps((state,), breps)[0]
         selections = []
-        for slot_index, (position, pointer_type) in enumerate(zip(pointer_positions, pointer_types)):
-            hidden = self.base_model(inputs_embeds=embeddings, attention_mask=attention_mask).last_hidden_state
+        logit_rows = []
+        if len(pointer_positions) != len(pointer_types) or len(set(pointer_positions)) != len(pointer_positions):
+            raise ValueError("pointer positions/types must be unique and aligned")
+        if any(not 0 <= int(position) < input_ids.shape[1] for position in pointer_positions):
+            raise ValueError("pointer position is outside input sequence")
+        pointer_by_position = {int(position): (index, pointer_type) for index, (position, pointer_type) in enumerate(zip(pointer_positions, pointer_types))}
+        past = None
+        running_feedback = None
+        cached = bool(getattr(self.base_model.config, "use_cache", True)) and not isinstance(self.base_model, _TinyBackbone) if use_cache is None else use_cache
+        if cached and isinstance(self.base_model, _TinyBackbone):
+            raise ValueError("tiny smoke backbone does not support KV cache")
+        uncached_embeddings = embeddings.clone() if not cached else None
+        for position in range(input_ids.shape[1]):
+            current = embeddings[:, position:position + 1, :]
+            if running_feedback is not None:
+                current = current + running_feedback.to(current.dtype)
+            if cached:
+                kwargs = {"inputs_embeds": current, "past_key_values": past, "use_cache": True}
+                try:
+                    kwargs["cache_position"] = torch.tensor([position], device=current.device)
+                    outputs = self.base_model(**kwargs)
+                except TypeError:
+                    kwargs.pop("cache_position", None)
+                    outputs = self.base_model(**kwargs)
+                hidden = outputs.last_hidden_state[:, -1, :]
+                past = getattr(outputs, "past_key_values", None)
+            else:
+                uncached_embeddings[:, position:position + 1, :] = current
+                if position not in pointer_by_position:
+                    continue
+                prefix_mask = attention_mask[:, :position + 1] if attention_mask is not None else None
+                reference = self.base_model(inputs_embeds=uncached_embeddings[:, :position + 1, :], attention_mask=prefix_mask).last_hidden_state
+                hidden = reference[:, -1, :]
+            if position not in pointer_by_position:
+                continue
+            slot_index, pointer_type = pointer_by_position[position]
             substate = decoder_substates[slot_index] if slot_index < len(decoder_substates) else None
             bank = self.candidate_view(state, pointer_type, substate, native_maps=native_maps)
-            logits = self.query_heads.score(hidden[:, position, :].squeeze(0), bank, pointer_type)
+            logits = self.query_heads.score(hidden.squeeze(0), bank, pointer_type)
+            logit_rows.append(logits)
             selected_index = int(logits.argmax())
             selections.append((pointer_type, selected_index, bank.index_to_external(selected_index)))
             if self.feedback is not None:
-                embeddings = embeddings.clone()
-                embeddings[:, position + 1:, :] += self.feedback_for(pointer_type, bank, selected_index).to(embeddings.dtype)
-        return selections
+                feedback = self.feedback_for(pointer_type, bank, selected_index)
+                running_feedback = feedback if running_feedback is None else running_feedback + feedback
+        return (selections, tuple(logit_rows)) if return_logits else selections
 
     @torch.no_grad()
     def bounded_decode_and_execute(self, input_ids, attention_mask, state: ExecutionState,

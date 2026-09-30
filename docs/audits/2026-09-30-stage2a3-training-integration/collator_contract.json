@@ -1,0 +1,13 @@
+{
+  "status": "IMPLEMENTED_LOCAL_STRUCTURAL",
+  "implementation": "models/crs_pointercad/sequence.py::Stage2QwenCollator",
+  "authoritative_input": "frozen command.tokens plus action_boundaries",
+  "position_map": ["command atom", "tokenizer span", "Qwen model position", "loss head"],
+  "target_routes": ["grammar", "pointer", "scalar", "structured_record"],
+  "feedback_positions": "immediately after the producing pointer atom span",
+  "target_lookup": "explicit command position; decoded-text search forbidden",
+  "batch_padding": "attention_mask and position_ids are padded per row",
+  "vocabulary": "frozen contiguous grammar vocabulary required before batching",
+  "assertions": ["target positions in range", "pointer feedback cardinality matches", "duplicate pointer slot rejected"],
+  "natural_frozen_records": "CCI_REQUIRED; corpus is not present locally"
+}

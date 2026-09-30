@@ -1,0 +1,17 @@
+{
+  "verdict_to_run": "STAGE2A3_READY_FOR_CCI_EMPIRICAL_REGATE only after CCI checks below",
+  "environment": "Pointer-CAD Qwen/DGL environment plus cadquery2crs environment for offline preparation",
+  "population": "frozen Stage2 Clean Validation Corpus v1, 80 NATURAL_CLEAN records, no regeneration",
+  "checks": [
+    "collator target completeness across all frozen grammar, pointer, scalar and structured-record targets",
+    "real native FACE/EDGE UVNet forward and CandidateKey alignment",
+    "natural ragged batch=2 with four loss components",
+    "GT teacher feedback changes later hidden states but not producing pointer hidden state",
+    "cached and uncached bounded inference logits agree within normal floating tolerance",
+    "full backbone calls do not grow with pointer slots",
+    "legacy native FACE/EDGE parity",
+    "bounded four-component overfit"
+  ],
+  "cost_probes": ["12 pointer slots", "102 pointer slots", "peak VRAM", "full training step wall time"],
+  "forbidden": ["corpus regeneration", "CRS redesign", "selection semantic changes", "expanded 9K launch"]
+}

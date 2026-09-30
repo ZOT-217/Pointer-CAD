@@ -1,0 +1,13 @@
+{
+  "status": "IMPLEMENTED_BASELINE_COMPATIBLE",
+  "config": "config/crs_expanded_9k.yaml",
+  "dtype": "bf16",
+  "peft_lora": true,
+  "lora_rank": 8,
+  "lora_alpha": 32,
+  "lora_dropout": 0.1,
+  "lora_target_modules": ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
+  "frozen_base_model": true,
+  "trainable_components": ["LoRA adapters", "UVNet", "typed pointer heads", "numeric heads", "grammar head", "feedback/context projections"],
+  "parameter_counts": "recorded by CRSExpandedPointerCAD.training_config() at runtime; CCI_REQUIRED for real Qwen"
+}
