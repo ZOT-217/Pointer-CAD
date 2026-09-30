@@ -206,6 +206,8 @@ class Stage2QwenCollator:
         pointer_positions = [target.model_position for target in sequence.pointer_positions]
         if len(pointer_positions) != len(sequence.feedback_positions):
             raise AssertionError("pointer and feedback maps are not aligned")
+        if pointer_positions != sorted(set(pointer_positions)):
+            raise ValueError("pointer slots must occupy unique increasing causal positions")
         keys = [(target.action_index, target.slot, repr(target.subposition), target.command_position) for target in sequence.pointer_positions]
         if len(keys) != len(set(keys)):
             raise AssertionError("pointer target map contains duplicate slot entries")

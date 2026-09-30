@@ -153,6 +153,8 @@ class CRSExpandedPointerCAD(nn.Module):
                 raise RuntimeError("native Pointer-CAD UV-Net encoder is unavailable")
             if len(prepared) != len(states):
                 raise ValueError("prepared BRep batch does not align with execution states")
+            if len(prepared) == 1 and not prepared[0].face_keys and not prepared[0].edge_keys:
+                return maps
             import dgl
             graphs = [item.graph for item in prepared]
             pointer_edge, pointer_face, _, _ = self.brep(dgl.batch(graphs))
@@ -444,6 +446,8 @@ class CRSExpandedPointerCAD(nn.Module):
         logit_rows = []
         if len(pointer_positions) != len(pointer_types) or len(set(pointer_positions)) != len(pointer_positions):
             raise ValueError("pointer positions/types must be unique and aligned")
+        if tuple(pointer_positions) != tuple(sorted(pointer_positions)):
+            raise ValueError("pointer positions must be in causal order")
         if any(not 0 <= int(position) < input_ids.shape[1] for position in pointer_positions):
             raise ValueError("pointer position is outside input sequence")
         pointer_by_position = {int(position): (index, pointer_type) for index, (position, pointer_type) in enumerate(zip(pointer_positions, pointer_types))}
