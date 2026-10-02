@@ -145,6 +145,33 @@ class Stage2QwenCollator:
             target_candidate=target.get("target_candidate"),
         )
 
+    @staticmethod
+    def _located_record_targets(record: Mapping[str, Any]) -> tuple[Mapping[str, Any], ...]:
+        """Locate positionless frozen numeric records at unique typed markers."""
+        command = record["command"]
+        atoms = command["tokens"]
+        markers = {"FRAME3": ("<frame>",), "VECTOR3": ("<vec>",),
+                   "PLANE3": ("<plane>", "<frame>")}
+        located = []
+        for target in record.get("structured_record_targets", ()):
+            if isinstance(target.get("position"), int):
+                located.append(target)
+                continue
+            kind = str(target["record_type"])
+            if kind not in markers:
+                raise ValueError(f"structured_record {kind} has no position or known typed marker")
+            action_index = target["action_index"]
+            boundaries = [item for item in command["action_boundaries"] if item["action_index"] == action_index]
+            if len(boundaries) != 1:
+                raise ValueError("structured_record action boundary is not unique")
+            boundary = boundaries[0]
+            positions = [index for index in range(boundary["start"], boundary["end"])
+                         if atoms[index] in markers[kind]]
+            if len(positions) != 1:
+                raise ValueError(f"structured_record {kind} typed marker is not unique in action {action_index}")
+            located.append({**target, "position": positions[0]})
+        return tuple(located)
+
     def __call__(self, records: Sequence[Mapping[str, Any]] | Mapping[str, Any]) -> Stage2Sequence | dict[str, Any]:
         if isinstance(records, Mapping):
             return self.collate_one(records)
@@ -196,12 +223,13 @@ class Stage2QwenCollator:
             model_end = spans[end - 1].end if start < end else model_start
             action_spans.append(ActionSpan(action_index, model_start, model_end))
 
+        located_records = self._located_record_targets(record)
         grammar = []
         grammar_labels = []
         supervised_atoms = {
             int(target["position"])
-            for category in ("pointer_targets", "parameter_targets", "structured_record_targets")
-            for target in record.get(category, ())
+            for category in (record.get("pointer_targets", ()), record.get("parameter_targets", ()), located_records)
+            for target in category
             if isinstance(target.get("position"), int)
         }
         for span in spans:
@@ -213,7 +241,7 @@ class Stage2QwenCollator:
             grammar_labels.append(self.grammar_vocabulary[span.token])
         pointers = tuple(self._position(target, spans, kind="pointer") for target in record.get("pointer_targets", ()))
         scalars = tuple(self._position(target, spans, kind="scalar") for target in record.get("parameter_targets", ()))
-        records = tuple(self._position(target, spans, kind="structured_record") for target in record.get("structured_record_targets", ()))
+        records = tuple(self._position(target, spans, kind="structured_record") for target in located_records)
         feedback = tuple(spans[item.command_position].end for item in pointers)
         input_ids = torch.tensor(values, dtype=torch.long)
         attention = torch.ones_like(input_ids)

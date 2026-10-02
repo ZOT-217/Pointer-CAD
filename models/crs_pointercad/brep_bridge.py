@@ -69,6 +69,8 @@ class PreparedBRep:
     face_keys: tuple[Any, ...]
     edge_keys: tuple[Any, ...]
     face_adjacency: tuple[tuple[int, int], ...]
+    loose_edge_features: np.ndarray | None = None
+    loose_edge_keys: tuple[Any, ...] = ()
 
     def alignment(self) -> dict[Any, tuple[str, int]]:
         result = {}
@@ -80,6 +82,10 @@ class PreparedBRep:
             if key in result:
                 raise ValueError("duplicate EDGE CandidateKey in prepared BRep")
             result[key] = ("EDGE", index)
+        for index, key in enumerate(self.loose_edge_keys):
+            if key in result:
+                raise ValueError("duplicate loose EDGE CandidateKey in prepared BRep")
+            result[key] = ("LOOSE_EDGE", index)
         return result
 
     def metadata(self) -> dict[str, Any]:
@@ -88,9 +94,11 @@ class PreparedBRep:
             "edge_count": len(self.edge_keys),
             "face_keys": [_key_dict(key) for key in self.face_keys],
             "edge_keys": [_key_dict(key) for key in self.edge_keys],
+            "loose_edge_keys": [_key_dict(key) for key in self.loose_edge_keys],
             "face_adjacency": [list(pair) for pair in self.face_adjacency],
             "face_shape": list(self.face_features.shape),
             "edge_shape": list(self.edge_features.shape),
+            "loose_edge_shape": list(self.loose_edge_features.shape) if self.loose_edge_features is not None else [0, 32, 12],
         }
 
     def to_dgl(self):
@@ -124,7 +132,10 @@ def validate_candidate_alignment(prepared: PreparedBRep, *, candidate_keys: Mapp
         raise ValueError("FACE tensor rows do not match FACE candidate keys")
     if prepared.edge_features.shape[0] != len(prepared.edge_keys):
         raise ValueError("EDGE tensor rows do not match EDGE candidate keys")
-    return {"status": "PASS", "face_rows": len(prepared.face_keys), "edge_rows": len(prepared.edge_keys), "one_to_one": True}
+    if prepared.loose_edge_features is not None and prepared.loose_edge_features.shape[0] != len(prepared.loose_edge_keys):
+        raise ValueError("loose EDGE tensor rows do not match EDGE candidate keys")
+    return {"status": "PASS", "face_rows": len(prepared.face_keys), "edge_rows": len(prepared.edge_keys),
+            "loose_edge_rows": len(prepared.loose_edge_keys), "one_to_one": True}
 
 
 def save_prepared_brep(prepared: PreparedBRep, root: str | Path) -> None:
@@ -132,6 +143,8 @@ def save_prepared_brep(prepared: PreparedBRep, root: str | Path) -> None:
     root.mkdir(parents=True, exist_ok=True)
     np.save(root / "face_features.npy", prepared.face_features)
     np.save(root / "edge_features.npy", prepared.edge_features)
+    if prepared.loose_edge_features is not None:
+        np.save(root / "loose_edge_features.npy", prepared.loose_edge_features)
     (root / "metadata.json").write_text(json.dumps(prepared.metadata(), sort_keys=True, separators=(",", ":")), encoding="utf-8")
 
 
@@ -149,6 +162,8 @@ def load_prepared_brep(root: str | Path, *, graph: Any = None, key_loader=None) 
         face_keys,
         edge_keys,
         tuple(tuple(pair) for pair in metadata["face_adjacency"]),
+        np.load(root / "loose_edge_features.npy", allow_pickle=False) if (root / "loose_edge_features.npy").exists() else None,
+        tuple(key_loader(item) for item in metadata.get("loose_edge_keys", ())),
     )
     validate_candidate_alignment(prepared)
     if graph is None:

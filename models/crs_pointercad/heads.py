@@ -31,7 +31,8 @@ class TypedPointerHeads(nn.Module):
                 value.clamp_(max=self.max_log_tau)
 
     def query(self, hidden: torch.Tensor, pointer_type: PointerType) -> torch.Tensor:
-        return self.queries[pointer_type.value](hidden)
+        projection = self.queries[pointer_type.value]
+        return projection(hidden.to(projection.weight.dtype))
 
     def score(self, hidden: torch.Tensor, bank: CandidateBank, pointer_type: PointerType | None = None) -> torch.Tensor:
         pointer_type = pointer_type or bank.pointer_type
@@ -82,6 +83,7 @@ class NumericHeads(nn.Module):
         self.records = nn.ModuleDict({name: nn.Linear(hidden_dim, dim) for name, dim in RECORD_DIMS.items()})
 
     def forward(self, hidden_states: torch.Tensor):
+        hidden_states = hidden_states.to(self.scalar.weight.dtype)
         return self.scalar(hidden_states).squeeze(-1), {
             name: head(hidden_states) for name, head in self.records.items()
         }

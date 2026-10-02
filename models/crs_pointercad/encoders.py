@@ -15,13 +15,13 @@ from torch import nn
 from .contracts import PointerType
 
 _CURVE_TYPES = ("Line3D", "Arc3D", "Circle3D", "Ellipse3D", "EllipticalArc3D", "NurbsCurve3D", "Polyline3D")
-_GEOMETRY_TYPES = ("Point3D", "Line3D", "Arc3D", "Circle3D", "Ellipse3D", "EllipticalArc3D", "NurbsCurve3D", "Polyline3D", "Plane3D", "CylinderSurface", "ConeSurface", "SphereSurface", "TorusSurface")
+_GEOMETRY_TYPES = ("Point3D", "Line3D", "Arc3D", "Circle3D", "Ellipse3D", "EllipticalArc3D", "NurbsCurve3D", "Polyline3D", "Plane3D", "PlaneSurface", "CylinderSurface", "ConeSurface", "SphereSurface", "TorusSurface")
 
 
 def _numbers(value: Any) -> torch.Tensor:
     """Extract explicitly numeric typed fields only."""
     if isinstance(value, torch.Tensor):
-        return value.detach().to(dtype=torch.float32).flatten()
+        return value.to(dtype=torch.float32).flatten()
     if isinstance(value, bool):
         return torch.tensor([float(value)], dtype=torch.float32)
     if isinstance(value, (int, float)):
@@ -55,7 +55,7 @@ class CandidateEncoder(nn.Module):
         self.projection = nn.Sequential(nn.Linear(64, hidden_dim), nn.LayerNorm(hidden_dim), nn.GELU(), nn.Linear(hidden_dim, output_dim))
 
     def project(self, values: torch.Tensor) -> torch.Tensor:
-        return self.projection(_fixed(values).unsqueeze(0)).squeeze(0)
+        return self.projection(_fixed(values).to(self.projection[0].weight.device).unsqueeze(0)).squeeze(0)
 
     def forward(self, semantic: Any, *, metadata: Mapping[str, Any] | None = None) -> torch.Tensor:
         return self.project(_numbers(semantic))
@@ -116,14 +116,15 @@ class Curve3DEncoder(CandidateEncoder):
         kind = str(semantic.get("type", ""))
         if kind not in _CURVE_TYPES:
             raise ValueError(f"unsupported Curve3D type: {kind!r}")
-        type_vec = self.type_embedding(torch.tensor([_CURVE_TYPES.index(kind)])).squeeze(0)
+        device = self.type_embedding.weight.device
+        type_vec = self.type_embedding(torch.tensor([_CURVE_TYPES.index(kind)], device=device)).squeeze(0)
         stream = list(self._ordered_scalars(semantic))
         if not stream:
             stream = [(0.0, 0.0)]
         rows = []
         length = max(1, len(stream) - 1)
         for index, (value, field_code) in enumerate(stream):
-            rows.append(torch.tensor([value, field_code, index / length, 1.0], dtype=torch.float32))
+            rows.append(torch.tensor([value, field_code, index / length, 1.0], dtype=torch.float32, device=device))
         encoded, _ = self.sequence(self.sequence_projection(torch.stack(rows)).unsqueeze(0))
         sequence_vec = encoded[:, -1, :].squeeze(0)
         return self.curve_projection(torch.cat((type_vec, sequence_vec)).unsqueeze(0)).squeeze(0)
@@ -150,12 +151,12 @@ class ProfileCandidateEncoder(nn.Module):
             if not curve_rows:
                 raise ValueError("profile loop must contain ordered curves")
             ordered_curves, _ = self.curve_sequence(torch.stack(curve_rows).unsqueeze(0))
-            outer = torch.tensor([float(loop.get("is_outer", False))])
+            outer = torch.tensor([float(loop.get("is_outer", False))], device=ordered_curves.device)
             loop_rows.append(self.loop_projection(torch.cat((ordered_curves[:, -1, :].squeeze(0), outer)).unsqueeze(0)).squeeze(0))
         if not loop_rows:
             raise ValueError("profile must contain at least one loop")
         ordered, _ = self.sequence(torch.stack(loop_rows).unsqueeze(0))
-        frame = self.frame_projection(_fixed(_numbers(semantic.get("transform", semantic.get("frame", {})))).unsqueeze(0)).squeeze(0)
+        frame = self.frame_projection(_fixed(_numbers(semantic.get("transform", semantic.get("frame", {})))).to(self.frame_projection.weight.device).unsqueeze(0)).squeeze(0)
         return self.output(torch.cat((ordered[:, -1, :].squeeze(0), frame)).unsqueeze(0)).squeeze(0)
 
 
@@ -169,15 +170,17 @@ class SketchReferenceCandidateEncoder(CandidateEncoder):
         self.output = nn.Sequential(nn.Linear(88, 192), nn.GELU(), nn.Linear(192, output_dim))
 
     def forward(self, semantic: Mapping[str, Any], *, metadata=None) -> torch.Tensor:
-        kind = str(semantic.get("geometry_type", semantic.get("type", "")))
+        geometry = semantic.get("geometry", semantic)
+        kind = str(semantic.get("geometry_type", semantic.get("type", geometry.get("type", ""))))
         if kind not in _GEOMETRY_TYPES:
             raise ValueError(f"unsupported sketch reference geometry type: {kind!r}")
         role_names = ("construction", "feature_input", "projected", "centerline", "profile", "axis", "direction", "other")
         roles = semantic.get("roles", [semantic.get("role", "construction")])
-        role_rows = [self.role(torch.tensor([role_names.index(str(role)) if str(role) in role_names else 7])) for role in roles]
-        role_vec = torch.stack(role_rows).mean(0).squeeze(0) if role_rows else torch.zeros(8)
-        fields = _fixed(_numbers(semantic.get("geometry", semantic)), 64)
-        return self.output(torch.cat((self.geometry(torch.tensor([_GEOMETRY_TYPES.index(kind)])).squeeze(0), role_vec, fields)).unsqueeze(0)).squeeze(0)
+        device = self.geometry.weight.device
+        role_rows = [self.role(torch.tensor([role_names.index(str(role)) if str(role) in role_names else 7], device=device)) for role in roles]
+        role_vec = torch.stack(role_rows).mean(0).squeeze(0) if role_rows else torch.zeros(8, device=device)
+        fields = _fixed(_numbers(geometry), 64).to(device)
+        return self.output(torch.cat((self.geometry(torch.tensor([_GEOMETRY_TYPES.index(kind)], device=device)).squeeze(0), role_vec, fields)).unsqueeze(0)).squeeze(0)
 
 
 class ResolvedGeometryCandidateEncoder(CandidateEncoder):
@@ -192,7 +195,8 @@ class ResolvedGeometryCandidateEncoder(CandidateEncoder):
         kind = str(semantic.get("type", semantic.get("geometry_type", "")))
         if kind not in _GEOMETRY_TYPES:
             raise ValueError(f"unsupported resolved geometry type: {kind!r}")
-        return self.output(torch.cat((self.geometry(torch.tensor([_GEOMETRY_TYPES.index(kind)])).squeeze(0), _fixed(_numbers(semantic), 64))).unsqueeze(0)).squeeze(0)
+        device = self.geometry.weight.device
+        return self.output(torch.cat((self.geometry(torch.tensor([_GEOMETRY_TYPES.index(kind)], device=device)).squeeze(0), _fixed(_numbers(semantic), 64).to(device))).unsqueeze(0)).squeeze(0)
 
 
 class BodyCandidateEncoder(CandidateEncoder):
@@ -237,11 +241,11 @@ class BodyCandidateEncoder(CandidateEncoder):
     def forward(self, semantic: Any, *, metadata: Mapping[str, Any] | None = None) -> torch.Tensor:
         metadata = dict(metadata or {})
         rows = torch.stack(self._face_rows(semantic, metadata))
-        projected = self.face_projection(torch.stack([_fixed(row) for row in rows]))
+        projected = self.face_projection(torch.stack([_fixed(row) for row in rows]).to(self.face_projection.weight.device))
         mean = projected.mean(0)
         pooled = torch.cat((mean, projected.max(0).values)) if self.pooling == "mean-max" else projected.max(0).values if self.pooling == "max" else mean
         typed_metadata = {"active": metadata.get("active", True), "predecessor_count": metadata.get("predecessor_count", 0), "relative_age": metadata.get("relative_age", 0) if self.use_relative_age else 0.0, "spatial": metadata.get("spatial", {})}
-        meta = self.metadata_projection(_fixed(_numbers(typed_metadata)).unsqueeze(0)).squeeze(0)
+        meta = self.metadata_projection(_fixed(_numbers(typed_metadata)).to(self.metadata_projection.weight.device).unsqueeze(0)).squeeze(0)
         return self.projection(torch.cat((pooled, meta)).unsqueeze(0)).squeeze(0)
 
 

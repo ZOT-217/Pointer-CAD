@@ -156,13 +156,23 @@ class CRSExpandedPointerCAD(nn.Module):
             if len(prepared) == 1 and not prepared[0].face_keys and not prepared[0].edge_keys:
                 return maps
             import dgl
-            graphs = [item.graph for item in prepared]
+            device = next(self.brep.parameters()).device
+            graphs = [item.graph.to(device) for item in prepared]
             pointer_edge, pointer_face, _, _ = self.brep(dgl.batch(graphs))
             for batch_index, (state, item) in enumerate(zip(states, prepared)):
                 if len(item.face_keys) != len(pointer_face[batch_index]) or len(item.edge_keys) != len(pointer_edge[batch_index]):
                     raise ValueError("prepared BRep rows do not match UV-Net output rows")
                 face_rows = {key: pointer_face[batch_index][index] for index, key in enumerate(item.face_keys)}
                 edge_rows = {key: pointer_edge[batch_index][index] for index, key in enumerate(item.edge_keys)}
+                if item.loose_edge_keys:
+                    features = torch.from_numpy(item.loose_edge_features).to(device)
+                    if features.shape[0] == 1 and self.training:
+                        # UVNetCurveEncoder contains BatchNorm1d; duplicate a
+                        # singleton only for its batch statistics.
+                        loose = self.brep.curv_encoder(torch.cat((features, features), dim=0))[:1]
+                    else:
+                        loose = self.brep.curv_encoder(features)
+                    edge_rows.update({key: loose[index] for index, key in enumerate(item.loose_edge_keys)})
                 maps[batch_index][0].update(face_rows)
                 maps[batch_index][1].update(edge_rows)
                 for key, embedding in face_rows.items():
@@ -300,13 +310,13 @@ class CRSExpandedPointerCAD(nn.Module):
                 embeddings = embeddings.clone()
                 embeddings[:, 0, :] = embeddings[:, 0, :] + self.context_projection(context.mean(0)).to(embeddings.dtype)
             if breps is not None and native_maps and native_maps[0][0]:
-                native = torch.stack(tuple(native_maps[0][0].values())).mean(0).to(embeddings.device, embeddings.dtype)
-                embeddings[:, 0, :] = embeddings[:, 0, :] + self.brep_projection(native)
+                native = torch.stack(tuple(native_maps[0][0].values())).mean(0).to(self.brep_projection.weight.device, self.brep_projection.weight.dtype)
+                embeddings[:, 0, :] = embeddings[:, 0, :] + self.brep_projection(native).to(embeddings.dtype)
             hidden_states = self.base_model(inputs_embeds=embeddings, attention_mask=attention_mask).last_hidden_state
         elif hidden_states is None:
             raise ValueError("CRSExpandedPointerCAD requires input_ids or hidden_states")
         hidden_states = self.hidden_projection(hidden_states)
-        grammar_logits = self.grammar_head(hidden_states)
+        grammar_logits = self.grammar_head(hidden_states.to(self.grammar_head.weight.dtype))
         scalar_predictions, record_predictions = self.numeric_heads(hidden_states)
         slots = tuple(pointer_slots)
         if slots and len(states) > 1:
@@ -326,9 +336,9 @@ class CRSExpandedPointerCAD(nn.Module):
             embeddings = embeddings.clone()
             embeddings[:, 0, :] = embeddings[:, 0, :] + self.context_projection(context.mean(0)).to(embeddings.dtype)
         if native_maps is not None and native_maps[0]:
-            native = torch.stack(tuple(native_maps[0].values())).mean(0).to(embeddings.device, embeddings.dtype)
+            native = torch.stack(tuple(native_maps[0].values())).mean(0).to(self.brep_projection.weight.device, self.brep_projection.weight.dtype)
             embeddings = embeddings.clone()
-            embeddings[:, 0, :] = embeddings[:, 0, :] + self.brep_projection(native)
+            embeddings[:, 0, :] = embeddings[:, 0, :] + self.brep_projection(native).to(embeddings.dtype)
         return embeddings, context
 
     def forward_ragged(self, *, input_ids: torch.Tensor, attention_mask: torch.Tensor | None,
@@ -339,8 +349,8 @@ class CRSExpandedPointerCAD(nn.Module):
         """Loss-bearing autoregressive path for ragged pointer slots.
 
         Each example owns its state, banks, slot types, substates and candidate
-        counts. The base model is rerun after each teacher-forced feedback
-        insertion, so later hidden states genuinely depend on that feedback.
+        counts. GT feedback is placed at the explicit post-span boundaries
+        before one causal backbone forward per action.
         """
         if len(states) != input_ids.shape[0] or len(pointer_specs) != input_ids.shape[0]:
             raise ValueError("states and pointer_specs must align with input batch")
@@ -399,6 +409,7 @@ class CRSExpandedPointerCAD(nn.Module):
             for start, feedback in feedback_by_position.items():
                 embeddings[:, start:, :] = embeddings[:, start:, :] + feedback
             final_hidden = self.base_model(inputs_embeds=embeddings, attention_mask=mask).last_hidden_state
+            final_hidden = final_hidden.to(self.grammar_head.weight.dtype)
             for position, pointer_type, bank in banks:
                 h_j = final_hidden[:, position, :].squeeze(0)
                 example_hidden.append(h_j)

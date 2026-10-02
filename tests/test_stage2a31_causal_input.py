@@ -15,6 +15,7 @@ from models.crs_pointercad import (
 from models.crs_pointercad.training import training_action_loss
 from models.crs_pointercad.training import PreparedStage2Corpus
 from models.crs_pointercad.frozen_corpus import FrozenStage2Record
+from models.crs_pointercad.encoders import ResolvedGeometryCandidateEncoder
 
 
 class SplitPointerTokenizer:
@@ -58,7 +59,7 @@ def _record(text="Make a bracket"):
 
 def _collator():
     return Stage2QwenCollator(SplitPointerTokenizer(), grammar_vocabulary={
-        "START": 0, "MIDDLE": 1, "END": 2, "FUTURE": 3,
+        "START": 0, "MIDDLE": 1, "END": 2, "FUTURE": 3, "<pe>": 4,
     })
 
 
@@ -187,8 +188,38 @@ def test_prepared_frozen_record_exposes_exact_source_text(tmp_path):
         PreparedStage2Corpus(frozen, prepared).collate_record(record, _collator())
 
 
+def test_resolved_plane_surface_has_a_typed_trainable_embedding():
+    encoder = ResolvedGeometryCandidateEncoder()
+    value = encoder({"type": "PlaneSurface", "origin": {"x": 0.0, "y": 1.0, "z": 2.0}})
+    assert value.shape == (128,)
+    assert torch.isfinite(value).all()
+    value.sum().backward()
+    assert encoder.geometry.weight.grad is not None
+    assert encoder.geometry.weight.grad.abs().sum() > 0
+
+
 def test_missing_conditioning_fails_instead_of_training_without_x():
     record = _record()
     del record["conditioning"]
     with pytest.raises(ValueError, match="conditioning X"):
+        _collator()(record)
+
+
+def test_positionless_frozen_frame_record_maps_to_unique_action_marker():
+    record = _record()
+    record["pointer_targets"] = []
+    record["command"]["tokens"][1] = "<frame>"
+    record["structured_record_targets"] = [{
+        "action_index": 0, "record_type": "FRAME3", "field": "transform",
+        "fields": {"origin": {"x": 0, "y": 0, "z": 0},
+                   "x_axis": {"x": 1, "y": 0, "z": 0},
+                   "y_axis": {"x": 0, "y": 1, "z": 0},
+                   "z_axis": {"x": 0, "y": 0, "z": 1}},
+    }]
+    sequence = _collator()(record)
+    assert sequence.structured_record_positions[0].command_position == 1
+    assert all(item.command_position != 1 for item in sequence.grammar_positions)
+
+    record["command"]["tokens"][3] = "<frame>"
+    with pytest.raises(ValueError, match="typed marker is not unique"):
         _collator()(record)

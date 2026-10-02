@@ -209,3 +209,4 @@ __marimo__/
 # Pointer CAD files
 log
 wandb
+/outputs/

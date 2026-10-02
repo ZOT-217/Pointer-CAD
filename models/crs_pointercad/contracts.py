@@ -197,8 +197,9 @@ class ExecutionState:
             )
         for key, record in getattr(snapshot, "references", {}).items():
             if ExternalKey(str(key)) not in constructions.records:
+                semantic = record.get("geometry", record) if isinstance(record, Mapping) else record
                 constructions.records[ExternalKey(str(key))] = ConstructionRecord(
-                    ExternalKey(str(key)), PointerType.RESOLVED_GEOMETRY, int(getattr(snapshot, "step_index", 0)), record
+                    ExternalKey(str(key)), PointerType.RESOLVED_GEOMETRY, int(getattr(snapshot, "step_index", 0)), semantic
                 )
         return cls(snapshot, bodies, constructions, int(getattr(snapshot, "step_index", 0)))
 
