@@ -1,0 +1,11 @@
+{
+  "corpus_input_only": true,
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "dtype": "bf16",
+  "lora_rank": 8,
+  "native_geometry_encoder": true,
+  "epochs_default": 3,
+  "per_device_batch_size_default": 1,
+  "gradient_accumulation_default": 8,
+  "validation": "frozen source-disjoint split_manifest.json"
+}

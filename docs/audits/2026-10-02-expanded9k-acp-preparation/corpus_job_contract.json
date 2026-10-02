@@ -1,0 +1,10 @@
+{
+  "output": "/mnt/afs/L202500475/cadquery2crs-corpus/stage2-expanded9k-v1",
+  "pipeline_output": "/mnt/afs/L202500475/cadquery2crs-corpus/stage2-expanded9k-v1-pipeline",
+  "workers_default": 32,
+  "workers_bounds": [1, 64],
+  "resume": true,
+  "atomic_writes": true,
+  "failure_isolation": true,
+  "fixed_conditioning_source": "expanded9k_fixed_constant"
+}

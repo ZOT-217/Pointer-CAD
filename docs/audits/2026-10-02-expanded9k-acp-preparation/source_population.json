@@ -1,0 +1,7 @@
+{
+  "source_manifest": "/mnt/afs/L202500475/zero2cad_rp/outputs/test-cadquery-source-operation-sets/manifest.jsonl",
+  "source_directory": "/mnt/afs/L202500475/zero2cad_rp/outputs/test-cadquery-source-operation-sets/sources",
+  "expected_records": 9767,
+  "membership_policy": "existing deterministic operation-set manifest; no random subset",
+  "conditioning": "Construct the CAD model."
+}

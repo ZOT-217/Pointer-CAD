@@ -1,0 +1,1 @@
+{"backend":"nccl","world_size_default":4,"launcher":"torchrun","data_parallelism":"DDP","preflight_steps":20,"data_loader_workers_configurable":true}

@@ -1,0 +1,1 @@
+{"verdict":"READY_FOR_MANUAL_ACP_LAUNCH","cpu_script":"scripts/acp/build_stage2_expanded9k_cpu.sh","gpu_script":"scripts/acp/train_stage2_expanded9k_4xh100.sh","cci_full_workload":"prohibited"}

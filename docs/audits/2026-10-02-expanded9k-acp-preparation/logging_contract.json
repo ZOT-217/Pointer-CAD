@@ -1,0 +1,1 @@
+{"format":"JSONL","path":"metrics.jsonl","loss_components":["L_g","L_p","L_s","L_r"],"pointer_diagnostics":["overall","by_type","by_bank_bucket"],"system_metrics":["examples_per_second","optimizer_steps_per_second","peak_allocated_vram","peak_reserved_vram"],"failures":"explicit status=failure record"}

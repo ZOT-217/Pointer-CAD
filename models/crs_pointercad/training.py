@@ -79,7 +79,7 @@ class PreparedStage2Corpus:
         source = conditioning.get("source")
         digest = conditioning.get("sha256")
         if not isinstance(text, str) or not text.strip() or source not in {
-            "dataset_annotation", "legacy_pointercad_adapter_constant",
+            "dataset_annotation", "legacy_pointercad_adapter_constant", "expanded9k_fixed_constant",
         } or digest != hashlib.sha256(text.encode("utf-8")).hexdigest():
             raise ValueError("prepared Stage2 conditioning provenance is invalid")
         return {"text": text, "source": source}
@@ -171,7 +171,8 @@ def training_action_loss(model, sequence: Stage2Sequence, supervision: Mapping[s
     record_targets = {key: torch.tensor(values, device=device, dtype=record_predictions[key].dtype)
                       for key, values in record_targets.items()}
 
-    return model.loss(grammar_logits=grammar_logits, grammar_targets=grammar_targets,
+    result = model.loss(grammar_logits=grammar_logits, grammar_targets=grammar_targets,
                       pointer_logits=output.pointer_logits_by_example[0], pointer_positive=positives,
                       scalar_predictions=scalar_predictions, scalar_targets=scalar_targets,
                       record_predictions=record_predictions, record_targets=record_targets)
+    return result

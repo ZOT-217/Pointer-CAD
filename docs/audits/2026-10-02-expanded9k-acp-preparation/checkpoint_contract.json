@@ -1,0 +1,1 @@
+{"atomic_publication":true,"fields":["model","optimizer","scheduler","epoch","global_step","config","split_sha256","rng_state"],"resume_must_validate_split":true}

@@ -95,7 +95,7 @@ class Stage2QwenCollator:
         source = conditioning.get("source")
         if not isinstance(text, str) or not text.strip():
             raise ValueError("conditioning X must be nonempty source text")
-        if source not in {"dataset_annotation", "legacy_pointercad_adapter_constant"}:
+        if source not in {"dataset_annotation", "legacy_pointercad_adapter_constant", "expanded9k_fixed_constant"}:
             raise ValueError("conditioning X needs an approved source annotation")
         if source == "legacy_pointercad_adapter_constant" and text != LEGACY_ADAPTER_INSTRUCTION:
             raise ValueError("legacy adapter instruction does not match its recorded source")
