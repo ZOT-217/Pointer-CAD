@@ -1,0 +1,15 @@
+{
+  "action_index": 2,
+  "feedback_boundary_contract": "TokenSpan.end; first pointer atom spans 3 actual Qwen tokens",
+  "first_atom_qwen_span_length": 3,
+  "first_feedback_position": 95,
+  "first_pointer_hidden_max_delta": 0.0,
+  "first_pointer_logit_max_delta": 0.0,
+  "first_pointer_position": 92,
+  "pass": true,
+  "pointer_slots": 4,
+  "production_path": "teacher feedback inserted before one causal backbone call, beginning after the complete selected atom",
+  "sample_id": "00002",
+  "second_pointer_hidden_max_delta": 95.375,
+  "second_pointer_logit_max_delta": 3.126559019088745
+}

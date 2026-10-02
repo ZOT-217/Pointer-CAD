@@ -1,0 +1,99 @@
+{
+  "checkpoint_level_comparison": "unavailable: no original Pointer-CAD checkpoint in workspace",
+  "examples": [
+    {
+      "action_index": 9,
+      "alignment": {
+        "edge_rows": 65,
+        "face_rows": 41,
+        "loose_edge_rows": 6,
+        "one_to_one": true,
+        "status": "PASS"
+      },
+      "edge_embedding_shape": [
+        65,
+        128
+      ],
+      "edge_feature_shape": [
+        65,
+        32,
+        12
+      ],
+      "edge_keys": 65,
+      "face_embedding_shape": [
+        41,
+        128
+      ],
+      "face_feature_shape": [
+        41,
+        32,
+        32,
+        8
+      ],
+      "face_keys": 41,
+      "graph_directed_edges": 130,
+      "graph_nodes": 41,
+      "loose_edge_feature_shape": [
+        6,
+        32,
+        12
+      ],
+      "loose_edge_keys": 6,
+      "max_keyed_vs_direct_edge_delta": 0.0,
+      "max_keyed_vs_direct_face_delta": 0.0,
+      "pass": true,
+      "sample_id": "00002"
+    },
+    {
+      "action_index": 3,
+      "alignment": {
+        "edge_rows": 24,
+        "face_rows": 12,
+        "loose_edge_rows": 0,
+        "one_to_one": true,
+        "status": "PASS"
+      },
+      "edge_embedding_shape": [
+        24,
+        128
+      ],
+      "edge_feature_shape": [
+        24,
+        32,
+        12
+      ],
+      "edge_keys": 24,
+      "face_embedding_shape": [
+        12,
+        128
+      ],
+      "face_feature_shape": [
+        12,
+        32,
+        32,
+        8
+      ],
+      "face_keys": 12,
+      "graph_directed_edges": 48,
+      "graph_nodes": 12,
+      "loose_edge_feature_shape": [
+        0,
+        32,
+        12
+      ],
+      "loose_edge_keys": 0,
+      "max_keyed_vs_direct_edge_delta": 0.0,
+      "max_keyed_vs_direct_face_delta": 0.0,
+      "pass": true,
+      "sample_id": "00013"
+    }
+  ],
+  "intended_stage2_differences": [
+    "owner-qualified CandidateKey row mapping",
+    "boundary/nonmanifold legal EDGE rows use native curve encoder without graph fusion",
+    "CRS state/context and new pointer heads differ from legacy decoder"
+  ],
+  "native_tensor_contract": "32x32x8 face UV grid, 32x12 edge curve grid, reverse-edge DGL graph; same UVNetEmbedder module as original Pointer-CAD",
+  "pass": true,
+  "unintended_regression_found": false
+}

@@ -1,0 +1,20 @@
+{
+  "block_before_9k": [],
+  "defer_until_9k_results": [
+    "SplitFeature natural exposure",
+    "historical EDGE real-model evidence before 100K"
+  ],
+  "measure_during_9k": [
+    "full-epoch throughput and long-action distribution",
+    "pointer diagnostic accuracy by candidate bank size after training"
+  ],
+  "resolved_during_this_gate": [
+    "CRSProgram frozen document access in preparer",
+    "singular UV normal sampling",
+    "legal loose EDGE native rows",
+    "positionless structured-record target mapping",
+    "GPU/dtype continuity of native and semantic encoders",
+    "PlaneSurface resolved geometry type"
+  ],
+  "verdict": "NO_REMAINING_CORRECTNESS_BLOCKER"
+}

@@ -1,0 +1,18 @@
+{
+  "items": [
+    {
+      "case": "SplitFeature",
+      "classification": "DEFER_UNTIL_9K_RESULTS",
+      "frozen_natural_count": 0,
+      "reason": "absence does not prevent interpreting the state-to-action 9K diagnostic; retain coverage tracking during expansion"
+    },
+    {
+      "case": "historical EDGE",
+      "classification": "DEFER_UNTIL_9K_RESULTS",
+      "frozen_natural_count": 0,
+      "reason": "bridge path exists but requires real-model evidence before 100K; absence from this 80-record gate does not block 9K",
+      "required_by": "before 100K"
+    }
+  ],
+  "synthetic_records_generated_for_gate": 0
+}

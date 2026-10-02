@@ -1,0 +1,85 @@
+{
+  "batch_size": 2,
+  "collation": "two real Stage2QwenCollator sequences sliced to causal actions and padded with attention masks",
+  "components": {
+    "grammar": 9.245118141174316,
+    "pointer": 0.6042972207069397,
+    "scalar": 3.0147321224212646
+  },
+  "cross_sample_input_perturbation_delta": 0.0,
+  "examples": [
+    {
+      "action_index": 2,
+      "candidate_counts": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "pointer_slots": 4,
+      "pointer_types": [
+        "PTR_EDGE",
+        "PTR_EDGE",
+        "PTR_EDGE",
+        "PTR_EDGE"
+      ],
+      "qwen_tokens": 121,
+      "sample_id": "00002"
+    },
+    {
+      "action_index": 4,
+      "candidate_counts": [
+        2,
+        1
+      ],
+      "pointer_slots": 2,
+      "pointer_types": [
+        "PTR_PROFILE",
+        "PTR_SKETCH_REFERENCE"
+      ],
+      "qwen_tokens": 142,
+      "sample_id": "00008"
+    }
+  ],
+  "finite_loss": true,
+  "gradients": {
+    "context_projection": {
+      "max_norm": 18.30312156677246,
+      "parameters_with_grad": 2
+    },
+    "native_uvnet": {
+      "max_norm": 44.33234405517578,
+      "parameters_with_grad": 28
+    },
+    "pointer_projection": {
+      "max_norm": 8.484283447265625,
+      "parameters_with_grad": 3
+    },
+    "pointer_temperature": {
+      "max_norm": 0.14262883365154266,
+      "parameters_with_grad": 3
+    },
+    "qwen_lora": {
+      "max_norm": 151.33172607421875,
+      "parameters_with_grad": 336
+    },
+    "record_heads": {
+      "max_norm": 0.0,
+      "parameters_with_grad": 0
+    },
+    "registry_context": {
+      "max_norm": 4.14154577255249,
+      "parameters_with_grad": 12
+    },
+    "scalar_head": {
+      "max_norm": 548.2229614257812,
+      "parameters_with_grad": 2
+    }
+  },
+  "loss_api": "model.loss on explicit per-action target maps, equivalent component heads to training_action_loss; training_action_loss itself accepts one action",
+  "max_isolated_logit_magnitude": 3.456995964050293,
+  "max_pointer_logit_isolation_delta": 0.09186506271362305,
+  "pass": true,
+  "same_isolated_argmax": true,
+  "valid_pointer_slots": 6
+}

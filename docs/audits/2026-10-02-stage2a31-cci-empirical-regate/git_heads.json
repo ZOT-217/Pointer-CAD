@@ -1,0 +1,9 @@
+{
+  "branches": "main tracking origin/main; initial worktrees clean; fetch and pull --ff-only completed before work",
+  "cadquery2crs_end_head": "6fe9e41d752e21a232a15cd6c1d1e4f82a512f12",
+  "cadquery2crs_push_succeeded": true,
+  "cadquery2crs_start_head": "d12094d60ff77026c79e95e83cf2ef043127db30",
+  "pointercad_final_audit_commit": "reported in git handoff after this self-referential audit is committed",
+  "pointercad_production_fix_head": "4d736fd89d7e32fe9e431d52a1c15f0105db7ff9",
+  "pointercad_start_head": "66207c3d700529d936421261c05fdca3a7bbf37a"
+}

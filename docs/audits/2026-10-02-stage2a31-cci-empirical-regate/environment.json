@@ -1,0 +1,38 @@
+{
+  "bf16_supported": true,
+  "compute_capability": "9.0",
+  "conda_environments_modified": false,
+  "cuda": "12.4",
+  "date_utc": "2026-10-02",
+  "dgl": "2.4.0+cu124",
+  "gpu": "NVIDIA H100 80GB HBM3 MIG 3g.40gb",
+  "model_checkpoint": "Qwen/Qwen2.5-0.5B-Instruct",
+  "model_checkpoint_local_path": "/mnt/afs/L202500475/hf-data/models/Qwen2.5-0.5B-Instruct",
+  "model_configuration": {
+    "dtype": "torch.bfloat16",
+    "frozen_parameters": 494032768,
+    "grammar_vocabulary_size": 64,
+    "lora_alpha": 32,
+    "lora_dropout": 0.1,
+    "lora_rank": 8,
+    "lora_target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ],
+    "peft_lora": true,
+    "total_parameters": 508962080,
+    "trainable_parameters": 14929312
+  },
+  "peft": "0.15.2",
+  "preparation_interpreter": "/root/miniconda/envs/cadquery2crs/bin/python",
+  "site": "CCI",
+  "torch": "2.4.1+cu124",
+  "training_interpreter": "/root/miniconda/envs/PointerCAD/bin/python",
+  "transformers": "4.51.3",
+  "visible_gpu_memory_bytes": 42412802048
+}

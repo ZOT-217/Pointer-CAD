@@ -1,0 +1,124 @@
+{
+  "all_intended_components_have_nonzero_gradient_on_an_applicable_action": true,
+  "examples": {
+    "face_record": {
+      "action_index": 9,
+      "gradients": {
+        "context_projection": {
+          "max_norm": 54.36064147949219,
+          "parameters_with_grad": 2
+        },
+        "native_uvnet": {
+          "max_norm": 82.8654556274414,
+          "parameters_with_grad": 28
+        },
+        "pointer_projection": {
+          "max_norm": 14.320069313049316,
+          "parameters_with_grad": 1
+        },
+        "pointer_temperature": {
+          "max_norm": 0.05556359887123108,
+          "parameters_with_grad": 1
+        },
+        "qwen_lora": {
+          "max_norm": 135.6206512451172,
+          "parameters_with_grad": 336
+        },
+        "record_heads": {
+          "max_norm": 351.5687255859375,
+          "parameters_with_grad": 2
+        },
+        "registry_context": {
+          "max_norm": 11.100513458251953,
+          "parameters_with_grad": 12
+        },
+        "scalar_head": {
+          "max_norm": 0.0,
+          "parameters_with_grad": 0
+        }
+      },
+      "loss": 20.20549774169922,
+      "sample_id": "00002"
+    },
+    "high_pointer": {
+      "action_index": 17,
+      "gradients": {
+        "context_projection": {
+          "max_norm": 15.213838577270508,
+          "parameters_with_grad": 2
+        },
+        "native_uvnet": {
+          "max_norm": 18.099964141845703,
+          "parameters_with_grad": 28
+        },
+        "pointer_projection": {
+          "max_norm": 27.344816207885742,
+          "parameters_with_grad": 1
+        },
+        "pointer_temperature": {
+          "max_norm": 1.4610735177993774,
+          "parameters_with_grad": 1
+        },
+        "qwen_lora": {
+          "max_norm": 38.36558532714844,
+          "parameters_with_grad": 336
+        },
+        "record_heads": {
+          "max_norm": 0.0,
+          "parameters_with_grad": 0
+        },
+        "registry_context": {
+          "max_norm": 3.207810163497925,
+          "parameters_with_grad": 12
+        },
+        "scalar_head": {
+          "max_norm": 982.241943359375,
+          "parameters_with_grad": 2
+        }
+      },
+      "loss": 18.0237979888916,
+      "sample_id": "00472"
+    },
+    "zero_pointer_record": {
+      "action_index": 0,
+      "gradients": {
+        "context_projection": {
+          "max_norm": 0.0,
+          "parameters_with_grad": 0
+        },
+        "native_uvnet": {
+          "max_norm": 0.0,
+          "parameters_with_grad": 0
+        },
+        "pointer_projection": {
+          "max_norm": 0.0,
+          "parameters_with_grad": 0
+        },
+        "pointer_temperature": {
+          "max_norm": 0.0,
+          "parameters_with_grad": 0
+        },
+        "qwen_lora": {
+          "max_norm": 175.41539001464844,
+          "parameters_with_grad": 336
+        },
+        "record_heads": {
+          "max_norm": 973.946044921875,
+          "parameters_with_grad": 2
+        },
+        "registry_context": {
+          "max_norm": 0.0,
+          "parameters_with_grad": 0
+        },
+        "scalar_head": {
+          "max_norm": 0.0,
+          "parameters_with_grad": 0
+        }
+      },
+      "loss": 42.71940231323242,
+      "sample_id": "00002"
+    }
+  },
+  "optimizer": "AdamW, lr=1e-4, optimizer.step then zero_grad(set_to_none=True)",
+  "pass": true
+}

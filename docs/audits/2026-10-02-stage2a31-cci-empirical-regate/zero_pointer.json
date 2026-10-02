@@ -1,0 +1,19 @@
+{
+  "action_index": 0,
+  "finite": true,
+  "other_losses": {
+    "grammar": 12.807607650756836,
+    "pointer": null,
+    "record": 29.911794662475586,
+    "scalar": null
+  },
+  "pass": true,
+  "pointer_loss": null,
+  "pointer_slots": 0,
+  "record_head_gradient": {
+    "max_norm": 973.946044921875,
+    "parameters_with_grad": 2
+  },
+  "sample_id": "00002",
+  "total_loss": 42.71940231323242
+}

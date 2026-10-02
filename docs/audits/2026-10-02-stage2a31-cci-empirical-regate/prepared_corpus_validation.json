@@ -1,0 +1,39 @@
+{
+  "corpus_membership_changed": false,
+  "failures": [],
+  "frozen_manifest_sha256": "8f20e1e9e76a239fdd0fa40c5753e3393af2eda08345b9a57fd897a377e3d8d1",
+  "frozen_records": 80,
+  "mapped_targets": {
+    "grammar": 32371,
+    "pointer": 3432,
+    "record": 662,
+    "scalar": 945
+  },
+  "native_aligned_face_edge_candidates": {
+    "EDGE": 219287,
+    "FACE": 109451
+  },
+  "native_feature_files_nonfinite": 0,
+  "native_feature_rows": {
+    "face": 109451,
+    "graph_edge": 207673,
+    "loose_edge": 11614
+  },
+  "pass": true,
+  "prepared_records": 80,
+  "prepared_steps": 1721,
+  "qwen_full_trajectory_tokens_min_max": [
+    413,
+    8659
+  ],
+  "resolved_pointer_targets": {
+    "BODY": 949,
+    "EDGE": 1259,
+    "FACE": 98,
+    "PROFILE": 631,
+    "RESOLVED_GEOMETRY": 123,
+    "SKETCH_REFERENCE": 372
+  },
+  "source_cad_regenerated": false,
+  "validated_graph_edges": 207673
+}

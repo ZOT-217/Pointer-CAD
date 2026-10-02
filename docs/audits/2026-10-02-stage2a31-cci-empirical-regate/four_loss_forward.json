@@ -1,0 +1,48 @@
+{
+  "all_four_components_observed_across_natural_actions": true,
+  "all_present_components_finite": true,
+  "causal_position_source": "Stage2QwenCollator explicit Qwen positions for grammar, pointer, scalar and located structured records",
+  "examples": [
+    {
+      "action_index": 17,
+      "loss_components": {
+        "grammar": 11.0192289352417,
+        "pointer": 1.8914661407470703,
+        "record": null,
+        "scalar": 5.113102912902832
+      },
+      "loss_total": 18.0237979888916,
+      "pointer_slots": 102,
+      "qwen_tokens": 422,
+      "sample_id": "00472"
+    },
+    {
+      "action_index": 9,
+      "loss_components": {
+        "grammar": 11.770462989807129,
+        "pointer": 0.4830069839954376,
+        "record": 7.9520263671875,
+        "scalar": null
+      },
+      "loss_total": 20.20549774169922,
+      "pointer_slots": 1,
+      "qwen_tokens": 308,
+      "sample_id": "00002"
+    },
+    {
+      "action_index": 0,
+      "loss_components": {
+        "grammar": 12.807607650756836,
+        "pointer": null,
+        "record": 29.911794662475586,
+        "scalar": null
+      },
+      "loss_total": 42.71940231323242,
+      "pointer_slots": 0,
+      "qwen_tokens": 321,
+      "sample_id": "00002"
+    }
+  ],
+  "pass": true,
+  "single_action_with_all_four_required": false
+}

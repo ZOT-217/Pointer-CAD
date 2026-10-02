@@ -1,0 +1,32 @@
+{
+  "all_required_checks_pass": true,
+  "checks": {
+    "80_frozen_prepared_loaded": true,
+    "backward_optimizer_gradients": true,
+    "cached_inference_parity": true,
+    "four_present_losses_finite": true,
+    "full_cost_feasible_for_9k": true,
+    "homogeneous_fixed_x_loss_path": true,
+    "material_micro_overfit": true,
+    "natural_ragged_batch2": true,
+    "natural_zero_pointer": true,
+    "no_correctness_blocker": true,
+    "no_unintended_legacy_regression": true,
+    "one_qwen_forward_per_action": true,
+    "real_face_edge_banks": true,
+    "six_natural_pointer_types_resolve": true,
+    "token_span_end_feedback_causality": true
+  },
+  "cost_classification": "COST_READY_FOR_9K",
+  "open_findings": [
+    {
+      "classification": "MEASURE_DURING_9K",
+      "finding": "real action length, bank-size distribution and full-epoch throughput"
+    },
+    {
+      "classification": "DEFER_UNTIL_9K_RESULTS",
+      "finding": "SplitFeature and historical EDGE natural coverage; historical EDGE evidence before 100K"
+    }
+  ],
+  "verdict": "STAGE2A31_READY_FOR_EXPANDED_9K"
+}

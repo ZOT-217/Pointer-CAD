@@ -1,0 +1,26 @@
+{
+  "action_index": 2,
+  "cache_mechanism": "Qwen past_key_values with predicted candidate embedding appended after each TokenSpan.end",
+  "cached_predicted_keys": [
+    "FrozenCandidateKey(kind='EDGE', owner='body_000001', local_index=4)",
+    "FrozenCandidateKey(kind='EDGE', owner='body_000001', local_index=9)",
+    "FrozenCandidateKey(kind='EDGE', owner='body_000001', local_index=0)",
+    "FrozenCandidateKey(kind='EDGE', owner='body_000001', local_index=0)"
+  ],
+  "max_delta_as_fraction_of_logit_scale": 0.014531725381589814,
+  "max_logit_delta": 0.050437137484550476,
+  "max_reference_logit_magnitude": 3.4708292484283447,
+  "pass": true,
+  "pointer_slots": 4,
+  "reference": "same model with uncached full-prefix continuation",
+  "reference_predicted_keys": [
+    "FrozenCandidateKey(kind='EDGE', owner='body_000001', local_index=4)",
+    "FrozenCandidateKey(kind='EDGE', owner='body_000001', local_index=9)",
+    "FrozenCandidateKey(kind='EDGE', owner='body_000001', local_index=0)",
+    "FrozenCandidateKey(kind='EDGE', owner='body_000001', local_index=0)"
+  ],
+  "same_candidates": true,
+  "sample_id": "00002",
+  "state_and_bank_contract": "candidate selection uses causal S_t and decoder substate; no teacher target is supplied",
+  "tolerance_basis": "bf16 pointer logits are scaled by 1/0.07; require same candidate and <=0.1 absolute, <=2% of observed scale"
+}

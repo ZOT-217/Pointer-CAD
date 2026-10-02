@@ -1,0 +1,289 @@
+{
+  "actions": [
+    [
+      "00002",
+      0
+    ],
+    [
+      "00002",
+      2
+    ],
+    [
+      "00002",
+      5
+    ],
+    [
+      "00002",
+      9
+    ],
+    [
+      "00008",
+      2
+    ],
+    [
+      "00008",
+      4
+    ],
+    [
+      "00013",
+      3
+    ],
+    [
+      "00111",
+      1
+    ]
+  ],
+  "all_present_major_components_decreased": true,
+  "component_relative_changes": {
+    "grammar": -0.8345115426118856,
+    "pointer": -0.7946347780234497,
+    "record": -0.9962626672463675,
+    "scalar": -0.9923114662407074
+  },
+  "curves": [
+    {
+      "epoch": 0,
+      "grammar_accuracy": 0.12030075187969924,
+      "means": {
+        "grammar": 9.747941136360168,
+        "pointer": 0.735720809016909,
+        "record": 21.053345680236816,
+        "scalar": 9.089251391589642,
+        "total": 25.462995171546936
+      },
+      "pointer_any_positive_at_1": 0.18181818181818182,
+      "present_action_counts": {
+        "grammar": 8,
+        "pointer": 7,
+        "record": 4,
+        "scalar": 4,
+        "total": 8
+      }
+    },
+    {
+      "epoch": 1,
+      "grammar_accuracy": 0.12781954887218044,
+      "means": {
+        "grammar": 6.875704646110535,
+        "pointer": 0.41631073717560085,
+        "record": 12.35714477300644,
+        "scalar": 25.17997194826603,
+        "total": 26.008534848690033
+      },
+      "pointer_any_positive_at_1": 0.2727272727272727,
+      "present_action_counts": {
+        "grammar": 8,
+        "pointer": 7,
+        "record": 4,
+        "scalar": 4,
+        "total": 8
+      }
+    },
+    {
+      "epoch": 2,
+      "grammar_accuracy": 0.19548872180451127,
+      "means": {
+        "grammar": 5.089776366949081,
+        "pointer": 0.28401621111801695,
+        "record": 3.132173240184784,
+        "scalar": 63.68859488517046,
+        "total": 38.74867445230484
+      },
+      "pointer_any_positive_at_1": 0.2727272727272727,
+      "present_action_counts": {
+        "grammar": 8,
+        "pointer": 7,
+        "record": 4,
+        "scalar": 4,
+        "total": 8
+      }
+    },
+    {
+      "epoch": 3,
+      "grammar_accuracy": 0.2857142857142857,
+      "means": {
+        "grammar": 3.6750632524490356,
+        "pointer": 0.2458945576633726,
+        "record": 3.482941098511219,
+        "scalar": 11.7996639048215,
+        "total": 11.531523495912552
+      },
+      "pointer_any_positive_at_1": 0.22727272727272727,
+      "present_action_counts": {
+        "grammar": 8,
+        "pointer": 7,
+        "record": 4,
+        "scalar": 4,
+        "total": 8
+      }
+    },
+    {
+      "epoch": 4,
+      "grammar_accuracy": 0.3533834586466165,
+      "means": {
+        "grammar": 3.4953578114509583,
+        "pointer": 0.24369009052004134,
+        "record": 1.2505457699298859,
+        "scalar": 13.919528460130095,
+        "total": 11.29362367093563
+      },
+      "pointer_any_positive_at_1": 0.2727272727272727,
+      "present_action_counts": {
+        "grammar": 8,
+        "pointer": 7,
+        "record": 4,
+        "scalar": 4,
+        "total": 8
+      }
+    },
+    {
+      "epoch": 5,
+      "grammar_accuracy": 0.44360902255639095,
+      "means": {
+        "grammar": 2.9709799885749817,
+        "pointer": 0.22864800611776964,
+        "record": 1.1157718151807785,
+        "scalar": 25.63387620728463,
+        "total": 16.54587058722973
+      },
+      "pointer_any_positive_at_1": 0.2727272727272727,
+      "present_action_counts": {
+        "grammar": 8,
+        "pointer": 7,
+        "record": 4,
+        "scalar": 4,
+        "total": 8
+      }
+    },
+    {
+      "epoch": 6,
+      "grammar_accuracy": 0.42857142857142855,
+      "means": {
+        "grammar": 2.7870082706212997,
+        "pointer": 0.20824708576713288,
+        "record": 0.5667868759483099,
+        "scalar": 6.175627239048481,
+        "total": 6.340431481599808
+      },
+      "pointer_any_positive_at_1": 0.3181818181818182,
+      "present_action_counts": {
+        "grammar": 8,
+        "pointer": 7,
+        "record": 4,
+        "scalar": 4,
+        "total": 8
+      }
+    },
+    {
+      "epoch": 7,
+      "grammar_accuracy": 0.3082706766917293,
+      "means": {
+        "grammar": 3.174380362033844,
+        "pointer": 0.2137200833697404,
+        "record": 2.733891125768423,
+        "scalar": 3.0563055276870728,
+        "total": 6.2564837038517
+      },
+      "pointer_any_positive_at_1": 0.3181818181818182,
+      "present_action_counts": {
+        "grammar": 8,
+        "pointer": 7,
+        "record": 4,
+        "scalar": 4,
+        "total": 8
+      }
+    },
+    {
+      "epoch": 8,
+      "grammar_accuracy": 0.48120300751879697,
+      "means": {
+        "grammar": 2.2647091150283813,
+        "pointer": 0.1738092614603894,
+        "record": 0.7014027927070856,
+        "scalar": 4.234332290943712,
+        "total": 4.8846596628427505
+      },
+      "pointer_any_positive_at_1": 0.3181818181818182,
+      "present_action_counts": {
+        "grammar": 8,
+        "pointer": 7,
+        "record": 4,
+        "scalar": 4,
+        "total": 8
+      }
+    },
+    {
+      "epoch": 9,
+      "grammar_accuracy": 0.49624060150375937,
+      "means": {
+        "grammar": 1.936167523264885,
+        "pointer": 0.1641155069560877,
+        "record": 0.15133220702409744,
+        "scalar": 0.4478754151787143,
+        "total": 2.379372350871563
+      },
+      "pointer_any_positive_at_1": 0.36363636363636365,
+      "present_action_counts": {
+        "grammar": 8,
+        "pointer": 7,
+        "record": 4,
+        "scalar": 4,
+        "total": 8
+      }
+    },
+    {
+      "epoch": 10,
+      "grammar_accuracy": 0.49624060150375937,
+      "means": {
+        "grammar": 1.8095998913049698,
+        "pointer": 0.15644663126607025,
+        "record": 0.10361651610583067,
+        "scalar": 1.0278141599701485,
+        "total": 2.512206047773361
+      },
+      "pointer_any_positive_at_1": 0.36363636363636365,
+      "present_action_counts": {
+        "grammar": 8,
+        "pointer": 7,
+        "record": 4,
+        "scalar": 4,
+        "total": 8
+      }
+    },
+    {
+      "epoch": 11,
+      "grammar_accuracy": 0.5263157894736842,
+      "means": {
+        "grammar": 1.6131717413663864,
+        "pointer": 0.15109146725652473,
+        "record": 0.0786833583842963,
+        "scalar": 0.06988301617093384,
+        "total": 1.819659948348999
+      },
+      "pointer_any_positive_at_1": 0.36363636363636365,
+      "present_action_counts": {
+        "grammar": 8,
+        "pointer": 7,
+        "record": 4,
+        "scalar": 4,
+        "total": 8
+      }
+    }
+  ],
+  "dtype": "bf16",
+  "epochs": 12,
+  "final_total_mean": 1.819659948348999,
+  "initial_total_mean": 25.462995171546936,
+  "lora_rank": 8,
+  "material_total_decrease": true,
+  "model_checkpoint": "Qwen/Qwen2.5-0.5B-Instruct",
+  "optimizer": "AdamW lr=1e-4; fixed 4-trajectory/8-action subset; no hyperparameter search",
+  "pass": true,
+  "total_relative_change": -0.9285370815141835,
+  "trajectory_ids": [
+    "00002",
+    "00008",
+    "00013",
+    "00111"
+  ]
+}

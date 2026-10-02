@@ -1,0 +1,12 @@
+{
+  "exact_x": "Construct the CAD model.",
+  "fixed_x_count": 80,
+  "future_action_text_in_x": false,
+  "model_input": "Qwen chat prefix followed by current causal action; ContextView(S_t) injected separately",
+  "pass": true,
+  "provenance_digest": "existing SHA-256 of X only",
+  "records_checked": 80,
+  "semantic_hash_used_as_model_input": false,
+  "source": "legacy_pointercad_adapter_constant",
+  "variant_identity_uses_new_hash": false
+}

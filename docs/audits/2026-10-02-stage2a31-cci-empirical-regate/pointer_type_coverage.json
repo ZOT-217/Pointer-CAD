@@ -1,0 +1,50 @@
+{
+  "all_six_natural_types_exercised": true,
+  "frozen_resolved_target_counts": {
+    "PTR_BODY": 949,
+    "PTR_EDGE": 1259,
+    "PTR_FACE": 98,
+    "PTR_PROFILE": 631,
+    "PTR_RESOLVED_GEOMETRY": 123,
+    "PTR_SKETCH_REFERENCE": 372
+  },
+  "frozen_target_counts": {
+    "PTR_BODY": 949,
+    "PTR_EDGE": 1259,
+    "PTR_FACE": 98,
+    "PTR_PROFILE": 631,
+    "PTR_RESOLVED_GEOMETRY": 123,
+    "PTR_SKETCH_REFERENCE": 372
+  },
+  "pass": true,
+  "real_model_action_statuses": {
+    "1": "PASS",
+    "2": "PASS",
+    "4": "PASS",
+    "5": "PASS",
+    "7": "PASS",
+    "9": "PASS"
+  },
+  "real_model_action_type_map": {
+    "1": [
+      "PROFILE"
+    ],
+    "2": [
+      "EDGE"
+    ],
+    "4": [
+      "PROFILE",
+      "SKETCH_REFERENCE"
+    ],
+    "5": [
+      "RESOLVED_GEOMETRY"
+    ],
+    "7": [
+      "BODY"
+    ],
+    "9": [
+      "FACE"
+    ]
+  },
+  "real_model_example_sample": "00002"
+}
