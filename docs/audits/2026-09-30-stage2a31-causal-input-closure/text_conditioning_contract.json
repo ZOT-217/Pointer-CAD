@@ -1,0 +1,16 @@
+{
+  "status": "LOCAL_STRUCTURAL_PASS",
+  "model_contract": "P(A_t | S_t, X)",
+  "baseline_layout": "Pointer-CAD system/user chat template followed by assistant CAD generation prefix",
+  "baseline_sources": [
+    "Pointer-CAD/train.py uses prompt_abs/exp.txt and models/processor.py chat template",
+    "cadquery2crs Pointer-CAD adapter for the frozen Zero2CAD population used the fixed instruction Construct the CAD model."
+  ],
+  "frozen_population_text": "The admitted Zero2CAD manifest carries no per-record text annotation; current X is the exact pre-existing adapter instruction, constant across that population.",
+  "prepared_sidecar": "Each entry records conditioning.text, conditioning.source and conditioning.sha256 without changing frozen corpus membership or CRS semantics.",
+  "accepted_sources": ["dataset_annotation", "legacy_pointercad_adapter_constant"],
+  "missing_or_unproven_x": "fail closed before collation",
+  "loss_path": "PreparedStage2Corpus.collate_record -> Stage2QwenCollator -> training_action_loss -> forward_ragged",
+  "future_information_policy": "X is read only from pre-existing instruction provenance; no command, result geometry or later state is used to form X.",
+  "quality_limit": "A constant generic X proves input wiring, not part-specific language conditioning quality."
+}

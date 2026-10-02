@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "pointercad": {
+    "command": "PYTHONPATH=. conda run -n zero2cad-rp python -m pytest -q tests/test_stage2a31_causal_input.py tests/test_stage2a.py tests/test_frozen_stage2_corpus.py",
+    "result": "40 passed",
+    "coverage": ["X changes loss-bearing input", "future targets cannot alter current X/action input", "missing X fails closed", "three-token pointer boundary", "later pointer feedback", "cached versus uncached Qwen", "existing Stage2A regressions"]
+  },
+  "cadquery2crs": {
+    "command": "conda run -n cadquery2crs python -m pytest -q tests/test_stage2a31_conditioning.py tests/test_stage2a3_brep_bridge.py tests/test_approved_variants.py",
+    "result": "10 passed",
+    "coverage": ["existing adapter instruction provenance", "annotation preference", "future trajectory isolation", "native BRep bridge", "approved variant manifest"]
+  },
+  "py_compile": "passed for changed Python files in both repositories",
+  "git_diff_check": "passed in both repositories",
+  "real_frozen_80": "CCI_ONLY; persistent frozen corpus is not present locally"
+}

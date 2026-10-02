@@ -200,7 +200,7 @@ def test_teacher_feedback_uses_recorded_candidate_and_changes_only_future():
     body = BodyRecord(ExternalKey("body_a"), 0, "Sketch", geometry={"faces": [{"center": [0, 0, 0], "area": 1.0}]})
     state = ExecutionState(action_index=1, body_version_registry=BodyVersionRegistry({body.key: body}))
     ids = torch.randint(0, 128, (1, 5))
-    result = model.teacher_forced_decode(ids, torch.ones_like(ids), state, [1], [PointerType.BODY], [0])
+    result = model.teacher_forced_decode(ids, torch.ones_like(ids), state, [1], [PointerType.BODY], [0], [2])
     assert torch.equal(result["hidden_before"][:, 1, :], result["hidden_after"][:, 1, :])
     assert not torch.equal(result["hidden_before"][:, 2, :], result["hidden_after"][:, 2, :])
 
@@ -210,7 +210,7 @@ def test_inference_pointer_selection_and_predicted_feedback_path():
     body = BodyRecord(ExternalKey("body_a"), 0, "Sketch", geometry={"faces": [{"center": [0, 0, 0], "area": 1.0}]})
     state = ExecutionState(action_index=1, body_version_registry=BodyVersionRegistry({body.key: body}))
     ids = torch.randint(0, 128, (1, 5))
-    selected = model.inference_pointer_decode(ids, torch.ones_like(ids), state, [1], [PointerType.BODY])
+    selected = model.inference_pointer_decode(ids, torch.ones_like(ids), state, [1], [PointerType.BODY], feedback_positions=[2])
     assert selected[0][0] is PointerType.BODY and selected[0][2] == body.key
 
 
@@ -292,7 +292,7 @@ def test_ragged_batch_different_slot_and_bank_counts_works():
     ids = torch.randint(0, 128, (2, 6))
     specs = [[], [(1, PointerType.BODY), (3, PointerType.BODY)]]
     teacher = [[], [0, 1]]
-    output = model.forward_ragged(input_ids=ids, attention_mask=torch.ones_like(ids), states=states, pointer_specs=specs, teacher_indices=teacher)
+    output = model.forward_ragged(input_ids=ids, attention_mask=torch.ones_like(ids), states=states, pointer_specs=specs, teacher_indices=teacher, feedback_positions=[[], [2, 4]])
     assert len(output.pointer_logits_by_example) == 2
     assert len(output.pointer_logits_by_example[0]) == 0 and len(output.pointer_logits_by_example[1]) == 2
     assert [len(bank) for bank in output.candidate_banks_by_example[1]] == [2, 2]
@@ -310,8 +310,8 @@ def test_real_training_feedback_changes_later_hidden_not_pointer_hidden():
     model = CRSExpandedPointerCAD(hidden_dim=16, grammar_vocab_size=16, use_native_brep=False).eval()
     states = _ragged_body_states()
     ids = torch.randint(0, 128, (1, 6))
-    first = model.forward_ragged(input_ids=ids, attention_mask=torch.ones_like(ids), states=[states[1]], pointer_specs=[[(1, PointerType.BODY), (3, PointerType.BODY)]], teacher_indices=[[0, 1]])
-    second = model.forward_ragged(input_ids=ids, attention_mask=torch.ones_like(ids), states=[states[1]], pointer_specs=[[(1, PointerType.BODY), (3, PointerType.BODY)]], teacher_indices=[[1, 0]])
+    first = model.forward_ragged(input_ids=ids, attention_mask=torch.ones_like(ids), states=[states[1]], pointer_specs=[[(1, PointerType.BODY), (3, PointerType.BODY)]], teacher_indices=[[0, 1]], feedback_positions=[[2, 4]])
+    second = model.forward_ragged(input_ids=ids, attention_mask=torch.ones_like(ids), states=[states[1]], pointer_specs=[[(1, PointerType.BODY), (3, PointerType.BODY)]], teacher_indices=[[1, 0]], feedback_positions=[[2, 4]])
     assert torch.allclose(first.pointer_hidden_by_example[0][0], second.pointer_hidden_by_example[0][0])
     assert not torch.allclose(first.hidden_states[:, 4, :], second.hidden_states[:, 4, :])
 
@@ -320,7 +320,7 @@ def test_decoder_substate_is_slot_local_in_teacher_and_inference_paths():
     model = CRSExpandedPointerCAD(hidden_dim=16, grammar_vocab_size=16, use_native_brep=False).eval()
     states = _ragged_body_states()
     ids = torch.randint(0, 128, (1, 6))
-    output = model.forward_ragged(input_ids=ids, attention_mask=torch.ones_like(ids), states=[states[1]], pointer_specs=[[(1, PointerType.BODY), (3, PointerType.BODY)]], decoder_substates=[[{"excluded_keys": ("body_a",)}, {"excluded_keys": ("body_b",)}]], teacher_indices=[[0, 0]])
+    output = model.forward_ragged(input_ids=ids, attention_mask=torch.ones_like(ids), states=[states[1]], pointer_specs=[[(1, PointerType.BODY), (3, PointerType.BODY)]], decoder_substates=[[{"excluded_keys": ("body_a",)}, {"excluded_keys": ("body_b",)}]], teacher_indices=[[0, 0]], feedback_positions=[[2, 4]])
     assert len(output.candidate_banks_by_example[0][0]) == 1
     assert len(output.candidate_banks_by_example[0][1]) == 1
 
@@ -355,7 +355,7 @@ def test_canonical_training_loss_consumes_ragged_forward_output():
     model = CRSExpandedPointerCAD(hidden_dim=16, grammar_vocab_size=16, use_native_brep=False)
     states = _ragged_body_states()
     ids = torch.randint(0, 128, (2, 5))
-    output = model.forward_ragged(input_ids=ids, attention_mask=torch.ones_like(ids), states=states, pointer_specs=[[], [(1, PointerType.BODY)]], teacher_indices=[[], [0]])
+    output = model.forward_ragged(input_ids=ids, attention_mask=torch.ones_like(ids), states=states, pointer_specs=[[], [(1, PointerType.BODY)]], teacher_indices=[[], [0]], feedback_positions=[[], [2]])
     loss, metrics = model.training_loss(output, grammar_targets=torch.zeros((2, 5), dtype=torch.long), pointer_positive=[[], [torch.tensor([True, False])]], scalar_targets=torch.zeros_like(output.scalar_predictions), record_targets={"VECTOR3": torch.zeros_like(output.record_predictions["VECTOR3"])})
     assert torch.isfinite(loss) and all(torch.isfinite(metrics[name]) for name in ("grammar", "pointer", "scalar", "record"))
     loss.backward()
@@ -369,18 +369,23 @@ def test_stage2_collator_retains_explicit_qwen_spans_and_feedback_positions():
         eos_token_id = 100
         pad_token_id = 0
 
+        def apply_chat_template(self, messages, tokenize=False, add_generation_prompt=False):
+            assert not tokenize and add_generation_prompt
+            return messages[1]["content"][1]["text"] + " <|cad_start|>"
+
         def __call__(self, value, add_special_tokens=False):
             del add_special_tokens
             return {"input_ids": [[10 + index for index, _ in enumerate(value.split())]]}
 
     record = {
+        "conditioning": {"text": "Construct the CAD model.", "source": "legacy_pointercad_adapter_constant"},
         "command": {"tokens": ["SKETCH", "<pe>", "<sv>", "1.0"], "action_boundaries": [{"action_index": 0, "start": 0, "end": 4}]},
         "pointer_targets": [{"action_index": 0, "position": 1, "slot": "reference_plane", "target_index": 0}],
         "parameter_targets": [{"action_index": 0, "position": 2, "slot": "radius", "value": 1.0}],
         "structured_record_targets": [],
     }
     sequence = Stage2QwenCollator(Tokenizer(), grammar_vocabulary={"SKETCH": 0})(record)
-    assert sequence.input_ids[0].item() == 99
+    assert sequence.conditioning_end > 0
     assert sequence.pointer_positions[0].model_position == sequence.token_spans[1].start
     assert sequence.feedback_positions[0] == sequence.token_spans[1].end
     assert sequence.scalar_positions[0].model_position == sequence.token_spans[2].start
@@ -401,7 +406,7 @@ def test_teacher_forced_ragged_uses_one_backbone_forward_per_example():
     model.forward_ragged(
         input_ids=ids, attention_mask=torch.ones_like(ids), states=[state],
         pointer_specs=[[(1, PointerType.BODY), (3, PointerType.BODY), (5, PointerType.BODY)]],
-        teacher_indices=[[0, 1, 0]],
+        teacher_indices=[[0, 1, 0]], feedback_positions=[[2, 4, 6]],
     )
     assert len(calls) == 1
 

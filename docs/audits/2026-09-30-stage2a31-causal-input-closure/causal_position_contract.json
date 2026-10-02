@@ -1,0 +1,11 @@
+{
+  "status": "LOCAL_STRUCTURAL_PASS",
+  "sequence": "Pointer-CAD chat-template X prefix, then frozen command atom tokens",
+  "position_map": "TokenSpan.start/end and action boundaries are constructed after the explicit conditioning prefix length",
+  "action_loss_input": "full X prefix plus only the current teacher-forced action atom span",
+  "state_input": "the current action's authoritative causal ExecutionState S_t",
+  "target_mapping": "grammar, pointer, scalar and structured-record targets retain deterministic command-to-Qwen positions after prefix insertion",
+  "first_action_prediction": "the final X prefix hidden position predicts the first grammar atom",
+  "future_test": "Changing the later action token and supervision target leaves X and the current action's loss-bearing input identical",
+  "no_future_commands_in_action_input": true
+}

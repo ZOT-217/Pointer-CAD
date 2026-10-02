@@ -13,6 +13,14 @@ from typing import Any, Mapping, Sequence
 import torch
 
 
+# Exact system instruction from the original Pointer-CAD train.py input path.
+POINTERCAD_SYSTEM_INSTRUCTION = (
+    "You are an expert mechanical engineer. Based on the user's text requirements, "
+    "generate the corresponding CAD model design."
+)
+LEGACY_ADAPTER_INSTRUCTION = "Construct the CAD model."
+
+
 @dataclass(frozen=True)
 class TokenSpan:
     command_position: int
@@ -46,6 +54,9 @@ class Stage2Sequence:
     input_ids: torch.Tensor
     attention_mask: torch.Tensor
     position_ids: torch.Tensor
+    conditioning_text: str
+    conditioning_source: str
+    conditioning_end: int
     token_spans: tuple[TokenSpan, ...]
     action_boundaries: tuple[ActionSpan, ...]
     grammar_positions: tuple[TargetPosition, ...]
@@ -75,9 +86,29 @@ class Stage2QwenCollator:
         if sorted(self.grammar_vocabulary.values()) != list(range(len(self.grammar_vocabulary))):
             raise ValueError("grammar vocabulary must have contiguous frozen indices")
         self.max_length = max_length
-        self.start_token_id = tokenizer.bos_token_id if tokenizer.bos_token_id is not None else tokenizer.eos_token_id
-        if self.start_token_id is None:
-            raise ValueError("Qwen tokenizer requires a start or end token for causal positions")
+
+    def _conditioning_prefix(self, record: Mapping[str, Any]) -> tuple[str, str, list[int]]:
+        conditioning = record.get("conditioning")
+        if not isinstance(conditioning, Mapping):
+            raise ValueError("frozen Stage2 record requires explicit conditioning X")
+        text = conditioning.get("text")
+        source = conditioning.get("source")
+        if not isinstance(text, str) or not text.strip():
+            raise ValueError("conditioning X must be nonempty source text")
+        if source not in {"dataset_annotation", "legacy_pointercad_adapter_constant"}:
+            raise ValueError("conditioning X needs an approved source annotation")
+        if source == "legacy_pointercad_adapter_constant" and text != LEGACY_ADAPTER_INSTRUCTION:
+            raise ValueError("legacy adapter instruction does not match its recorded source")
+        if not hasattr(self.tokenizer, "apply_chat_template"):
+            raise TypeError("Stage2 tokenizer must implement the Pointer-CAD chat template")
+        messages = [
+            {"role": "system", "content": POINTERCAD_SYSTEM_INSTRUCTION},
+            {"role": "user", "content": [{"type": "brep"}, {"type": "text", "text": text}]},
+        ]
+        rendered = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        if not isinstance(rendered, str) or not rendered:
+            raise ValueError("Pointer-CAD chat template produced an empty conditioning prefix")
+        return text, source, self._encode_atom(rendered)
 
     def _encode_atom(self, atom: str) -> list[int]:
         encoded = self.tokenizer(atom, add_special_tokens=False)["input_ids"]
@@ -145,7 +176,8 @@ class Stage2QwenCollator:
         if not isinstance(boundaries, list):
             raise ValueError("command.action_boundaries must be present")
 
-        values: list[int] = [int(self.start_token_id)]
+        conditioning_text, conditioning_source, values = self._conditioning_prefix(record)
+        conditioning_end = len(values)
         spans: list[TokenSpan] = []
         for command_position, atom in enumerate(atoms):
             start = len(values)
@@ -160,7 +192,7 @@ class Stage2QwenCollator:
             start, end, action_index = boundary.get("start"), boundary.get("end"), boundary.get("action_index")
             if not all(isinstance(value, int) for value in (start, end, action_index)) or not 0 <= start <= end <= len(spans):
                 raise ValueError("invalid action boundary")
-            model_start = spans[start].start if start < end else (spans[start - 1].end if start else 0)
+            model_start = spans[start].start if start < end else (spans[start - 1].end if start else conditioning_end)
             model_end = spans[end - 1].end if start < end else model_start
             action_spans.append(ActionSpan(action_index, model_start, model_end))
 
@@ -190,7 +222,8 @@ class Stage2QwenCollator:
         scalar_targets = tuple(float(target["value"]) for target in record.get("parameter_targets", ()))
         decoder_substates = tuple(target.get("decoder_substate", {}) for target in record.get("pointer_targets", ()))
         result = Stage2Sequence(
-            input_ids, attention, position_ids, tuple(spans), tuple(action_spans), tuple(grammar),
+            input_ids, attention, position_ids, conditioning_text, conditioning_source, conditioning_end,
+            tuple(spans), tuple(action_spans), tuple(grammar),
             pointers, scalars, records, feedback, grammar_targets, scalar_targets,
             tuple(record.get("structured_record_targets", ())), decoder_substates,
         )

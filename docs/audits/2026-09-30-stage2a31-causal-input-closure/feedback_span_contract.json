@@ -1,0 +1,11 @@
+{
+  "status": "LOCAL_STRUCTURAL_PASS",
+  "pointer_prediction_position": "TokenSpan.start",
+  "feedback_start": "the explicit TokenSpan.end emitted by Stage2QwenCollator",
+  "training": "training_action_loss maps feedback_positions to action-local positions; forward_ragged requires the explicit boundary for teacher feedback",
+  "inference": "inference_pointer_decode schedules predicted feedback at the supplied complete-span boundary for both cached and uncached modes",
+  "multi_token_fixture": "pointer atom tokenizes into three Qwen tokens",
+  "causal_observation": "changing GT candidate leaves all three pointer-atom hidden states and producing pointer logits unchanged; later hidden state and pointer logits change",
+  "cached_reference": "bounded tiny Qwen cached and uncached candidate logits agree within 1e-4 absolute/relative tolerance",
+  "backbone_forward_contract": "teacher-forced action still invokes the complete backbone once"
+}

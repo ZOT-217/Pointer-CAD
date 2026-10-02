@@ -66,6 +66,28 @@ class PreparedStage2Corpus:
         if manifest["frozen_manifest_sha256"] != frozen_sha:
             raise ValueError("prepared geometry belongs to a different frozen manifest")
         self.entries = {tuple(item["identity"]): item for item in manifest["entries"]}
+        if len(self.entries) != len(manifest["entries"]):
+            raise ValueError("duplicate prepared Stage2 identity")
+
+    def conditioning_for(self, identity: tuple[str, str, str, str]) -> dict[str, str]:
+        """Get the pre-action X recorded by the offline preparation stage."""
+        entry = self.entries[identity]
+        conditioning = entry.get("conditioning")
+        if not isinstance(conditioning, Mapping):
+            raise ValueError("prepared Stage2 entry has no conditioning X")
+        text = conditioning.get("text")
+        source = conditioning.get("source")
+        digest = conditioning.get("sha256")
+        if not isinstance(text, str) or not text.strip() or source not in {
+            "dataset_annotation", "legacy_pointercad_adapter_constant",
+        } or digest != hashlib.sha256(text.encode("utf-8")).hexdigest():
+            raise ValueError("prepared Stage2 conditioning provenance is invalid")
+        return {"text": text, "source": source}
+
+    def collate_record(self, record, collator):
+        """Bind an approved frozen record to its immutable prepared X."""
+        supervision = {**record.supervision, "conditioning": self.conditioning_for(record.identity)}
+        return collator(supervision)
 
     def state_for(self, identity: tuple[str, str, str, str], action_index: int):
         entry = self.entries[identity]
@@ -81,19 +103,28 @@ def training_action_loss(model, sequence: Stage2Sequence, supervision: Mapping[s
     """Run one causal action and score only its explicitly mapped targets."""
     action = next(item for item in sequence.action_boundaries if item.action_index == action_index)
     device = next(model.parameters()).device
-    bos = sequence.input_ids[:1]
-    ids = torch.cat((bos, sequence.input_ids[action.start:action.end])).unsqueeze(0).to(device)
+    if sequence.conditioning_end <= 0 or action.start < sequence.conditioning_end:
+        raise ValueError("action loss requires a nonempty conditioning X prefix")
+    prefix = sequence.input_ids[:sequence.conditioning_end]
+    ids = torch.cat((prefix, sequence.input_ids[action.start:action.end])).unsqueeze(0).to(device)
     mask = torch.ones_like(ids)
 
     def local(position: int) -> int:
-        result = position - action.start + 1
+        result = position - action.start + sequence.conditioning_end
         if not 0 <= result < ids.shape[1]:
             raise ValueError("target model position is outside its causal action")
         return result
 
-    pointer_targets = [target for target in sequence.pointer_positions if target.action_index == action_index]
+    def feedback_local(position: int) -> int:
+        result = position - action.start + sequence.conditioning_end
+        if not sequence.conditioning_end <= result <= ids.shape[1]:
+            raise ValueError("pointer feedback boundary is outside its causal action")
+        return result
+
+    pointer_targets = [(index, target) for index, target in enumerate(sequence.pointer_positions)
+                       if target.action_index == action_index]
     specs = []
-    for target in pointer_targets:
+    for target_index, target in pointer_targets:
         key = target.target_candidate
         if key is None:
             raise ValueError("pointer target has no CandidateKey")
@@ -103,12 +134,13 @@ def training_action_loss(model, sequence: Stage2Sequence, supervision: Mapping[s
                       and item["target_candidate"] == key)
         specs.append({
             "position": local(target.model_position),
+            "feedback_position": feedback_local(sequence.feedback_positions[target_index]),
             "pointer_type": pointer_type,
             "target_key": _target_key(key),
             "decoder_substate": source.get("decoder_substate", {}),
         })
     output = model.forward_ragged(input_ids=ids, attention_mask=mask, states=[state],
-                                  pointer_specs=[specs], breps=[prepared_brep])
+                                  pointer_specs=[specs], breps=[prepared_brep] if prepared_brep is not None else None)
 
     grammar_indices = [index for index, target in enumerate(sequence.grammar_positions)
                        if target.action_index == action_index]
@@ -117,7 +149,7 @@ def training_action_loss(model, sequence: Stage2Sequence, supervision: Mapping[s
     grammar_targets = sequence.grammar_targets[grammar_indices].to(device) if grammar_indices else None
 
     positives = []
-    for target, bank in zip(pointer_targets, output.candidate_banks_by_example[0]):
+    for (_, target), bank in zip(pointer_targets, output.candidate_banks_by_example[0]):
         positives.append(bank.positive_mask((_target_key(target.target_candidate),), device=device))
 
     scalar_indices = [index for index, target in enumerate(sequence.scalar_positions)

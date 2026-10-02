@@ -1,0 +1,16 @@
+{
+  "status": "READY_TO_RECHECK_ON_CCI",
+  "verdict": "STAGE2A31_READY_FOR_CCI_REGATE",
+  "required_input_refresh": "Re-run only the Stage2A3 deterministic native-input sidecar preparation so each frozen identity has conditioning text/source/hash. Do not regenerate the frozen corpus or alter membership.",
+  "frozen_manifest": "unchanged",
+  "crs_and_selection_semantics": "unchanged",
+  "model_architecture": "unchanged",
+  "cci_checks": [
+    "all frozen identities have the expected original text source and matching digest",
+    "real action loss consumes X plus S_t plus current command",
+    "multi-token pointer feedback begins at explicit span.end",
+    "cached versus uncached inference remains within tolerance",
+    "one-full-backbone-forward teacher forcing remains intact"
+  ],
+  "text_limitation": "Current Zero2CAD frozen population has a constant existing adapter instruction; no new per-part caption was produced."
+}

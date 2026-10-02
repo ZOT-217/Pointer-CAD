@@ -334,7 +334,8 @@ class CRSExpandedPointerCAD(nn.Module):
     def forward_ragged(self, *, input_ids: torch.Tensor, attention_mask: torch.Tensor | None,
                        states: Sequence[ExecutionState], pointer_specs: Sequence[Sequence[Any]],
                        decoder_substates: Sequence[Sequence[Mapping[str, Any] | None]] = (),
-                       teacher_indices: Sequence[Sequence[int | None]] = (), breps=None) -> ExpandedForward:
+                       teacher_indices: Sequence[Sequence[int | None]] = (),
+                       feedback_positions: Sequence[Sequence[int]] = (), breps=None) -> ExpandedForward:
         """Loss-bearing autoregressive path for ragged pointer slots.
 
         Each example owns its state, banks, slot types, substates and candidate
@@ -364,12 +365,15 @@ class CRSExpandedPointerCAD(nn.Module):
             for slot_index, slot in enumerate(slots):
                 if isinstance(slot, Mapping):
                     position = int(slot["position"])
+                    feedback_position = slot.get("feedback_position")
                     pointer_type = slot["pointer_type"]
                     substate = slot.get("decoder_substate")
                     target_index = slot.get("target_index")
                     target_key = slot.get("target_key")
                 else:
                     position, pointer_type = slot
+                    row_feedback = feedback_positions[batch_index] if batch_index < len(feedback_positions) else ()
+                    feedback_position = row_feedback[slot_index] if slot_index < len(row_feedback) else None
                     substate = substates[slot_index] if slot_index < len(substates) else None
                     target_index = targets[slot_index] if slot_index < len(targets) else None
                     target_key = None
@@ -387,7 +391,9 @@ class CRSExpandedPointerCAD(nn.Module):
                         raise IndexError(f"teacher target {target_index} is outside {pointer_type.value} bank")
                     feedback = self.feedback_for(pointer_type, bank, int(target_index))
                     if self.feedback is not None:
-                        feedback_by_position[position + 1] = feedback_by_position.get(position + 1, 0) + feedback.to(embeddings.dtype)
+                        if not isinstance(feedback_position, int) or not position < feedback_position <= ids.shape[1]:
+                            raise ValueError("teacher pointer requires explicit post-span feedback_position")
+                        feedback_by_position[feedback_position] = feedback_by_position.get(feedback_position, 0) + feedback.to(embeddings.dtype)
             if feedback_by_position:
                 embeddings = embeddings.clone()
             for start, feedback in feedback_by_position.items():
@@ -419,13 +425,18 @@ class CRSExpandedPointerCAD(nn.Module):
         embedding = bank.embeddings()[selected_index]
         return embedding.new_zeros(self.hidden_dim) if self.feedback is None else self.feedback(pointer_type, embedding)
 
-    def teacher_forced_decode(self, input_ids, attention_mask, state: ExecutionState, pointer_positions: Sequence[int], pointer_types: Sequence[PointerType], recorded_indices: Sequence[int], decoder_substates=(), breps=None):
+    def teacher_forced_decode(self, input_ids, attention_mask, state: ExecutionState, pointer_positions: Sequence[int], pointer_types: Sequence[PointerType], recorded_indices: Sequence[int], feedback_positions: Sequence[int], decoder_substates=(), breps=None):
         """Run real base-LM hidden states and inject recorded GT feedback."""
+        if not len(pointer_positions) == len(pointer_types) == len(recorded_indices) == len(feedback_positions):
+            raise ValueError("teacher pointer positions and feedback boundaries must align")
         embeddings = self.base_model.get_input_embeddings()(input_ids)
         native_maps = self._native_maps((state,), breps)[0]
         before = self.base_model(inputs_embeds=embeddings, attention_mask=attention_mask).last_hidden_state
         selected = []
         for slot_index, (position, pointer_type, target_index) in enumerate(zip(pointer_positions, pointer_types, recorded_indices)):
+            boundary = feedback_positions[slot_index]
+            if not position < boundary <= input_ids.shape[1]:
+                raise ValueError("teacher feedback must follow its complete pointer span")
             substate = decoder_substates[slot_index] if slot_index < len(decoder_substates) else None
             bank = self.candidate_view(state, pointer_type, substate, native_maps=native_maps)
             if not 0 <= target_index < len(bank):
@@ -433,12 +444,12 @@ class CRSExpandedPointerCAD(nn.Module):
             selected.append(self.feedback_for(pointer_type, bank, target_index))
             if self.feedback is not None:
                 embeddings = embeddings.clone()
-                embeddings[:, position + 1:, :] = embeddings[:, position + 1:, :] + selected[-1].to(embeddings.dtype)
+                embeddings[:, boundary:, :] = embeddings[:, boundary:, :] + selected[-1].to(embeddings.dtype)
         after = self.base_model(inputs_embeds=embeddings, attention_mask=attention_mask).last_hidden_state
         return {"hidden_before": before, "hidden_after": after, "feedback": tuple(selected)}
 
     @torch.no_grad()
-    def inference_pointer_decode(self, input_ids, attention_mask, state: ExecutionState, pointer_positions: Sequence[int], pointer_types: Sequence[PointerType], decoder_substates=(), breps=None, *, use_cache: bool | None = None, return_logits: bool = False):
+    def inference_pointer_decode(self, input_ids, attention_mask, state: ExecutionState, pointer_positions: Sequence[int], pointer_types: Sequence[PointerType], decoder_substates=(), breps=None, *, feedback_positions: Sequence[int], use_cache: bool | None = None, return_logits: bool = False):
         """Incremental inference using ``past_key_values`` when available."""
         embeddings = self.base_model.get_input_embeddings()(input_ids)
         native_maps = self._native_maps((state,), breps)[0]
@@ -450,14 +461,25 @@ class CRSExpandedPointerCAD(nn.Module):
             raise ValueError("pointer positions must be in causal order")
         if any(not 0 <= int(position) < input_ids.shape[1] for position in pointer_positions):
             raise ValueError("pointer position is outside input sequence")
+        if len(feedback_positions) != len(pointer_positions):
+            raise ValueError("pointer feedback boundaries must align with pointer positions")
+        if any(not position < boundary <= input_ids.shape[1]
+               for position, boundary in zip(pointer_positions, feedback_positions)):
+            raise ValueError("predicted feedback must follow its complete pointer span")
+        if any(boundary > next_position for boundary, next_position in zip(feedback_positions, pointer_positions[1:])):
+            raise ValueError("pointer spans overlap or are out of causal order")
         pointer_by_position = {int(position): (index, pointer_type) for index, (position, pointer_type) in enumerate(zip(pointer_positions, pointer_types))}
         past = None
         running_feedback = None
+        scheduled_feedback = {}
         cached = bool(getattr(self.base_model.config, "use_cache", True)) and not isinstance(self.base_model, _TinyBackbone) if use_cache is None else use_cache
         if cached and isinstance(self.base_model, _TinyBackbone):
             raise ValueError("tiny smoke backbone does not support KV cache")
         uncached_embeddings = embeddings.clone() if not cached else None
         for position in range(input_ids.shape[1]):
+            if position in scheduled_feedback:
+                feedback = scheduled_feedback[position]
+                running_feedback = feedback if running_feedback is None else running_feedback + feedback
             current = embeddings[:, position:position + 1, :]
             if running_feedback is not None:
                 current = current + running_feedback.to(current.dtype)
@@ -489,17 +511,20 @@ class CRSExpandedPointerCAD(nn.Module):
             selections.append((pointer_type, selected_index, bank.index_to_external(selected_index)))
             if self.feedback is not None:
                 feedback = self.feedback_for(pointer_type, bank, selected_index)
-                running_feedback = feedback if running_feedback is None else running_feedback + feedback
+                boundary = feedback_positions[slot_index]
+                scheduled_feedback[boundary] = scheduled_feedback.get(boundary, 0) + feedback
         return (selections, tuple(logit_rows)) if return_logits else selections
 
     @torch.no_grad()
     def bounded_decode_and_execute(self, input_ids, attention_mask, state: ExecutionState,
                                    pointer_positions: Sequence[int], pointer_types: Sequence[PointerType],
-                                   operation: str, fields_builder, executor, decoder_substates=(), breps=None):
+                                   operation: str, fields_builder, executor, decoder_substates=(), breps=None,
+                                   *, feedback_positions: Sequence[int]):
         """Inference smoke boundary: predicted pointers -> AST -> causal executor."""
         selections = self.inference_pointer_decode(
             input_ids, attention_mask, state, pointer_positions, pointer_types,
             decoder_substates=decoder_substates, breps=breps,
+            feedback_positions=feedback_positions,
         )
         action = self.decode_action(operation, fields_builder(selections))
         execution = self.execute_decoded(executor, state, action)
