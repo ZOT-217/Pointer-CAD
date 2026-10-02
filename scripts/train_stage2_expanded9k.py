@@ -109,21 +109,41 @@ def _load_checkpoint(path: Path, model, optimizer, scheduler, split_sha: str) ->
 def _loss_one(ddp, row, collator, corpus, device):
     sequence = collator(row["supervision"])
     total = None; parts = {name: 0.0 for name in ("grammar", "pointer", "scalar", "record")}; actions = 0
+    pointer_stats = {"slots": 0, "any_positive_at_1": 0, "top3": 0, "top5": 0, "best_positive_rank_sum": 0, "by_type": {}, "by_bank_bucket": {}}
     for action in sequence.action_boundaries:
         state, brep = corpus.state_for(row["identity"], action.action_index)
         value, metrics = ddp(sequence, row["supervision"], action.action_index, state, brep)
         total = value if total is None else total + value
         for name in parts: parts[name] += float(metrics[name].detach().item())
+        stats = metrics.get("pointer_stats", pointer_stats)
+        for name in ("slots", "any_positive_at_1", "top3", "top5", "best_positive_rank_sum"): pointer_stats[name] += stats[name]
+        for group in ("by_type", "by_bank_bucket"):
+            for key, item in stats[group].items():
+                target = pointer_stats[group].setdefault(key, {"slots": 0, "any_positive_at_1": 0, "top3": 0, "top5": 0, "best_positive_rank_sum": 0})
+                for name in target: target[name] += item[name]
         actions += 1
     if total is None: total = torch.zeros((), device=device, requires_grad=True)
-    return total / max(actions, 1), parts, actions
+    return total / max(actions, 1), parts, actions, pointer_stats
+
+
+def _pointer_report(stats):
+    slots = max(stats["slots"], 1)
+    def row(item):
+        n = max(item["slots"], 1)
+        return {"slots": item["slots"], "any-positive@1": item["any_positive_at_1"] / n,
+                "top3": item["top3"] / n, "top5": item["top5"] / n,
+                "best-positive-rank": item["best_positive_rank_sum"] / n}
+    return {"any-positive@1": stats["any_positive_at_1"] / slots, "top3": stats["top3"] / slots,
+            "top5": stats["top5"] / slots, "best-positive-rank": stats["best_positive_rank_sum"] / slots,
+            "by_type": {key: row(value) for key, value in stats["by_type"].items()},
+            "by_bank_bucket": {key: row(value) for key, value in stats["by_bank_bucket"].items()}}
 
 
 @torch.no_grad()
 def _evaluate(ddp, rows, collator, corpus, device, limit=None):
     values, parts, count = [], {k: 0.0 for k in ("grammar", "pointer", "scalar", "record")}, 0
     for row in rows[:limit] if limit else rows:
-        value, item, actions = _loss_one(ddp, row, collator, corpus, device)
+        value, item, actions, _ = _loss_one(ddp, row, collator, corpus, device)
         values.append(float(value.detach().item())); count += actions
         for key in parts: parts[key] += item[key]
     return {"total_loss": sum(values) / max(len(values), 1), "L_g": parts["grammar"] / max(len(values), 1),
@@ -187,7 +207,7 @@ def main() -> int:
         if not args.skip_preflight:
             probe = train[(rank + global_step) % len(train)]
             for _ in range(args.preflight_steps):
-                optimizer.zero_grad(set_to_none=True); loss, _, _ = _loss_one(ddp, probe, collator, corpus, device)
+                optimizer.zero_grad(set_to_none=True); loss, _, _, _ = _loss_one(ddp, probe, collator, corpus, device)
                 if not torch.isfinite(loss): raise FloatingPointError("preflight loss is not finite")
                 loss.backward(); optimizer.step(); scheduler.step()
             if rank == 0:
@@ -203,10 +223,16 @@ def main() -> int:
             for offset in range(0, len(train), args.per_device_batch_size):
                 batch = train[offset:offset + args.per_device_batch_size]
                 total = None; aggregate = {k: 0.0 for k in ("grammar", "pointer", "scalar", "record")}; action_count = 0
+                batch_pointer = {"slots": 0, "any_positive_at_1": 0, "top3": 0, "top5": 0, "best_positive_rank_sum": 0, "by_type": {}, "by_bank_bucket": {}}
                 for row in batch:
-                    value, parts, count = _loss_one(ddp, row, collator, corpus, device); total = value if total is None else total + value
+                    value, parts, count, stats = _loss_one(ddp, row, collator, corpus, device); total = value if total is None else total + value
                     action_count += count
                     for key in aggregate: aggregate[key] += parts[key]
+                    for key in ("slots", "any_positive_at_1", "top3", "top5", "best_positive_rank_sum"): batch_pointer[key] += stats[key]
+                    for group in ("by_type", "by_bank_bucket"):
+                        for name, item in stats[group].items():
+                            target = batch_pointer[group].setdefault(name, {"slots": 0, "any_positive_at_1": 0, "top3": 0, "top5": 0, "best_positive_rank_sum": 0})
+                            for key in target: target[key] += item[key]
                 total = total / len(batch) / args.gradient_accumulation_steps
                 if not torch.isfinite(total): raise FloatingPointError("training loss is not finite")
                 total.backward()
@@ -218,7 +244,7 @@ def main() -> int:
                         _append(args.output / "metrics.jsonl", {"split": "train", "epoch": epoch, "global_step": global_step,
                             "learning_rate": optimizer.param_groups[0]["lr"], "total_loss": float(total.detach().item() * args.gradient_accumulation_steps),
                             "L_g": aggregate["grammar"] / len(batch), "L_p": aggregate["pointer"] / len(batch), "L_s": aggregate["scalar"] / len(batch), "L_r": aggregate["record"] / len(batch),
-                            "pointer": {"any-positive@1": None, "top3": None, "top5": None, "best-positive-rank": None, "by_type": {}, "by_bank_bucket": {}},
+                            "pointer": _pointer_report(batch_pointer),
                             "examples_per_second": (global_step * args.per_device_batch_size * world) / elapsed,
                             "optimizer_steps_per_second": global_step / elapsed, "peak_allocated_vram": torch.cuda.max_memory_allocated() if torch.cuda.is_available() else 0,
                             "peak_reserved_vram": torch.cuda.max_memory_reserved() if torch.cuda.is_available() else 0, "actions": action_count})

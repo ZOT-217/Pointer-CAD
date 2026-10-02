@@ -175,4 +175,23 @@ def training_action_loss(model, sequence: Stage2Sequence, supervision: Mapping[s
                       pointer_logits=output.pointer_logits_by_example[0], pointer_positive=positives,
                       scalar_predictions=scalar_predictions, scalar_targets=scalar_targets,
                       record_predictions=record_predictions, record_targets=record_targets)
+    pointer_stats = {"slots": 0, "any_positive_at_1": 0, "top3": 0, "top5": 0,
+                     "best_positive_rank_sum": 0, "by_type": {}, "by_bank_bucket": {}}
+    for spec, logits, positive in zip(specs, output.pointer_logits_by_example[0], positives):
+        if not logits.numel() or not positive.numel():
+            continue
+        positive = positive.to(device=logits.device, dtype=torch.bool)
+        order = torch.argsort(logits, descending=True)
+        positive_indices = torch.nonzero(positive, as_tuple=False).flatten()
+        ranks = [(order == index).nonzero(as_tuple=False).item() + 1 for index in positive_indices]
+        best = min(ranks)
+        ptype = spec["pointer_type"].value.removeprefix("PTR_")
+        size = logits.numel()
+        bucket = "<=16" if size <= 16 else "17-32" if size <= 32 else "33-64" if size <= 64 else "65-128" if size <= 128 else ">128"
+        pointer_stats["slots"] += 1; pointer_stats["any_positive_at_1"] += best == 1
+        pointer_stats["top3"] += best <= 3; pointer_stats["top5"] += best <= 5; pointer_stats["best_positive_rank_sum"] += best
+        for group, key in ((pointer_stats["by_type"], ptype), (pointer_stats["by_bank_bucket"], bucket)):
+            item = group.setdefault(key, {"slots": 0, "any_positive_at_1": 0, "top3": 0, "top5": 0, "best_positive_rank_sum": 0})
+            item["slots"] += 1; item["any_positive_at_1"] += best == 1; item["top3"] += best <= 3; item["top5"] += best <= 5; item["best_positive_rank_sum"] += best
+    result[1]["pointer_stats"] = pointer_stats
     return result
