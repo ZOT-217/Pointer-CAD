@@ -1,6 +1,9 @@
 # Stage2 Expanded-9K ACP Runbook
 
 This run is manually launched on ACP. CCI verification must remain bounded.
+The launchers call `/root/miniconda/bin/conda` directly, so batch shells do not
+need to source `conda.sh`. Set `CONDA_EXE=/absolute/path/to/conda` if the image
+uses a different installation path.
 
 ## CPU corpus job
 
