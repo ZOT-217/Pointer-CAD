@@ -2,18 +2,24 @@
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ProcessPoolExecutor
 import json
 from collections.abc import Mapping
+from multiprocessing import get_context
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 
 from models.crs_pointercad.candidates import CandidateView
 from models.crs_pointercad.contracts import PointerType
 from models.crs_pointercad.training import PreparedStage2Corpus, _target_key
+from models.crs_pointercad.sequence import Stage2QwenCollator, frozen_grammar_vocabulary
 
 
 def _plain(value):
+    if hasattr(value, "detach") and hasattr(value, "tolist"):
+        return value.detach().cpu().tolist()
     if isinstance(value, Mapping):
         return {str(key): _plain(item) for key, item in value.items()}
     if isinstance(value, (list, tuple)):
@@ -96,21 +102,89 @@ def compare_action(v1, v2, identity, action_index, supervision):
     return {"pointer_slots": len(slots), "candidate_rows": rows}
 
 
-def compare_corpora(frozen_root, v1_root, v2_root):
+_worker_corpora = None
+
+
+class _ParityFixtureTokenizer:
+    """Deterministic tokenizer for structural collator parity, not production IDs."""
+
+    def apply_chat_template(self, messages, *, tokenize=False, add_generation_prompt=False):
+        if tokenize or not add_generation_prompt:
+            raise ValueError("unexpected parity fixture chat-template call")
+        text = next(item["text"] for item in messages[1]["content"] if item["type"] == "text")
+        return f"<|im_start|>system\n{messages[0]['content']}<|im_end|><|im_start|>user\n{text}<|im_end|><|im_start|>assistant\n<|cad_start|>"
+
+    def __call__(self, value, *, add_special_tokens=False):
+        if add_special_tokens:
+            raise ValueError("fixture tokenizer expects no special tokens")
+        return {"input_ids": [64 + ord(character) % 64 for character in value]}
+
+
+def _init_worker(frozen_root, v1_root, v2_root, tokenizer_path=None, fixture_tokenizer=False):
+    global _worker_corpora
+    collator = None
+    if tokenizer_path is not None or fixture_tokenizer:
+        entries = json.loads((Path(frozen_root) / "manifest.json").read_text())["entries"]
+        records = [json.loads((Path(frozen_root) / item["supervision_artifact"]).read_text()) for item in entries]
+        grammar = frozen_grammar_vocabulary(records)
+        if fixture_tokenizer:
+            tokenizer = _ParityFixtureTokenizer()
+        else:
+            from transformers import AutoTokenizer
+            tokenizer = AutoTokenizer.from_pretrained(tokenizer_path, local_files_only=True)
+        collator = Stage2QwenCollator(tokenizer, grammar_vocabulary=grammar)
+    _worker_corpora = (PreparedStage2Corpus(frozen_root, v1_root),
+                       PreparedStage2Corpus(frozen_root, v2_root, native_backend="v2"), Path(frozen_root), collator)
+
+
+def _compare_record(identity):
+    v1, v2, frozen_root, collator = _worker_corpora
+    entry = v1.entries[identity]
+    frozen = json.loads((frozen_root / "manifest.json").read_text())
+    source = next(item for item in frozen["entries"] if identity == tuple(item[key] for key in
+                  ("dataset", "sample_id", "source_variant_id", "approved_variant_id")))
+    supervision = json.loads((frozen_root / source["supervision_artifact"]).read_text())
+    result = {"actions": 0, "pointer_slots": 0, "candidate_rows": 0, "first_mismatch": None}
+    if collator is not None:
+        record = SimpleNamespace(identity=identity, supervision=supervision)
+        try:
+            sequence_a = _plain(v1.collate_record(record, collator))
+            sequence_b = _plain(v2.collate_record(record, collator))
+        except Exception as exc:
+            result["first_mismatch"] = {"identity": list(identity), "field": "sequence.materialization",
+                                        "error_type": type(exc).__name__, "message": str(exc),
+                                        "comparison_status": "BLOCKED"}
+            return result
+        if sequence_a != sequence_b:
+            for field in sequence_a:
+                if sequence_a[field] != sequence_b[field]:
+                    result["first_mismatch"] = {"identity": list(identity), "field": f"sequence.{field}",
+                                                "v1": sequence_a[field], "v2": sequence_b[field]}
+                    return result
+    for step in entry["steps"]:
+        compared = compare_action(v1, v2, identity, step["action_index"], supervision)
+        if "field" in compared:
+            result["first_mismatch"] = compared
+            break
+        result["actions"] += 1
+        result["pointer_slots"] += compared["pointer_slots"]
+        result["candidate_rows"] += compared["candidate_rows"]
+    return result
+
+
+def compare_corpora(frozen_root, v1_root, v2_root, *, workers=1, tokenizer_path=None, fixture_tokenizer=False):
     v1 = PreparedStage2Corpus(frozen_root, v1_root)
     v2 = PreparedStage2Corpus(frozen_root, v2_root, native_backend="v2")
     report = {"records": 0, "actions": 0, "pointer_slots": 0, "candidate_rows": 0,
-              "parity_mismatches": 0, "first_mismatch": None}
+              "parity_mismatches": 0, "first_mismatch": None, "comparison_blockers": 0, "first_blocker": None,
+              "sequence_parity_mode": "fixture" if fixture_tokenizer else "production" if tokenizer_path else "artifact_equivalence"}
     if set(v1.entries) != set(v2.entries):
         report.update(parity_mismatches=1, first_mismatch={"field": "record_identities",
                                                        "v1_only": [list(x) for x in set(v1.entries) - set(v2.entries)],
                                                        "v2_only": [list(x) for x in set(v2.entries) - set(v1.entries)]})
         return report
-    frozen = json.loads((Path(frozen_root) / "manifest.json").read_text())
-    frozen_entries = {tuple(item[key] for key in ("dataset", "sample_id", "source_variant_id", "approved_variant_id")): item
-                      for item in frozen["entries"]}
+    tasks = []
     for identity in sorted(v1.entries):
-        report["records"] += 1
         a, b = v1.entries[identity], v2.entries[identity]
         if a["crs_sha256"] != b["crs_sha256"] or a["supervision_sha256"] != b["supervision_sha256"]:
             report.update(parity_mismatches=1, first_mismatch={"identity": list(identity), "field": "frozen_artifact_sha256"})
@@ -121,15 +195,29 @@ def compare_corpora(frozen_root, v1_root, v2_root):
             report.update(parity_mismatches=1, first_mismatch={"identity": list(identity), "field": "action_indices",
                                                          "v1": actions_a, "v2": actions_b})
             return report
-        supervision = json.loads((Path(frozen_root) / frozen_entries[identity]["supervision_artifact"]).read_text())
-        for action_index in actions_a:
-            result = compare_action(v1, v2, identity, action_index, supervision)
-            if "field" in result:
-                report.update(parity_mismatches=1, first_mismatch=result)
+        tasks.append(identity)
+    if workers == 1:
+        _init_worker(frozen_root, v1_root, v2_root, tokenizer_path, fixture_tokenizer)
+        results = map(_compare_record, tasks)
+    else:
+        pool = ProcessPoolExecutor(max_workers=workers, mp_context=get_context("spawn"),
+                                   initializer=_init_worker, initargs=(frozen_root, v1_root, v2_root,
+                                                                        tokenizer_path, fixture_tokenizer))
+        results = pool.map(_compare_record, tasks)
+    try:
+        for result in results:
+            report["records"] += 1
+            if result["first_mismatch"] is not None:
+                if result["first_mismatch"].get("comparison_status") == "BLOCKED":
+                    report.update(comparison_blockers=1, first_blocker=result["first_mismatch"])
+                else:
+                    report.update(parity_mismatches=1, first_mismatch=result["first_mismatch"])
                 return report
-            report["actions"] += 1
-            report["pointer_slots"] += result["pointer_slots"]
-            report["candidate_rows"] += result["candidate_rows"]
+            for key in ("actions", "pointer_slots", "candidate_rows"):
+                report[key] += result[key]
+    finally:
+        if workers != 1:
+            pool.shutdown(cancel_futures=True)
     return report
 
 
@@ -139,12 +227,18 @@ def main():
     parser.add_argument("--v1", type=Path, required=True)
     parser.add_argument("--v2", type=Path, required=True)
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--workers", type=int, default=1)
+    parser.add_argument("--tokenizer", type=Path)
+    parser.add_argument("--fixture-tokenizer", action="store_true")
     args = parser.parse_args()
-    report = compare_corpora(args.frozen, args.v1, args.v2)
+    if args.fixture_tokenizer and args.tokenizer:
+        parser.error("choose either --fixture-tokenizer or --tokenizer")
+    report = compare_corpora(args.frozen, args.v1, args.v2, workers=args.workers,
+                             tokenizer_path=args.tokenizer, fixture_tokenizer=args.fixture_tokenizer)
     if args.output:
         args.output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
     print(json.dumps(report, sort_keys=True))
-    raise SystemExit(bool(report["parity_mismatches"]))
+    raise SystemExit(bool(report["parity_mismatches"] or report["comparison_blockers"]))
 
 
 if __name__ == "__main__":
