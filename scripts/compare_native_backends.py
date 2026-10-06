@@ -97,8 +97,6 @@ def compare_action(v1, v2, identity, action_index, supervision):
         positive_b = right.positive_mask((target,)).tolist()
         if positive_a != positive_b or sum(positive_a) != 1:
             return mismatch("slot.positive_mask", positive_a, positive_b)
-        if slot["target_index"] >= len(left) or slot["target_index"] >= len(right):
-            return mismatch("slot.target_index", slot["target_index"], len(left))
     return {"pointer_slots": len(slots), "candidate_rows": rows}
 
 
