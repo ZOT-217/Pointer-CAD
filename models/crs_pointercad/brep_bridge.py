@@ -181,3 +181,59 @@ def load_prepared_state(root: str | Path):
     state = ExecutionState.from_runtime_snapshot(snapshot)
     brep = load_prepared_brep(root)
     return state, brep
+
+
+def load_prepared_v2_state(root: str | Path, record_root: str | Path):
+    """Reassemble one action from exact-equality owner payload references."""
+    from .contracts import ExecutionState
+
+    root, record_root = Path(root), Path(record_root)
+    state_data = json.loads((root / "state.json").read_text(encoding="utf-8"))
+    view = json.loads((root / "view.json").read_text(encoding="utf-8"))
+    if view.get("format") != "stage2a3-native-view-v2":
+        raise ValueError("unsupported native V2 action view")
+    owners = state_data["active_bodies"] + state_data["historical_bodies"]
+    if [item["owner"] for item in view["owners"]] != owners:
+        raise ValueError("native V2 owner order differs from action state")
+    features = [[], [], []]
+    keys = [[], [], []]
+    pairs = []
+    for owner_view in view["owners"]:
+        block_id = owner_view["block"]
+        if not isinstance(block_id, str) or not block_id.isdigit() or len(block_id) != 8:
+            raise ValueError("invalid native V2 block reference")
+        payload = record_root / "payloads" / block_id
+        meta = json.loads(payload.with_suffix(".json").read_text(encoding="utf-8"))
+        if meta["owner"] != owner_view["owner"]:
+            raise ValueError("native V2 payload owner mismatch")
+        face_offset = len(keys[0])
+        with np.load(payload.with_suffix(".npz"), allow_pickle=False) as arrays:
+            for index, (array_name, expected_shape) in enumerate((("face_features", (32, 32, 8)),
+                                                                   ("edge_features", (32, 12)),
+                                                                   ("loose_edge_features", (32, 12)))):
+                value = arrays[array_name]
+                if value.dtype != np.float32 or value.shape[1:] != expected_shape or len(value) != len(meta["keys"][index]):
+                    raise ValueError(f"native V2 {array_name} shape/key mismatch")
+                if any(key["owner"] != meta["owner"] for key in meta["keys"][index]):
+                    raise ValueError("native V2 CandidateKey owner mismatch")
+                features[index].append(value)
+                keys[index].extend(FrozenCandidateKey.from_dict(key) for key in meta["keys"][index])
+        for pair in meta["face_adjacency"]:
+            if len(pair) != 2 or any(not isinstance(index, int) or index < 0 or index >= len(meta["keys"][0]) for index in pair):
+                raise ValueError("native V2 graph endpoint out of range")
+            pairs.append((face_offset + pair[0], face_offset + pair[1]))
+    tensors = [np.concatenate(rows) if rows else np.zeros((0, *shape), dtype=np.float32)
+               for rows, shape in zip(features, ((32, 32, 8), (32, 12), (32, 12)))]
+    brep = PreparedBRep(None, tensors[0], tensors[1], tuple(keys[0]), tuple(keys[1]), tuple(pairs),
+                        tensors[2], tuple(keys[2]))
+    validate_candidate_alignment(brep)
+    if len(pairs) != len(brep.edge_keys):
+        raise ValueError("native V2 adjacency rows do not align with EDGE features")
+    for kind, prepared_keys in (("FACE", brep.face_keys), ("EDGE", brep.edge_keys + brep.loose_edge_keys)):
+        state_keys = tuple(FrozenCandidateKey.from_dict(item["key"])
+                           for item in state_data["candidates"][kind])
+        if len(state_keys) != len(set(state_keys)) or set(state_keys) != set(prepared_keys):
+            raise ValueError(f"native V2 {kind} rows differ from action candidate keys")
+    state = ExecutionState.from_runtime_snapshot(PreparedSnapshot(state_data))
+    object.__setattr__(brep, "graph", brep.to_dgl())
+    return state, brep

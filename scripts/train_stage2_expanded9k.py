@@ -56,9 +56,9 @@ def _cleanup() -> None:
         dist.destroy_process_group()
 
 
-def _records(root: Path, prepared: Path) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+def _records(root: Path, prepared: Path, *, native_backend: str = "v1") -> tuple[list[dict[str, Any]], dict[str, Any]]:
     manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
-    native = PreparedStage2Corpus(root, prepared)
+    native = PreparedStage2Corpus(root, prepared, native_backend=native_backend)
     split = json.loads((root / "split_manifest.json").read_text(encoding="utf-8"))
     rows, by_id = [], {}
     for entry in manifest["entries"]:
@@ -155,6 +155,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--corpus", type=Path, required=True)
     parser.add_argument("--prepared", type=Path, required=True)
+    parser.add_argument("--native-backend", choices=("v1", "v2"), default="v1")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--model", default="Qwen/Qwen2.5-0.5B-Instruct")
     parser.add_argument("--epochs", type=int, default=3)
@@ -172,7 +173,7 @@ def main() -> int:
     rank, world, local, device = _init_dist()
     try:
         random.seed(args.seed + rank); torch.manual_seed(args.seed + rank)
-        rows, split_info = _records(args.corpus.resolve(), args.prepared.resolve())
+        rows, split_info = _records(args.corpus.resolve(), args.prepared.resolve(), native_backend=args.native_backend)
         if not split_info["train"] or not split_info["validation"]:
             raise ValueError("frozen corpus needs nonempty train and validation splits")
         raw = [r["supervision"] for r in rows]
@@ -201,7 +202,7 @@ def main() -> int:
         start_epoch, global_step = 0, 0
         if args.resume:
             start_epoch, global_step = _load_checkpoint(args.resume, module, optimizer, scheduler, split_sha)
-        corpus = PreparedStage2Corpus(args.corpus, args.prepared)
+        corpus = PreparedStage2Corpus(args.corpus, args.prepared, native_backend=args.native_backend)
         train = [r for r in rows if r["split"] == "train"]
         valid = [r for r in rows if r["split"] == "validation"]
         if not args.skip_preflight:

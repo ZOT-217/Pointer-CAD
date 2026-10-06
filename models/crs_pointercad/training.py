@@ -8,7 +8,7 @@ from typing import Any, Mapping
 
 import torch
 
-from .brep_bridge import FrozenCandidateKey, load_prepared_state
+from .brep_bridge import FrozenCandidateKey, load_prepared_state, load_prepared_v2_state
 from .contracts import ExternalKey, PointerType
 from .heads import RECORD_DIMS
 from .sequence import Stage2Sequence
@@ -56,12 +56,13 @@ def _target_key(value: Mapping[str, Any]):
 class PreparedStage2Corpus:
     """Index a prepared sidecar against the exact frozen manifest hash."""
 
-    def __init__(self, frozen_root: str | Path, prepared_root: str | Path):
+    def __init__(self, frozen_root: str | Path, prepared_root: str | Path, *, native_backend: str = "v1"):
         self.frozen_root = Path(frozen_root).resolve()
         self.prepared_root = Path(prepared_root).resolve()
         manifest = json.loads((self.prepared_root / "manifest.json").read_text(encoding="utf-8"))
-        if manifest.get("format") != "stage2a3-native-input-v1":
+        if native_backend not in {"v1", "v2"} or manifest.get("format") != f"stage2a3-native-input-{native_backend}":
             raise ValueError("unsupported prepared Stage2 geometry format")
+        self.native_backend = native_backend
         frozen_sha = hashlib.sha256((self.frozen_root / "manifest.json").read_bytes()).hexdigest()
         if manifest["frozen_manifest_sha256"] != frozen_sha:
             raise ValueError("prepared geometry belongs to a different frozen manifest")
@@ -95,6 +96,8 @@ class PreparedStage2Corpus:
         path = (self.prepared_root / step["path"]).resolve()
         if not path.is_relative_to(self.prepared_root):
             raise ValueError("prepared step path escapes sidecar root")
+        if self.native_backend == "v2":
+            return load_prepared_v2_state(path, path.parent)
         return load_prepared_state(path)
 
 
