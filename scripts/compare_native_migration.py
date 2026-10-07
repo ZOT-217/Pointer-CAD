@@ -9,6 +9,7 @@ import argparse
 import hashlib
 import json
 import os
+from multiprocessing import get_context
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -18,6 +19,7 @@ from scripts.compare_native_backends import _ParityFixtureTokenizer, _plain, com
 
 
 FIELDS = ("dataset", "sample_id", "source_variant_id", "approved_variant_id")
+_worker_context = None
 
 
 def _digest(path: Path) -> str:
@@ -31,13 +33,66 @@ def _write_json_atomic(path: Path, value: dict) -> None:
     os.replace(temporary, path)
 
 
+def _compare_record(v1, v2, identity, supervision, collator) -> dict:
+    left, right = v1.entries[identity], v2.entries[identity]
+    if (left["crs_sha256"] != right["crs_sha256"] or
+            left["supervision_sha256"] != right["supervision_sha256"]):
+        return {"first_mismatch": {"identity": list(identity), "field": "frozen_artifact_sha256"}}
+    actions_a = [step["action_index"] for step in left["steps"]]
+    actions_b = [step["action_index"] for step in right["steps"]]
+    if actions_a != actions_b:
+        return {"first_mismatch": {"identity": list(identity), "field": "action_indices",
+                                   "v1": actions_a, "v2": actions_b}}
+    record = SimpleNamespace(identity=identity, supervision=supervision)
+    try:
+        sequence_a = _plain(v1.collate_record(record, collator))
+        sequence_b = _plain(v2.collate_record(record, collator))
+    except Exception as exc:
+        return {"first_blocker": {"identity": list(identity), "field": "sequence.materialization",
+                                  "error_type": type(exc).__name__, "message": str(exc)}}
+    if sequence_a != sequence_b:
+        field = next((key for key in sequence_a if sequence_a[key] != sequence_b.get(key)), "sequence")
+        return {"first_mismatch": {"identity": list(identity), "field": f"sequence.{field}"}}
+    result_row = {"identity": list(identity), "actions": 0, "pointer_slots": 0, "candidate_rows": 0}
+    for action_index in actions_a:
+        try:
+            result = compare_action(v1, v2, identity, action_index, supervision)
+        except Exception as exc:
+            return {"first_blocker": {"identity": list(identity), "action_index": action_index,
+                                      "field": "state_for", "error_type": type(exc).__name__,
+                                      "message": str(exc)}}
+        if "field" in result:
+            return {"first_mismatch": result}
+        result_row["actions"] += 1
+        result_row["pointer_slots"] += result["pointer_slots"]
+        result_row["candidate_rows"] += result["candidate_rows"]
+    return {"record": result_row}
+
+
+def _init_worker(frozen_root, v1_root, v2_root, v1_manifest, v2_manifest, source, grammar):
+    global _worker_context
+    v1 = PreparedStage2Corpus(frozen_root, v1_root, migration_manifest=v1_manifest)
+    v2 = PreparedStage2Corpus(frozen_root, v2_root, native_backend="v2", migration_manifest=v2_manifest)
+    collator = Stage2QwenCollator(_ParityFixtureTokenizer(), grammar_vocabulary=grammar)
+    _worker_context = (v1, v2, Path(frozen_root), source, collator)
+
+
+def _compare_worker(identity):
+    v1, v2, frozen_root, source, collator = _worker_context
+    supervision = json.loads((frozen_root / source[identity]).read_text())
+    return _compare_record(v1, v2, identity, supervision, collator)
+
+
 def compare(frozen_root: Path, v1_root: Path, v2_root: Path, v1_manifest: Path,
-            v2_manifest: Path, selection: Path, output: Path, *, resume: bool = False) -> dict:
+            v2_manifest: Path, selection: Path, output: Path, *, resume: bool = False,
+            workers: int = 1) -> dict:
     frozen_root, v1_root, v2_root = (path.resolve() for path in (frozen_root, v1_root, v2_root))
     v1_manifest, v2_manifest, selection, output = (path.resolve() for path in
                                                    (v1_manifest, v2_manifest, selection, output))
     if not output.is_relative_to(Path("/tmp").resolve()):
         raise ValueError("migration comparison output must be local /tmp scratch")
+    if workers < 1:
+        raise ValueError("parity workers must be positive")
     selected = json.loads(selection.read_text())
     identities = [tuple(row["identity"]) for row in selected["entries"]]
     if selected.get("selected_count") != len(identities) or len(set(identities)) != len(identities):
@@ -57,8 +112,8 @@ def compare(frozen_root: Path, v1_root: Path, v2_root: Path, v1_manifest: Path,
     tokens = set()
     for supervision in supervisions.values():
         tokens.update(frozen_grammar_vocabulary([supervision]))
-    collator = Stage2QwenCollator(_ParityFixtureTokenizer(),
-                                 grammar_vocabulary={token: index for index, token in enumerate(sorted(tokens))})
+    grammar = {token: index for index, token in enumerate(sorted(tokens))}
+    collator = Stage2QwenCollator(_ParityFixtureTokenizer(), grammar_vocabulary=grammar)
     config = {"frozen_manifest_sha256": _digest(frozen_root / "manifest.json"),
               "v1_migration_manifest_sha256": _digest(v1_manifest),
               "v2_migration_manifest_sha256": _digest(v2_manifest),
@@ -91,60 +146,37 @@ def compare(frozen_root: Path, v1_root: Path, v2_root: Path, v1_manifest: Path,
               "first_blocker": None, "tokenizer_mode": "fixture",
               "tensor_policy": "np.allclose(rtol=0, atol=1e-7, equal_nan=False)",
               "source_backend": "v1_unreleased_individually_validated", "migration_mode": True}
-    for identity in identities:
-        if identity in completed:
-            continue
-        left, right = v1.entries[identity], v2.entries[identity]
-        if (left["crs_sha256"] != right["crs_sha256"] or
-                left["supervision_sha256"] != right["supervision_sha256"]):
-            report["first_mismatch"] = {"identity": list(identity), "field": "frozen_artifact_sha256"}
-            break
-        actions_a = [step["action_index"] for step in left["steps"]]
-        actions_b = [step["action_index"] for step in right["steps"]]
-        if actions_a != actions_b:
-            report["first_mismatch"] = {"identity": list(identity), "field": "action_indices",
-                                        "v1": actions_a, "v2": actions_b}
-            break
-        supervision = supervisions[identity]
-        record = SimpleNamespace(identity=identity, supervision=supervision)
-        try:
-            sequence_a = _plain(v1.collate_record(record, collator))
-            sequence_b = _plain(v2.collate_record(record, collator))
-        except Exception as exc:
-            report["first_blocker"] = {"identity": list(identity), "field": "sequence.materialization",
-                                       "error_type": type(exc).__name__, "message": str(exc)}
-            break
-        if sequence_a != sequence_b:
-            field = next((key for key in sequence_a if sequence_a[key] != sequence_b.get(key)), "sequence")
-            report["first_mismatch"] = {"identity": list(identity), "field": f"sequence.{field}"}
-            break
-        record_result = {"identity": list(identity), "actions": 0, "pointer_slots": 0, "candidate_rows": 0}
-        for action_index in actions_a:
-            try:
-                result = compare_action(v1, v2, identity, action_index, supervision)
-            except Exception as exc:
-                report["first_blocker"] = {"identity": list(identity), "action_index": action_index,
-                                           "field": "state_for", "error_type": type(exc).__name__,
-                                           "message": str(exc)}
+    pending = [identity for identity in identities if identity not in completed]
+
+    def consume(results) -> None:
+        for result in results:
+            if result.get("first_mismatch"):
+                report["first_mismatch"] = result["first_mismatch"]
                 break
-            if "field" in result:
-                report["first_mismatch"] = result
+            if result.get("first_blocker"):
+                report["first_blocker"] = result["first_blocker"]
                 break
-            record_result["actions"] += 1
-            record_result["pointer_slots"] += result["pointer_slots"]
-            record_result["candidate_rows"] += result["candidate_rows"]
-        if report["first_mismatch"] is not None or report["first_blocker"] is not None:
-            break
-        with progress_path.open("a", encoding="utf-8") as stream:
-            stream.write(json.dumps(record_result, sort_keys=True) + "\n")
-        completed[identity] = record_result
-        report["records"] += 1
-        report["actions"] += record_result["actions"]
-        report["pointer_slots"] += record_result["pointer_slots"]
-        report["candidate_rows"] += record_result["candidate_rows"]
-        if report["records"] % 10 == 0 or report["records"] == len(identities):
-            print(json.dumps({"compared_records": report["records"],
-                              "expected_records": len(identities), "actions": report["actions"]}), flush=True)
+            record_result = result["record"]
+            identity = tuple(record_result["identity"])
+            with progress_path.open("a", encoding="utf-8") as stream:
+                stream.write(json.dumps(record_result, sort_keys=True) + "\n")
+            completed[identity] = record_result
+            report["records"] += 1
+            report["actions"] += record_result["actions"]
+            report["pointer_slots"] += record_result["pointer_slots"]
+            report["candidate_rows"] += record_result["candidate_rows"]
+            if report["records"] % 10 == 0 or report["records"] == len(identities):
+                print(json.dumps({"compared_records": report["records"],
+                                  "expected_records": len(identities), "actions": report["actions"]}), flush=True)
+
+    if workers == 1:
+        consume(_compare_record(v1, v2, identity, supervisions[identity], collator)
+                for identity in pending)
+    else:
+        with get_context("spawn").Pool(workers, initializer=_init_worker,
+                                       initargs=(frozen_root, v1_root, v2_root, v1_manifest,
+                                                 v2_manifest, source, grammar)) as pool:
+            consume(pool.imap_unordered(_compare_worker, pending, chunksize=1))
     report["parity_mismatches"] = int(report["first_mismatch"] is not None)
     report["comparison_blockers"] = int(report["first_blocker"] is not None)
     report["verdict"] = ("PASS" if report["records"] == len(identities) and
@@ -165,9 +197,10 @@ def main() -> None:
     parser.add_argument("--selection", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--resume", action="store_true")
+    parser.add_argument("--workers", type=int, default=1)
     args = parser.parse_args()
     report = compare(args.frozen, args.v1, args.v2, args.v1_manifest, args.v2_manifest,
-                     args.selection, args.output, resume=args.resume)
+                     args.selection, args.output, resume=args.resume, workers=args.workers)
     print(json.dumps(report, sort_keys=True))
     raise SystemExit(report["verdict"] != "PASS")
 
