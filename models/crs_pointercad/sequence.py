@@ -68,6 +68,11 @@ class Stage2Sequence:
     scalar_targets: tuple[float, ...]
     structured_record_targets: tuple[Mapping[str, Any], ...]
     decoder_substates: tuple[Mapping[str, Any], ...]
+    stage2_conditioning: str = "text_only"
+    pixel_values: torch.Tensor | None = None
+    image_grid_thw: torch.Tensor | None = None
+    visual_token_positions: tuple[int, ...] = ()
+    context_position: int = 0
 
 
 class Stage2QwenCollator:
@@ -80,14 +85,19 @@ class Stage2QwenCollator:
     """
 
     def __init__(self, tokenizer, *, grammar_vocabulary: Mapping[str, int],
-                 max_length: int | None = None):
-        self.tokenizer = tokenizer
+                 max_length: int | None = None,
+                 stage2_conditioning: str = "multiview_vlm"):
+        if stage2_conditioning not in {"text_only", "multiview_vlm"}:
+            raise ValueError("unknown Stage2 conditioning mode")
+        self.stage2_conditioning = stage2_conditioning
+        self.processor = tokenizer if stage2_conditioning == "multiview_vlm" else None
+        self.tokenizer = tokenizer.tokenizer if self.processor is not None else tokenizer
         self.grammar_vocabulary = dict(grammar_vocabulary)
         if sorted(self.grammar_vocabulary.values()) != list(range(len(self.grammar_vocabulary))):
             raise ValueError("grammar vocabulary must have contiguous frozen indices")
         self.max_length = max_length
 
-    def _conditioning_prefix(self, record: Mapping[str, Any]) -> tuple[str, str, list[int]]:
+    def _conditioning_prefix(self, record: Mapping[str, Any]) -> tuple[str, str, list[int], torch.Tensor | None, torch.Tensor | None, tuple[int, ...], int]:
         conditioning = record.get("conditioning")
         if not isinstance(conditioning, Mapping):
             raise ValueError("frozen Stage2 record requires explicit conditioning X")
@@ -101,6 +111,38 @@ class Stage2QwenCollator:
             raise ValueError("legacy adapter instruction does not match its recorded source")
         if not hasattr(self.tokenizer, "apply_chat_template"):
             raise TypeError("Stage2 tokenizer must implement the Pointer-CAD chat template")
+        if self.stage2_conditioning == "multiview_vlm":
+            if text != LEGACY_ADAPTER_INSTRUCTION:
+                raise ValueError("multiview baseline requires the exact fixed instruction")
+            paths = record.get("image_paths")
+            if not isinstance(paths, (list, tuple)) or len(paths) != 8:
+                raise ValueError("multiview conditioning requires exactly eight ordered image paths")
+            from PIL import Image
+            images = []
+            for path in paths:
+                with Image.open(path) as image:
+                    images.append(image.convert("RGB"))
+            content = [{"type": "image", "image": str(path)} for path in paths]
+            content.append({"type": "text", "text": text})
+            messages = [{"role": "system", "content": POINTERCAD_SYSTEM_INSTRUCTION},
+                        {"role": "user", "content": content}]
+            rendered = self.processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+            processed = self.processor(text=[rendered], images=images, return_tensors="pt")
+            values = processed["input_ids"][0].tolist()
+            grid = processed.get("image_grid_thw")
+            if grid is None or grid.shape[0] != 8 or "pixel_values" not in processed:
+                raise ValueError("Qwen2.5-VL processor did not produce eight image grids")
+            image_id = self.tokenizer.convert_tokens_to_ids("<|image_pad|>")
+            visual_positions = tuple(i for i, value in enumerate(values) if value == image_id)
+            if not visual_positions:
+                raise ValueError("Qwen2.5-VL processor produced no visual tokens")
+            # One constant assistant-side token is reserved for current S_t.
+            # It follows all visual tokens and precedes every command atom.
+            slot = self._encode_atom(" ")
+            if len(slot) != 1:
+                raise ValueError("Stage2 context slot must be exactly one tokenizer token")
+            values.extend(slot)
+            return text, source, values, processed["pixel_values"], grid, visual_positions, len(values) - 1
         messages = [
             {"role": "system", "content": POINTERCAD_SYSTEM_INSTRUCTION},
             {"role": "user", "content": [{"type": "brep"}, {"type": "text", "text": text}]},
@@ -108,7 +150,7 @@ class Stage2QwenCollator:
         rendered = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
         if not isinstance(rendered, str) or not rendered:
             raise ValueError("Pointer-CAD chat template produced an empty conditioning prefix")
-        return text, source, self._encode_atom(rendered)
+        return text, source, self._encode_atom(rendered), None, None, (), 0
 
     def _encode_atom(self, atom: str) -> list[int]:
         encoded = self.tokenizer(atom, add_special_tokens=False)["input_ids"]
@@ -203,7 +245,8 @@ class Stage2QwenCollator:
         if not isinstance(boundaries, list):
             raise ValueError("command.action_boundaries must be present")
 
-        conditioning_text, conditioning_source, values = self._conditioning_prefix(record)
+        (conditioning_text, conditioning_source, values, pixel_values,
+         image_grid_thw, visual_positions, context_position) = self._conditioning_prefix(record)
         conditioning_end = len(values)
         spans: list[TokenSpan] = []
         for command_position, atom in enumerate(atoms):
@@ -254,6 +297,8 @@ class Stage2QwenCollator:
             tuple(spans), tuple(action_spans), tuple(grammar),
             pointers, scalars, records, feedback, grammar_targets, scalar_targets,
             tuple(record.get("structured_record_targets", ())), decoder_substates,
+            self.stage2_conditioning, pixel_values, image_grid_thw,
+            visual_positions, context_position,
         )
         self._assert_one_to_one(result)
         return result

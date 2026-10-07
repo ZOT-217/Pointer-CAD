@@ -85,8 +85,9 @@ class ActionLossModule(torch.nn.Module):
     def __init__(self, model):
         super().__init__(); self.model = model
 
-    def forward(self, sequence, supervision, action_index, state, brep):
-        return training_action_loss(self.model, sequence, supervision, action_index, state, brep)
+    def forward(self, sequence, supervision, action_index, state, brep, visual_features=None):
+        return training_action_loss(self.model, sequence, supervision, action_index, state, brep,
+                                    visual_features=visual_features)
 
 
 def _checkpoint(path: Path, model, optimizer, scheduler, epoch: int, step: int, config: dict[str, Any], split_sha: str) -> None:
@@ -107,12 +108,20 @@ def _load_checkpoint(path: Path, model, optimizer, scheduler, split_sha: str) ->
 
 
 def _loss_one(ddp, row, collator, corpus, device):
-    sequence = collator(row["supervision"])
+    supervision = row["supervision"]
+    if collator.stage2_conditioning == "multiview_vlm":
+        if corpus.images is None:
+            raise ValueError("multiview training requires --image-manifest")
+        supervision = {**supervision, "image_paths": corpus.images.paths_for(row["identity"])}
+    sequence = collator(supervision)
+    model = ddp.module.model if isinstance(ddp, DDP) else ddp.model
+    visual_features = (model.encode_visual(sequence.pixel_values, sequence.image_grid_thw)
+                       if sequence.pixel_values is not None else None)
     total = None; parts = {name: 0.0 for name in ("grammar", "pointer", "scalar", "record")}; actions = 0
     pointer_stats = {"slots": 0, "any_positive_at_1": 0, "top3": 0, "top5": 0, "best_positive_rank_sum": 0, "by_type": {}, "by_bank_bucket": {}}
     for action in sequence.action_boundaries:
         state, brep = corpus.state_for(row["identity"], action.action_index)
-        value, metrics = ddp(sequence, row["supervision"], action.action_index, state, brep)
+        value, metrics = ddp(sequence, supervision, action.action_index, state, brep, visual_features)
         total = value if total is None else total + value
         for name in parts: parts[name] += float(metrics[name].detach().item())
         stats = metrics.get("pointer_stats", pointer_stats)
@@ -156,7 +165,9 @@ def main() -> int:
     parser.add_argument("--corpus", type=Path, required=True)
     parser.add_argument("--prepared", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--model", default="Qwen/Qwen2.5-0.5B-Instruct")
+    parser.add_argument("--model", default="Qwen/Qwen2.5-VL-3B-Instruct")
+    parser.add_argument("--stage2-conditioning", choices=("multiview_vlm", "text_only"), default="multiview_vlm")
+    parser.add_argument("--image-manifest", type=Path)
     parser.add_argument("--epochs", type=int, default=3)
     parser.add_argument("--per-device-batch-size", type=int, default=1)
     parser.add_argument("--gradient-accumulation-steps", type=int, default=8)
@@ -177,11 +188,17 @@ def main() -> int:
             raise ValueError("frozen corpus needs nonempty train and validation splits")
         raw = [r["supervision"] for r in rows]
         grammar = frozen_grammar_vocabulary(raw)
-        from transformers import AutoTokenizer
-        tokenizer = AutoTokenizer.from_pretrained(args.model, local_files_only=True)
-        collator = Stage2QwenCollator(tokenizer, grammar_vocabulary=grammar)
+        if args.stage2_conditioning == "multiview_vlm" and args.image_manifest is None:
+            raise ValueError("multiview Stage2 requires --image-manifest")
+        from transformers import AutoProcessor, AutoTokenizer
+        tokenizer = (AutoProcessor.from_pretrained(args.model, local_files_only=True, use_fast=False)
+                     if args.stage2_conditioning == "multiview_vlm"
+                     else AutoTokenizer.from_pretrained(args.model, local_files_only=True))
+        collator = Stage2QwenCollator(tokenizer, grammar_vocabulary=grammar,
+                                      stage2_conditioning=args.stage2_conditioning)
         model = CRSExpandedPointerCAD(qwen_model=args.model, dtype="bf16", use_lora=True, lora_rank=8,
-            hidden_dim=896, pointer_dim=128, grammar_vocab_size=max(1, len(grammar)), registry_context_mode="TYPE_POOLED",
+            hidden_dim=2048 if args.stage2_conditioning == "multiview_vlm" else 896,
+            pointer_dim=128, grammar_vocab_size=max(1, len(grammar)), registry_context_mode="TYPE_POOLED",
             use_native_brep=True).to(device)
         module = ActionLossModule(model)
         ddp = DDP(module, device_ids=[local] if device.type == "cuda" and world > 1 else None,
@@ -201,7 +218,7 @@ def main() -> int:
         start_epoch, global_step = 0, 0
         if args.resume:
             start_epoch, global_step = _load_checkpoint(args.resume, module, optimizer, scheduler, split_sha)
-        corpus = PreparedStage2Corpus(args.corpus, args.prepared)
+        corpus = PreparedStage2Corpus(args.corpus, args.prepared, args.image_manifest)
         train = [r for r in rows if r["split"] == "train"]
         valid = [r for r in rows if r["split"] == "validation"]
         if not args.skip_preflight:

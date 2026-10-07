@@ -11,6 +11,7 @@ import torch
 from .brep_bridge import FrozenCandidateKey, load_prepared_state
 from .contracts import ExternalKey, PointerType
 from .heads import RECORD_DIMS
+from .images import Stage2ImageManifest
 from .sequence import Stage2Sequence
 
 
@@ -56,7 +57,8 @@ def _target_key(value: Mapping[str, Any]):
 class PreparedStage2Corpus:
     """Index a prepared sidecar against the exact frozen manifest hash."""
 
-    def __init__(self, frozen_root: str | Path, prepared_root: str | Path):
+    def __init__(self, frozen_root: str | Path, prepared_root: str | Path,
+                 image_manifest: str | Path | None = None):
         self.frozen_root = Path(frozen_root).resolve()
         self.prepared_root = Path(prepared_root).resolve()
         manifest = json.loads((self.prepared_root / "manifest.json").read_text(encoding="utf-8"))
@@ -66,6 +68,7 @@ class PreparedStage2Corpus:
         if manifest["frozen_manifest_sha256"] != frozen_sha:
             raise ValueError("prepared geometry belongs to a different frozen manifest")
         self.entries = {tuple(item["identity"]): item for item in manifest["entries"]}
+        self.images = Stage2ImageManifest(image_manifest) if image_manifest is not None else None
         if len(self.entries) != len(manifest["entries"]):
             raise ValueError("duplicate prepared Stage2 identity")
 
@@ -87,6 +90,10 @@ class PreparedStage2Corpus:
     def collate_record(self, record, collator):
         """Bind an approved frozen record to its immutable prepared X."""
         supervision = {**record.supervision, "conditioning": self.conditioning_for(record.identity)}
+        if collator.stage2_conditioning == "multiview_vlm":
+            if self.images is None:
+                raise ValueError("multiview Stage2 requires an image manifest")
+            supervision["image_paths"] = self.images.paths_for(record.identity)
         return collator(supervision)
 
     def state_for(self, identity: tuple[str, str, str, str], action_index: int):
@@ -99,7 +106,7 @@ class PreparedStage2Corpus:
 
 
 def training_action_loss(model, sequence: Stage2Sequence, supervision: Mapping[str, Any],
-                         action_index: int, state, prepared_brep):
+                         action_index: int, state, prepared_brep, *, visual_features=None):
     """Run one causal action and score only its explicitly mapped targets."""
     action = next(item for item in sequence.action_boundaries if item.action_index == action_index)
     device = next(model.parameters()).device
@@ -140,7 +147,12 @@ def training_action_loss(model, sequence: Stage2Sequence, supervision: Mapping[s
             "decoder_substate": source.get("decoder_substate", {}),
         })
     output = model.forward_ragged(input_ids=ids, attention_mask=mask, states=[state],
-                                  pointer_specs=[specs], breps=[prepared_brep] if prepared_brep is not None else None)
+                                  pointer_specs=[specs], breps=[prepared_brep] if prepared_brep is not None else None,
+                                  pixel_values=sequence.pixel_values,
+                                  image_grid_thw=sequence.image_grid_thw,
+                                  context_positions=[sequence.context_position],
+                                  visual_token_positions=[sequence.visual_token_positions],
+                                  visual_features=visual_features)
 
     grammar_indices = [index for index, target in enumerate(sequence.grammar_positions)
                        if target.action_index == action_index]

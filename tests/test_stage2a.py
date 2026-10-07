@@ -384,7 +384,8 @@ def test_stage2_collator_retains_explicit_qwen_spans_and_feedback_positions():
         "parameter_targets": [{"action_index": 0, "position": 2, "slot": "radius", "value": 1.0}],
         "structured_record_targets": [],
     }
-    sequence = Stage2QwenCollator(Tokenizer(), grammar_vocabulary={"SKETCH": 0})(record)
+    sequence = Stage2QwenCollator(Tokenizer(), grammar_vocabulary={"SKETCH": 0},
+                                  stage2_conditioning="text_only")(record)
     assert sequence.conditioning_end > 0
     assert sequence.pointer_positions[0].model_position == sequence.token_spans[1].start
     assert sequence.feedback_positions[0] == sequence.token_spans[1].end

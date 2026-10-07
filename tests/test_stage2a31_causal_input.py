@@ -60,7 +60,7 @@ def _record(text="Make a bracket"):
 def _collator():
     return Stage2QwenCollator(SplitPointerTokenizer(), grammar_vocabulary={
         "START": 0, "MIDDLE": 1, "END": 2, "FUTURE": 3, "<pe>": 4,
-    })
+    }, stage2_conditioning="text_only")
 
 
 def _state():

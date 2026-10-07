@@ -39,7 +39,8 @@ class GateInputs:
         tokenizer = AutoTokenizer.from_pretrained(CHECKPOINT, local_files_only=True)
         tokenizer.chat_template = Path('config/chat_template.jinja').read_text()
         self.vocabulary = frozen_grammar_vocabulary([record.supervision for record in self.records.values()])
-        self.collator = Stage2QwenCollator(tokenizer, grammar_vocabulary=self.vocabulary)
+        self.collator = Stage2QwenCollator(tokenizer, grammar_vocabulary=self.vocabulary,
+                                           stage2_conditioning="text_only")
         self.sequences = {}
 
     def sequence(self, sample_id: str):
