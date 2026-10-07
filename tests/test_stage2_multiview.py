@@ -86,6 +86,18 @@ def test_real_processor_exact_order_and_command_spans(processor, images):
     assert not torch.equal(mrope[0], mrope[1])
 
 
+def test_real_processor_accepts_lazy_pil_views(processor, images):
+    paths = record(images, pointers=True)
+    pil = {**paths, "images": tuple(Image.open(path).convert("RGB") for path in images)}
+    pil.pop("image_paths")
+    from_paths = collator(processor)(paths)
+    from_pil = collator(processor)(pil)
+    assert torch.equal(from_paths.input_ids, from_pil.input_ids)
+    assert torch.equal(from_paths.pixel_values, from_pil.pixel_values)
+    assert from_paths.token_spans == from_pil.token_spans
+    assert from_pil.image_grid_thw.shape[0] == 8
+
+
 def test_missing_view_fails(processor, images):
     with pytest.raises(ValueError, match="exactly eight"):
         collator(processor)(record(images[:7]))

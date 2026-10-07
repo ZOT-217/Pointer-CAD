@@ -30,7 +30,7 @@ from .model import CRSExpandedPointerCAD, build_pointercad
 from .sequence import Stage2QwenCollator, Stage2Sequence, TargetPosition, frozen_grammar_vocabulary
 from .brep_bridge import PreparedBRep, PreparedSnapshot, FrozenCandidateKey, load_prepared_brep, load_prepared_state, save_prepared_brep, validate_candidate_alignment
 from .training import PreparedStage2Corpus, training_action_loss
-from .images import Stage2ImageManifest
+from .images import Stage2ImageManifest, Zero2CADArrowImageProvider
 
 __all__ = [
     "ActionAST", "BodyCandidateEncoder", "BodyRecord", "BodyVersionRegistry", "CRSExpandedPointerCAD", "Curve3DEncoder",
@@ -45,5 +45,5 @@ __all__ = [
     "PreparedBRep", "load_prepared_brep", "save_prepared_brep", "validate_candidate_alignment",
     "PreparedSnapshot", "FrozenCandidateKey", "load_prepared_state",
     "PreparedStage2Corpus", "training_action_loss",
-    "Stage2ImageManifest",
+    "Stage2ImageManifest", "Zero2CADArrowImageProvider",
 ]

@@ -1,0 +1,30 @@
+{
+  "dimensions": [
+    256,
+    256
+  ],
+  "expected_count": 9087,
+  "failed_count": 0,
+  "format": "stage2-arrow-image-mapping-certification-v1",
+  "frozen_count": 9087,
+  "frozen_manifest_sha256": "191ff3db07bbf902eec77511df33f2c28e6090f385285f8c3f3869ed5f6b0196",
+  "image_format": "RGB PNG",
+  "index": "stage2_expanded9k_zero2cad_arrow_index.json",
+  "index_sha256": "59deaffb6bbf974815670c987be536ba567e1a5bc1b75beeff01d5ca6ff220e7",
+  "mapped_count": 9087,
+  "method": "each frozen identity matched by exact CQ source bytes, frozen source digest, and eight decoded PNG views",
+  "source_manifest_sha256": "a234e061e75a3d60dd2e9418410b17705c48466d26d87ca7b1a6a8c6f43f5204",
+  "upstream_dataset": "ADSKAILab/Zero-To-CAD-100k",
+  "upstream_split": "test",
+  "upstream_split_rows": 9767,
+  "view_fields": [
+    "image_0",
+    "image_1",
+    "image_2",
+    "image_3",
+    "image_4",
+    "image_5",
+    "image_6",
+    "image_7"
+  ]
+}

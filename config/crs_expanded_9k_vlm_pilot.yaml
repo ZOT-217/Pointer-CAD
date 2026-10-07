@@ -1,0 +1,41 @@
+# Authoritative expanded-9K VLM pilot policy. Runtime paths are launcher inputs.
+mode: CRS_EXPANDED_POINTERCAD
+model:
+  base_model: Qwen/Qwen2.5-VL-3B-Instruct
+  processor: Qwen/Qwen2.5-VL-3B-Instruct
+  dtype: bf16
+  base_language_model: frozen
+  vision_tower: frozen
+  visual_merger: frozen
+  language_lora:
+    enabled: true
+    rank: 8
+    alpha: 32
+    dropout: 0.1
+  trainable:
+    - language_lora
+    - uvnet_gnn
+    - context_adapter
+    - feedback_adapter
+    - typed_pointer_heads
+    - grammar_head
+    - scalar_record_heads
+train:
+  stage2_conditioning: multiview_vlm
+  text: Construct the CAD model.
+  image_provider: zero2cad_arrow
+  image_index: config/stage2_expanded9k_zero2cad_arrow_index.json
+  image_count: 8
+  image_fields: [image_0, image_1, image_2, image_3, image_4, image_5, image_6, image_7]
+  native_backend: v2
+  native_boundary: PreparedStage2Corpus.state_for
+  per_device_batch_size: 1
+  gradient_accumulation_steps: 8
+  learning_rate: 1.0e-4
+  epochs: 3
+runtime:
+  launcher: scripts/acp/train_stage2_expanded9k_vlm_4xh100.sh
+  default_nproc: 4
+  arrow_dataset_root: configurable
+  frozen_corpus_root: configurable
+  native_release_root: configurable

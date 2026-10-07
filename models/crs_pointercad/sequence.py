@@ -119,14 +119,24 @@ class Stage2QwenCollator:
             if text != LEGACY_ADAPTER_INSTRUCTION:
                 raise ValueError("multiview baseline requires the exact fixed instruction")
             paths = record.get("image_paths")
-            if not isinstance(paths, (list, tuple)) or len(paths) != 8:
-                raise ValueError("multiview conditioning requires exactly eight ordered image paths")
+            supplied_images = record.get("images")
+            if (paths is None) == (supplied_images is None):
+                raise ValueError("multiview conditioning requires exactly one eight-view image source")
+            views = paths if paths is not None else supplied_images
+            if not isinstance(views, (list, tuple)) or len(views) != 8:
+                raise ValueError("multiview conditioning requires exactly eight ordered images")
             from PIL import Image
             images = []
-            for path in paths:
-                with Image.open(path) as image:
+            if paths is not None:
+                for path in paths:
+                    with Image.open(path) as image:
+                        images.append(image.convert("RGB"))
+            else:
+                for image in supplied_images:
+                    if not isinstance(image, Image.Image):
+                        raise TypeError("multiview images must be PIL images")
                     images.append(image.convert("RGB"))
-            content = [{"type": "image", "image": str(path)} for path in paths]
+            content = [{"type": "image", "image": image} for image in images]
             content.append({"type": "text", "text": text})
             messages = [{"role": "system", "content": POINTERCAD_SYSTEM_INSTRUCTION},
                         {"role": "user", "content": content}]

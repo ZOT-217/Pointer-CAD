@@ -6,7 +6,7 @@ or reconstructs a CRS trajectory during training.
 """
 from __future__ import annotations
 
-import argparse, hashlib, json, os, platform, random, socket, subprocess, time, sys
+import argparse, contextlib, hashlib, json, math, os, platform, random, socket, subprocess, time, sys
 from pathlib import Path
 from typing import Any
 
@@ -92,7 +92,11 @@ class ActionLossModule(torch.nn.Module):
 
 def _checkpoint(path: Path, model, optimizer, scheduler, epoch: int, step: int, config: dict[str, Any], split_sha: str) -> None:
     tmp = path.with_name(f".{path.name}.{os.getpid()}.tmp")
-    torch.save({"model": model.state_dict(), "optimizer": optimizer.state_dict(), "scheduler": scheduler.state_dict(),
+    trainable = {name for name, parameter in model.named_parameters() if parameter.requires_grad}
+    state = {name: value for name, value in model.state_dict().items()
+             if name in trainable or not name.startswith("model.base_model.")}
+    torch.save({"format": "stage2-vlm-trainable-checkpoint-v1", "model": state,
+                "optimizer": optimizer.state_dict(), "scheduler": scheduler.state_dict(),
                 "epoch": epoch, "global_step": step, "config": config, "split_sha256": split_sha,
                 "rng_state": torch.get_rng_state()}, tmp)
     os.replace(tmp, path)
@@ -102,27 +106,38 @@ def _load_checkpoint(path: Path, model, optimizer, scheduler, split_sha: str) ->
     value = torch.load(path, map_location="cpu", weights_only=False)
     if value.get("split_sha256") != split_sha:
         raise ValueError("checkpoint split membership does not match corpus")
-    model.load_state_dict(value["model"]); optimizer.load_state_dict(value["optimizer"]); scheduler.load_state_dict(value["scheduler"])
+    incompatible = model.load_state_dict(value["model"], strict=False)
+    trainable = {name for name, parameter in model.named_parameters() if parameter.requires_grad}
+    if incompatible.unexpected_keys or trainable.intersection(incompatible.missing_keys):
+        raise ValueError("checkpoint is missing trainable Stage2/LoRA parameters")
+    optimizer.load_state_dict(value["optimizer"]); scheduler.load_state_dict(value["scheduler"])
     if "rng_state" in value: torch.set_rng_state(value["rng_state"])
     return int(value["epoch"]), int(value["global_step"])
 
 
-def _loss_one(ddp, row, collator, corpus, device):
+def _loss_one(ddp, row, collator, corpus, device, *, backward_scale=None, sync_last=True):
     supervision = row["supervision"]
     if collator.stage2_conditioning == "multiview_vlm":
         if corpus.images is None:
-            raise ValueError("multiview training requires --image-manifest")
-        supervision = {**supervision, "image_paths": corpus.images.paths_for(row["identity"])}
+            raise ValueError("multiview training requires an image provider")
+        supervision = {**supervision, "images": corpus.images.images_for(row["identity"])}
     sequence = collator(supervision)
     model = ddp.module.model if isinstance(ddp, DDP) else ddp.model
     visual_features = (model.encode_visual(sequence.pixel_values, sequence.image_grid_thw)
                        if sequence.pixel_values is not None else None)
-    total = None; parts = {name: 0.0 for name in ("grammar", "pointer", "scalar", "record")}; actions = 0
+    total = 0.0; parts = {name: 0.0 for name in ("grammar", "pointer", "scalar", "record")}; actions = 0
     pointer_stats = {"slots": 0, "any_positive_at_1": 0, "top3": 0, "top5": 0, "best_positive_rank_sum": 0, "by_type": {}, "by_bank_bucket": {}}
-    for action in sequence.action_boundaries:
+    for action_number, action in enumerate(sequence.action_boundaries):
         state, brep = corpus.state_for(row["identity"], action.action_index)
-        value, metrics = ddp(sequence, supervision, action.action_index, state, brep, visual_features)
-        total = value if total is None else total + value
+        should_sync = sync_last and action_number == len(sequence.action_boundaries) - 1
+        context = ddp.no_sync() if backward_scale is not None and isinstance(ddp, DDP) and not should_sync else contextlib.nullcontext()
+        with context:
+            value, metrics = ddp(sequence, supervision, action.action_index, state, brep, visual_features)
+            if backward_scale is not None:
+                if not torch.isfinite(value):
+                    raise FloatingPointError("training action loss is not finite")
+                (value * backward_scale).backward()
+        total += float(value.detach().item())
         for name in parts: parts[name] += float(metrics[name].detach().item())
         stats = metrics.get("pointer_stats", pointer_stats)
         for name in ("slots", "any_positive_at_1", "top3", "top5", "best_positive_rank_sum"): pointer_stats[name] += stats[name]
@@ -131,8 +146,7 @@ def _loss_one(ddp, row, collator, corpus, device):
                 target = pointer_stats[group].setdefault(key, {"slots": 0, "any_positive_at_1": 0, "top3": 0, "top5": 0, "best_positive_rank_sum": 0})
                 for name in target: target[name] += item[name]
         actions += 1
-    if total is None: total = torch.zeros((), device=device, requires_grad=True)
-    return total / max(actions, 1), parts, actions, pointer_stats
+    return torch.tensor(total / max(actions, 1), device=device), parts, actions, pointer_stats
 
 
 def _pointer_report(stats):
@@ -150,11 +164,16 @@ def _pointer_report(stats):
 
 @torch.no_grad()
 def _evaluate(ddp, rows, collator, corpus, device, limit=None):
+    was_training = ddp.training
+    ddp.eval()
     values, parts, count = [], {k: 0.0 for k in ("grammar", "pointer", "scalar", "record")}, 0
-    for row in rows[:limit] if limit else rows:
-        value, item, actions, _ = _loss_one(ddp, row, collator, corpus, device)
-        values.append(float(value.detach().item())); count += actions
-        for key in parts: parts[key] += item[key]
+    try:
+        for row in rows[:limit] if limit else rows:
+            value, item, actions, _ = _loss_one(ddp, row, collator, corpus, device)
+            values.append(float(value.detach().item())); count += actions
+            for key in parts: parts[key] += item[key]
+    finally:
+        if was_training: ddp.train()
     return {"total_loss": sum(values) / max(len(values), 1), "L_g": parts["grammar"] / max(len(values), 1),
             "L_p": parts["pointer"] / max(len(values), 1), "L_s": parts["scalar"] / max(len(values), 1),
             "L_r": parts["record"] / max(len(values), 1), "actions": count}
@@ -168,6 +187,8 @@ def main() -> int:
     parser.add_argument("--model", default="Qwen/Qwen2.5-VL-3B-Instruct")
     parser.add_argument("--stage2-conditioning", choices=("multiview_vlm", "text_only"), default="multiview_vlm")
     parser.add_argument("--image-manifest", type=Path)
+    parser.add_argument("--arrow-image-index", type=Path)
+    parser.add_argument("--arrow-dataset-root", type=Path)
     parser.add_argument("--epochs", type=int, default=3)
     parser.add_argument("--per-device-batch-size", type=int, default=1)
     parser.add_argument("--gradient-accumulation-steps", type=int, default=8)
@@ -177,6 +198,7 @@ def main() -> int:
     parser.add_argument("--preflight-steps", type=int, default=20)
     parser.add_argument("--checkpoint-every", type=int, default=250)
     parser.add_argument("--validate-every", type=int, default=250)
+    parser.add_argument("--validation-record-limit", type=int, default=8)
     parser.add_argument("--resume", type=Path)
     parser.add_argument("--skip-preflight", action="store_true")
     args = parser.parse_args()
@@ -188,8 +210,8 @@ def main() -> int:
             raise ValueError("frozen corpus needs nonempty train and validation splits")
         raw = [r["supervision"] for r in rows]
         grammar = frozen_grammar_vocabulary(raw)
-        if args.stage2_conditioning == "multiview_vlm" and args.image_manifest is None:
-            raise ValueError("multiview Stage2 requires --image-manifest")
+        if args.stage2_conditioning == "multiview_vlm" and (args.image_manifest is None) == (args.arrow_image_index is None):
+            raise ValueError("multiview Stage2 requires exactly one image provider")
         from transformers import AutoProcessor, AutoTokenizer
         tokenizer = (AutoProcessor.from_pretrained(args.model, local_files_only=True, use_fast=False)
                      if args.stage2_conditioning == "multiview_vlm"
@@ -202,9 +224,12 @@ def main() -> int:
             use_native_brep=True).to(device)
         module = ActionLossModule(model)
         ddp = DDP(module, device_ids=[local] if device.type == "cuda" and world > 1 else None,
-                  find_unused_parameters=False) if world > 1 else module
+                  find_unused_parameters=True) if world > 1 else module
         optimizer = torch.optim.AdamW((p for p in module.parameters() if p.requires_grad), lr=args.lr, weight_decay=0.01)
-        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=max(1, args.epochs * len(rows)))
+        per_rank_records = math.ceil(split_info["train"] / world)
+        batches_per_epoch = math.ceil(per_rank_records / args.per_device_batch_size)
+        steps_per_epoch = math.ceil(batches_per_epoch / args.gradient_accumulation_steps)
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=max(1, args.epochs * steps_per_epoch))
         args.output.mkdir(parents=True, exist_ok=True)
         if rank == 0:
             for name in ("checkpoints", "logs"): (args.output / name).mkdir(exist_ok=True)
@@ -218,19 +243,24 @@ def main() -> int:
         start_epoch, global_step = 0, 0
         if args.resume:
             start_epoch, global_step = _load_checkpoint(args.resume, module, optimizer, scheduler, split_sha)
-        corpus = PreparedStage2Corpus(args.corpus, args.prepared, args.image_manifest)
+        corpus = PreparedStage2Corpus(args.corpus, args.prepared, args.image_manifest,
+                                     arrow_image_index=args.arrow_image_index,
+                                     arrow_dataset_root=args.arrow_dataset_root)
         if args.stage2_conditioning == "multiview_vlm":
             missing_images = [row["identity"] for row in rows if row["identity"] not in corpus.images.entries]
             if missing_images:
                 raise ValueError(f"image manifest is missing {len(missing_images)} prepared records; first={missing_images[0]}")
-        train = [r for r in rows if r["split"] == "train"]
+        all_train = [r for r in rows if r["split"] == "train"]
         valid = [r for r in rows if r["split"] == "validation"]
         if not args.skip_preflight:
-            probe = train[(rank + global_step) % len(train)]
+            probe = all_train[(rank + global_step) % len(all_train)]
             for _ in range(args.preflight_steps):
-                optimizer.zero_grad(set_to_none=True); loss, _, _, _ = _loss_one(ddp, probe, collator, corpus, device)
+                optimizer.zero_grad(set_to_none=True)
+                actions = len(probe["supervision"]["command"]["action_boundaries"])
+                loss, _, _, _ = _loss_one(ddp, probe, collator, corpus, device,
+                                          backward_scale=1 / max(actions, 1))
                 if not torch.isfinite(loss): raise FloatingPointError("preflight loss is not finite")
-                loss.backward(); optimizer.step(); scheduler.step()
+                optimizer.step(); scheduler.step()
             if rank == 0:
                 preflight_path = args.output / "checkpoints" / "preflight.pt"
                 _checkpoint(preflight_path, module, optimizer, scheduler, 0, global_step, vars(args), split_sha)
@@ -240,13 +270,25 @@ def main() -> int:
             if rank == 0: _json(args.output / "preflight_results.json", {"status": "PASS", "world_size": world, "steps": args.preflight_steps})
         started = time.perf_counter(); optimizer.zero_grad(set_to_none=True)
         for epoch in range(start_epoch, args.epochs):
-            random.Random(args.seed + epoch).shuffle(train)
+            shuffled = all_train.copy()
+            random.Random(args.seed + epoch).shuffle(shuffled)
+            train = shuffled[rank::world]
+            per_rank = math.ceil(len(shuffled) / world)
+            if len(train) < per_rank:
+                train.extend(shuffled[:per_rank - len(train)])
             for offset in range(0, len(train), args.per_device_batch_size):
                 batch = train[offset:offset + args.per_device_batch_size]
                 total = None; aggregate = {k: 0.0 for k in ("grammar", "pointer", "scalar", "record")}; action_count = 0
                 batch_pointer = {"slots": 0, "any_positive_at_1": 0, "top3": 0, "top5": 0, "best_positive_rank_sum": 0, "by_type": {}, "by_bank_bucket": {}}
-                for row in batch:
-                    value, parts, count, stats = _loss_one(ddp, row, collator, corpus, device); total = value if total is None else total + value
+                optimizer_step = ((offset // args.per_device_batch_size + 1) % args.gradient_accumulation_steps == 0)
+                optimizer_step = optimizer_step or offset + len(batch) >= len(train)
+                for row_index, row in enumerate(batch):
+                    action_total = len(row["supervision"]["command"]["action_boundaries"])
+                    scale = 1 / max(action_total * len(batch) * args.gradient_accumulation_steps, 1)
+                    value, parts, count, stats = _loss_one(
+                        ddp, row, collator, corpus, device, backward_scale=scale,
+                        sync_last=optimizer_step and row_index == len(batch) - 1)
+                    total = value if total is None else total + value
                     action_count += count
                     for key in aggregate: aggregate[key] += parts[key]
                     for key in ("slots", "any_positive_at_1", "top3", "top5", "best_positive_rank_sum"): batch_pointer[key] += stats[key]
@@ -256,8 +298,6 @@ def main() -> int:
                             for key in target: target[key] += item[key]
                 total = total / len(batch) / args.gradient_accumulation_steps
                 if not torch.isfinite(total): raise FloatingPointError("training loss is not finite")
-                total.backward()
-                optimizer_step = ((offset // args.per_device_batch_size + 1) % args.gradient_accumulation_steps == 0)
                 if optimizer_step or offset + len(batch) >= len(train):
                     torch.nn.utils.clip_grad_norm_(module.parameters(), 1.0); optimizer.step(); optimizer.zero_grad(set_to_none=True); scheduler.step(); global_step += 1
                     if rank == 0:
@@ -271,11 +311,14 @@ def main() -> int:
                             "peak_reserved_vram": torch.cuda.max_memory_reserved() if torch.cuda.is_available() else 0, "actions": action_count})
                     if rank == 0 and global_step % args.checkpoint_every == 0:
                         _checkpoint(args.output / "checkpoints" / f"step-{global_step:08d}.pt", module, optimizer, scheduler, epoch, global_step, vars(args), split_sha)
-                    if rank == 0 and global_step % args.validate_every == 0:
-                        validation = _evaluate(ddp, valid, collator, corpus, device)
-                        _append(args.output / "metrics.jsonl", {"split": "validation", "epoch": epoch, "global_step": global_step,
-                            **validation, "pointer": {"any-positive@1": None, "top3": None, "top5": None,
-                            "best_positive_rank": None, "by_type": {}, "by_bank_bucket": {}}})
+                    if global_step % args.validate_every == 0:
+                        if rank == 0:
+                            validation = _evaluate(module, valid, collator, corpus, device,
+                                                   limit=args.validation_record_limit)
+                            _append(args.output / "metrics.jsonl", {"split": "validation", "epoch": epoch, "global_step": global_step,
+                                **validation, "pointer": {"any-positive@1": None, "top3": None, "top5": None,
+                                "best_positive_rank": None, "by_type": {}, "by_bank_bucket": {}}})
+                        if world > 1: dist.barrier()
             if rank == 0:
                 _checkpoint(args.output / "checkpoints" / f"epoch-{epoch + 1:03d}.pt", module, optimizer, scheduler, epoch + 1, global_step, vars(args), split_sha)
             if world > 1: dist.barrier()

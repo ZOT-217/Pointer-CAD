@@ -1,0 +1,57 @@
+{
+  "backward_succeeded": true,
+  "image_provider": "Zero2CADArrowImageProvider",
+  "model": "/tmp/Pointer-CAD-stage2-model/Qwen2.5-VL-3B-Instruct",
+  "peak_allocated_bytes": 12555729408,
+  "peak_reserved_bytes": 12754878464,
+  "records": [
+    {
+      "action_index": 1,
+      "backward_seconds": 0.36615625279955566,
+      "corpus_identity": [
+        "zero2cad100k-train",
+        "sample-00000",
+        "000",
+        "v000"
+      ],
+      "forward_seconds": 0.6205499051138759,
+      "loss": 10.523406982421875,
+      "parts": {
+        "grammar": 5.945176601409912,
+        "pointer": 1.2908663749694824,
+        "record": 0.0,
+        "scalar": 3.2873644828796387
+      },
+      "pointer_slots": 1,
+      "vision_forwards": 1,
+      "visual_tokens": 648
+    },
+    {
+      "action_index": 1,
+      "backward_seconds": 0.23387527000159025,
+      "corpus_identity": [
+        "zero2cad100k-train",
+        "sample-00001",
+        "000",
+        "v000"
+      ],
+      "forward_seconds": 0.10128146805800498,
+      "loss": 11.356637954711914,
+      "parts": {
+        "grammar": 6.1242756843566895,
+        "pointer": 1.1378073692321777,
+        "record": 0.0,
+        "scalar": 4.094555377960205
+      },
+      "pointer_slots": 1,
+      "vision_forwards": 1,
+      "visual_tokens": 648
+    }
+  ],
+  "state_provider": "PreparedStage2Corpus.state_for over two individually complete V1 records",
+  "status": "PASS",
+  "vision_forwards_per_trajectory": [
+    1,
+    1
+  ]
+}

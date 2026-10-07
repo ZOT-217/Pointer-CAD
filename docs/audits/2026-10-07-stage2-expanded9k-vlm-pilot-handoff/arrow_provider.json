@@ -1,0 +1,33 @@
+{
+  "identity_policy": "frozen four-part corpus identity unchanged; CQ/image digests are provenance only",
+  "image_count_per_record": 8,
+  "image_dimensions": [
+    256,
+    256
+  ],
+  "index_bytes": 3597574,
+  "index_sha256": "59deaffb6bbf974815670c987be536ba567e1a5bc1b75beeff01d5ca6ff220e7",
+  "mapped_entries": 9087,
+  "missing_view_failure_test": "PASS",
+  "ordered_fields": [
+    "image_0",
+    "image_1",
+    "image_2",
+    "image_3",
+    "image_4",
+    "image_5",
+    "image_6",
+    "image_7"
+  ],
+  "provider": "Zero2CADArrowImageProvider",
+  "real_arrow_read_after_runtime_cq_digest_check": "PASS",
+  "repeatability_test": "PASS",
+  "runtime_dataset_root": "configurable --arrow-dataset-root / ARROW_DATASET_ROOT",
+  "source": "upstream_original",
+  "status": "PASS",
+  "storage": "HuggingFace Arrow test split memory map; PIL decode on demand; no loose PNG copies",
+  "upstream_dataset": "ADSKAILab/Zero-To-CAD-100k",
+  "upstream_split": "test",
+  "vision_reuse": "one frozen visual forward per trajectory",
+  "worker_reopen_test": "PASS"
+}

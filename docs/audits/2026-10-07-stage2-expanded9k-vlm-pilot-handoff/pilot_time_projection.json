@@ -1,0 +1,23 @@
+{
+  "assumptions": {
+    "excluded": [
+      "data loading",
+      "DDP communication",
+      "optimizer/checkpoint overhead",
+      "validation",
+      "action-length distribution effects"
+    ],
+    "forward_backward_seconds_per_action": 1.3065338649321347,
+    "four_gpu_speedup": "ideal 4x estimate; ACP measurement pending",
+    "vision_forward_seconds_per_trajectory": 1.1559011139906943,
+    "vision_forwards_per_trajectory": 1
+  },
+  "frozen_actions": 202839,
+  "frozen_trajectories": 9087,
+  "one_epoch_four_h100_estimated_hours": 19.133312225819633,
+  "one_epoch_four_h100_estimated_seconds": 68879.92401295068,
+  "one_epoch_single_h100_hours": 76.53324890327853,
+  "one_epoch_single_h100_seconds": 275519.6960518027,
+  "source": "direct sum of feature_count across 9087 frozen manifest entries (202839), crosschecked against coverage_report operation_counts; existing real pretrained single-action H100 MIG measurement",
+  "three_epochs_four_h100_estimated_hours": 57.399936677458896
+}

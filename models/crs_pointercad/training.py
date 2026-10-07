@@ -11,7 +11,7 @@ import torch
 from .brep_bridge import FrozenCandidateKey, load_prepared_state
 from .contracts import ExternalKey, PointerType
 from .heads import RECORD_DIMS
-from .images import Stage2ImageManifest
+from .images import Stage2ImageManifest, Zero2CADArrowImageProvider
 from .sequence import Stage2Sequence
 
 
@@ -58,7 +58,9 @@ class PreparedStage2Corpus:
     """Index a prepared sidecar against the exact frozen manifest hash."""
 
     def __init__(self, frozen_root: str | Path, prepared_root: str | Path,
-                 image_manifest: str | Path | None = None):
+                 image_manifest: str | Path | None = None, *,
+                 arrow_image_index: str | Path | None = None,
+                 arrow_dataset_root: str | Path | None = None):
         self.frozen_root = Path(frozen_root).resolve()
         self.prepared_root = Path(prepared_root).resolve()
         manifest = json.loads((self.prepared_root / "manifest.json").read_text(encoding="utf-8"))
@@ -68,7 +70,13 @@ class PreparedStage2Corpus:
         if manifest["frozen_manifest_sha256"] != frozen_sha:
             raise ValueError("prepared geometry belongs to a different frozen manifest")
         self.entries = {tuple(item["identity"]): item for item in manifest["entries"]}
-        self.images = Stage2ImageManifest(image_manifest) if image_manifest is not None else None
+        if image_manifest is not None and arrow_image_index is not None:
+            raise ValueError("select one image provider")
+        if arrow_image_index is not None and arrow_dataset_root is None:
+            raise ValueError("Arrow images require a configurable dataset root")
+        self.images = (Zero2CADArrowImageProvider(arrow_image_index, arrow_dataset_root)
+                       if arrow_image_index is not None else
+                       Stage2ImageManifest(image_manifest) if image_manifest is not None else None)
         if len(self.entries) != len(manifest["entries"]):
             raise ValueError("duplicate prepared Stage2 identity")
 
@@ -93,7 +101,7 @@ class PreparedStage2Corpus:
         if collator.stage2_conditioning == "multiview_vlm":
             if self.images is None:
                 raise ValueError("multiview Stage2 requires an image manifest")
-            supervision["image_paths"] = self.images.paths_for(record.identity)
+            supervision["images"] = self.images.images_for(record.identity)
         return collator(supervision)
 
     def state_for(self, identity: tuple[str, str, str, str], action_index: int):

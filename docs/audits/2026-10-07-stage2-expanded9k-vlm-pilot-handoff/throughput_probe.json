@@ -1,0 +1,23 @@
+{
+  "batch1": {
+    "arrow_v1_smoke": {
+      "actions": 2,
+      "forward_backward_seconds": [
+        0.9867061579134315,
+        0.3351567380595952
+      ],
+      "mean_seconds_per_action": 0.6609314479865134,
+      "peak_reserved_bytes": 12754878464
+    },
+    "reference_actions_per_second": 0.7653839114625192,
+    "reference_forward_backward_seconds_per_action": 1.3065338649321347,
+    "reference_hardware": "H100 MIG 3g.40gb",
+    "reference_peak_reserved_bytes": 12712935424,
+    "status": "measured_reference_and_two_record_arrow_smoke"
+  },
+  "batch2": {
+    "reason": "current trainer processes trajectories and action losses sequentially; a true action batch of two needs training-path changes and is outside bounded handoff scope",
+    "status": "SKIPPED"
+  },
+  "batch_size_sweep": false
+}

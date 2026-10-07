@@ -1,0 +1,10 @@
+{
+  "end_to_end_v1_smoke_ready": true,
+  "image_mapping_ready": true,
+  "image_provider_ready": true,
+  "launcher_ready": true,
+  "model_ready": true,
+  "native_v2_ready": false,
+  "remaining_pilot_gate": "final Native V2 manifest and EXPANDED_9K_CORPUS_READY release_check for all 9087 records",
+  "verdict": "STAGE2_EXPANDED9K_VLM_HANDOFF_READY_WAITING_FOR_NATIVE_V2"
+}
