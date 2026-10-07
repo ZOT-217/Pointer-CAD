@@ -56,12 +56,29 @@ def _target_key(value: Mapping[str, Any]):
 class PreparedStage2Corpus:
     """Index a prepared sidecar against the exact frozen manifest hash."""
 
-    def __init__(self, frozen_root: str | Path, prepared_root: str | Path, *, native_backend: str = "v1"):
+    def __init__(self, frozen_root: str | Path, prepared_root: str | Path, *, native_backend: str = "v1",
+                 migration_manifest: str | Path | None = None):
         self.frozen_root = Path(frozen_root).resolve()
         self.prepared_root = Path(prepared_root).resolve()
-        manifest = json.loads((self.prepared_root / "manifest.json").read_text(encoding="utf-8"))
-        if native_backend not in {"v1", "v2"} or manifest.get("format") != f"stage2a3-native-input-{native_backend}":
+        self.migration_mode = migration_manifest is not None
+        manifest_path = Path(migration_manifest) if self.migration_mode else self.prepared_root / "manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        expected_format = f"stage2a3-native-{'migration' if self.migration_mode else 'input'}-{native_backend}"
+        if native_backend not in {"v1", "v2"} or manifest.get("format") != expected_format:
             raise ValueError("unsupported prepared Stage2 geometry format")
+        if self.migration_mode:
+            if manifest.get("migration_mode") is not True or manifest.get("source_backend") != "v1_unreleased_individually_validated":
+                raise ValueError("invalid unreleased migration provenance")
+            if manifest.get("status") not in {"COMPLETE", "PARTIAL"}:
+                raise ValueError("invalid unreleased migration status")
+            expected = [tuple(item) for item in manifest.get("expected_identities", [])]
+            entries = [tuple(item["identity"]) for item in manifest["entries"]]
+            if len(set(expected)) != len(expected) or not set(entries).issubset(expected):
+                raise ValueError("migration manifest entries differ from expected identities")
+            if manifest.get("status") == "COMPLETE" and (set(entries) != set(expected) or manifest.get("failures")):
+                raise ValueError("complete migration manifest has missing records or failures")
+        elif manifest.get("migration_mode"):
+            raise ValueError("unreleased migration data requires an explicit migration manifest")
         self.native_backend = native_backend
         frozen_sha = hashlib.sha256((self.frozen_root / "manifest.json").read_bytes()).hexdigest()
         if manifest["frozen_manifest_sha256"] != frozen_sha:
