@@ -85,7 +85,7 @@ def _compare_worker(identity):
 
 def compare(frozen_root: Path, v1_root: Path, v2_root: Path, v1_manifest: Path,
             v2_manifest: Path, selection: Path, output: Path, *, resume: bool = False,
-            workers: int = 1) -> dict:
+            workers: int = 1, schedule: str = "identity") -> dict:
     frozen_root, v1_root, v2_root = (path.resolve() for path in (frozen_root, v1_root, v2_root))
     v1_manifest, v2_manifest, selection, output = (path.resolve() for path in
                                                    (v1_manifest, v2_manifest, selection, output))
@@ -93,6 +93,8 @@ def compare(frozen_root: Path, v1_root: Path, v2_root: Path, v1_manifest: Path,
         raise ValueError("migration comparison output must be local /tmp scratch")
     if workers < 1:
         raise ValueError("parity workers must be positive")
+    if schedule not in {"identity", "shortest_first"}:
+        raise ValueError("unsupported parity schedule")
     selected = json.loads(selection.read_text())
     identities = [tuple(row["identity"]) for row in selected["entries"]]
     if selected.get("selected_count") != len(identities) or len(set(identities)) != len(identities):
@@ -119,6 +121,7 @@ def compare(frozen_root: Path, v1_root: Path, v2_root: Path, v1_manifest: Path,
               "v2_migration_manifest_sha256": _digest(v2_manifest),
               "selection_sha256": _digest(selection),
               "comparator_sha256": _digest(Path(__file__)),
+              "schedule": schedule,
               "mode": "fixture_tokenizer_plus_exact_prepared_action",
               "expected_records": len(identities)}
     config_path = output.with_suffix(".config.json")
@@ -147,6 +150,8 @@ def compare(frozen_root: Path, v1_root: Path, v2_root: Path, v1_manifest: Path,
               "tensor_policy": "np.allclose(rtol=0, atol=1e-7, equal_nan=False)",
               "source_backend": "v1_unreleased_individually_validated", "migration_mode": True}
     pending = [identity for identity in identities if identity not in completed]
+    if schedule == "shortest_first":
+        pending.sort(key=lambda identity: (len(v1.entries[identity]["steps"]), identity))
 
     def consume(results) -> None:
         for result in results:
@@ -198,9 +203,11 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--workers", type=int, default=1)
+    parser.add_argument("--schedule", choices=("identity", "shortest_first"), default="identity")
     args = parser.parse_args()
     report = compare(args.frozen, args.v1, args.v2, args.v1_manifest, args.v2_manifest,
-                     args.selection, args.output, resume=args.resume, workers=args.workers)
+                     args.selection, args.output, resume=args.resume, workers=args.workers,
+                     schedule=args.schedule)
     print(json.dumps(report, sort_keys=True))
     raise SystemExit(report["verdict"] != "PASS")
 
