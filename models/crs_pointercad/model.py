@@ -77,26 +77,42 @@ class CRSExpandedPointerCAD(nn.Module):
                  autoregressive_pointer_feedback: bool = True):
         super().__init__()
         self.configured_base_model = qwen_model
+        self.vlm_backbone = False
+        self.vision_forward_count = 0
         if base_model is not None:
             self.base_model = base_model
+            self.vlm_backbone = all(hasattr(base_model, name) for name in ("visual", "model", "get_rope_index"))
             self.base_model_source = "injected"
             self.base_model_dtype = str(next(base_model.parameters()).dtype)
             self.peft_lora = False
         elif qwen_model is not None and load_base_model:
             try:
-                from transformers.models.qwen2.modeling_qwen2 import Qwen2Model
                 torch_dtype = _resolve_dtype(dtype)
-                self.base_model = Qwen2Model.from_pretrained(qwen_model, torch_dtype=torch_dtype)
+                from transformers import AutoConfig
+                self.vlm_backbone = AutoConfig.from_pretrained(qwen_model).model_type == "qwen2_5_vl"
+                if self.vlm_backbone:
+                    from transformers import Qwen2_5_VLForConditionalGeneration
+                    self.base_model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+                        qwen_model, torch_dtype=torch_dtype, attn_implementation="flash_attention_2")
+                    self.base_model.requires_grad_(False)
+                    self.base_model.visual.eval()
+                else:
+                    from transformers.models.qwen2.modeling_qwen2 import Qwen2Model
+                    self.base_model = Qwen2Model.from_pretrained(qwen_model, torch_dtype=torch_dtype)
                 self.base_model_dtype = str(torch_dtype)
                 self.peft_lora = False
                 if use_lora:
-                    from peft import LoraConfig, TaskType, get_peft_model
-                    self.base_model = get_peft_model(self.base_model, LoraConfig(
-                        task_type=TaskType.CAUSAL_LM,
+                    from peft import LoraConfig, TaskType, get_peft_model, inject_adapter_in_model
+                    lora_config = LoraConfig(
+                        task_type=None if self.vlm_backbone else TaskType.CAUSAL_LM,
                         target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
                         inference_mode=False, r=lora_rank, lora_alpha=lora_alpha,
                         lora_dropout=lora_dropout,
-                    ))
+                    )
+                    if self.vlm_backbone:
+                        self.base_model.model = inject_adapter_in_model(lora_config, self.base_model.model)
+                    else:
+                        self.base_model = get_peft_model(self.base_model, lora_config)
                     self.peft_lora = True
                 self.base_model_source = "pretrained"
             except Exception as exc:
@@ -143,6 +159,21 @@ class CRSExpandedPointerCAD(nn.Module):
             "trainable_parameters": sum(parameter.numel() for parameter in self.parameters() if parameter.requires_grad),
             "frozen_parameters": sum(parameter.numel() for parameter in self.parameters() if not parameter.requires_grad),
             "lora_target_modules": ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"] if self.peft_lora else [],
+            "vlm_backbone": self.vlm_backbone,
+            "vision_tower": "frozen" if self.vlm_backbone else None,
+            "vision_merger": "frozen" if self.vlm_backbone else None,
+            "trainable_groups": {name: sum(p.numel() for p in module.parameters() if p.requires_grad)
+                                 for name, module in (("language_lora", self.base_model),
+                                                      ("context_adapter", self.context_projection),
+                                                      ("brep_adapter", self.brep_projection),
+                                                      ("feedback_adapter", self.feedback),
+                                                      ("uvnet_gnn", self.brep),
+                                                      ("typed_pointer_heads", self.query_heads),
+                                                      ("semantic_candidate_encoders", self.encoders),
+                                                      ("grammar_head", self.grammar_head),
+                                                      ("scalar_record_heads", self.numeric_heads),
+                                                      ("registry_context", self.registry_context))
+                                 if module is not None},
         }
 
     def _native_maps(self, states: Sequence[ExecutionState], breps=None):
@@ -291,7 +322,9 @@ class CRSExpandedPointerCAD(nn.Module):
     def forward(self, hidden_states: torch.Tensor | None = None, state: ExecutionState | None = None,
                 pointer_slots: Sequence[PointerType] = (), decoder_substates: Sequence[Mapping[str, Any] | None] = (),
                 input_ids: torch.Tensor | None = None, attention_mask: torch.Tensor | None = None,
-                breps=None, states: Sequence[ExecutionState] | None = None, **kwargs) -> ExpandedForward:
+                breps=None, states: Sequence[ExecutionState] | None = None,
+                pixel_values=None, image_grid_thw=None, context_position: int = 0,
+                visual_token_positions: Sequence[int] = (), **kwargs) -> ExpandedForward:
         del kwargs
         state = state or (states[0] if states else ExecutionState())
         states = tuple(states or (state,))
@@ -304,15 +337,13 @@ class CRSExpandedPointerCAD(nn.Module):
         native_maps = self._native_maps(states, breps)
         context = self._context(state, native_maps=native_maps[0] if native_maps else None)
         if input_ids is not None:
-            embeddings = self.base_model.get_input_embeddings()(input_ids)
-            embeddings = self._inject_native_brep_tokens(embeddings, input_ids, breps)
-            if context.numel():
-                embeddings = embeddings.clone()
-                embeddings[:, 0, :] = embeddings[:, 0, :] + self.context_projection(context.mean(0)).to(embeddings.dtype)
-            if breps is not None and native_maps and native_maps[0][0]:
-                native = torch.stack(tuple(native_maps[0][0].values())).mean(0).to(self.brep_projection.weight.device, self.brep_projection.weight.dtype)
-                embeddings[:, 0, :] = embeddings[:, 0, :] + self.brep_projection(native).to(embeddings.dtype)
-            hidden_states = self.base_model(inputs_embeds=embeddings, attention_mask=attention_mask).last_hidden_state
+            embeddings, context = self._prepare_embeddings(
+                input_ids, state, attention_mask=attention_mask, breps=breps,
+                native_maps=native_maps[0] if native_maps else None,
+                pixel_values=pixel_values, image_grid_thw=image_grid_thw,
+                visual_token_positions=visual_token_positions, context_position=context_position)
+            position_ids = self._vlm_position_ids(input_ids, attention_mask, image_grid_thw)
+            hidden_states = self._backbone_forward(embeddings, attention_mask, position_ids).last_hidden_state
         elif hidden_states is None:
             raise ValueError("CRSExpandedPointerCAD requires input_ids or hidden_states")
         hidden_states = self.hidden_projection(hidden_states)
@@ -328,24 +359,77 @@ class CRSExpandedPointerCAD(nn.Module):
         return ExpandedForward(grammar_logits, pointer_logits, banks, hidden_states, context,
                                scalar_predictions=scalar_predictions, record_predictions=record_predictions)
 
-    def _prepare_embeddings(self, input_ids: torch.Tensor, state: ExecutionState, *, attention_mask=None, breps=None, native_maps=None):
+    def encode_visual(self, pixel_values: torch.Tensor, image_grid_thw: torch.Tensor) -> torch.Tensor:
+        """Use Qwen2.5-VL's frozen visual tower and merger exactly once."""
+        if not self.vlm_backbone:
+            raise ValueError("visual features require the Qwen2.5-VL backbone")
+        self.base_model.visual.eval()
+        device = next(self.base_model.visual.parameters()).device
+        with torch.no_grad():
+            features = self.base_model.visual(pixel_values.to(device=device, dtype=self.base_model.visual.dtype),
+                                              grid_thw=image_grid_thw.to(device))
+        self.vision_forward_count += 1
+        return features
+
+    def _vlm_position_ids(self, input_ids: torch.Tensor, attention_mask: torch.Tensor | None,
+                          image_grid_thw: torch.Tensor | None):
+        if not self.vlm_backbone:
+            return None
+        grid = image_grid_thw.to(input_ids.device) if image_grid_thw is not None else None
+        position_ids, _ = self.base_model.get_rope_index(input_ids, grid, None, None, attention_mask)
+        return position_ids.to(input_ids.device)
+
+    def _backbone_forward(self, embeddings: torch.Tensor, attention_mask: torch.Tensor | None,
+                          position_ids: torch.Tensor | None = None, **kwargs):
+        if self.vlm_backbone:
+            kwargs.setdefault("use_cache", False)
+            return self.base_model.model(inputs_embeds=embeddings, attention_mask=attention_mask,
+                                         position_ids=position_ids, **kwargs)
+        return self.base_model(inputs_embeds=embeddings, attention_mask=attention_mask, **kwargs)
+
+    def _prepare_embeddings(self, input_ids: torch.Tensor, state: ExecutionState, *, attention_mask=None,
+                            breps=None, native_maps=None, pixel_values=None, image_grid_thw=None,
+                            visual_token_positions=(), context_position=0,
+                            visual_features=None):
         embeddings = self.base_model.get_input_embeddings()(input_ids)
-        embeddings = self._inject_native_brep_tokens(embeddings, input_ids, breps)
+        if self.vlm_backbone:
+            image_mask = input_ids == self.base_model.config.image_token_id
+            actual_positions = tuple(torch.nonzero(image_mask[0], as_tuple=False).flatten().tolist())
+            if visual_token_positions and actual_positions != tuple(visual_token_positions):
+                raise ValueError("visual token positions changed after action slicing")
+            if actual_positions:
+                if image_grid_thw is None or (pixel_values is None and visual_features is None):
+                    raise ValueError("visual tokens require real image pixels and image grids")
+                features = visual_features if visual_features is not None else self.encode_visual(pixel_values, image_grid_thw)
+                if len(actual_positions) != features.shape[0]:
+                    raise ValueError("Qwen2.5-VL image features and image tokens do not match")
+                embeddings = embeddings.masked_scatter(
+                    image_mask.unsqueeze(-1).expand_as(embeddings), features.to(embeddings.dtype).flatten())
+            elif pixel_values is not None:
+                raise ValueError("image pixels were supplied without Qwen visual tokens")
+        else:
+            embeddings = self._inject_native_brep_tokens(embeddings, input_ids, breps)
+        if not 0 <= context_position < embeddings.shape[1] or context_position in visual_token_positions:
+            raise ValueError("Stage2 context position overlaps or escapes visual tokens")
         context = self._context(state, native_maps=native_maps)
         if context.numel():
             embeddings = embeddings.clone()
-            embeddings[:, 0, :] = embeddings[:, 0, :] + self.context_projection(context.mean(0)).to(embeddings.dtype)
+            embeddings[:, context_position, :] = embeddings[:, context_position, :] + self.context_projection(context.mean(0)).to(embeddings.dtype)
         if native_maps is not None and native_maps[0]:
             native = torch.stack(tuple(native_maps[0].values())).mean(0).to(self.brep_projection.weight.device, self.brep_projection.weight.dtype)
             embeddings = embeddings.clone()
-            embeddings[:, 0, :] = embeddings[:, 0, :] + self.brep_projection(native).to(embeddings.dtype)
+            embeddings[:, context_position, :] = embeddings[:, context_position, :] + self.brep_projection(native).to(embeddings.dtype)
         return embeddings, context
 
     def forward_ragged(self, *, input_ids: torch.Tensor, attention_mask: torch.Tensor | None,
                        states: Sequence[ExecutionState], pointer_specs: Sequence[Sequence[Any]],
                        decoder_substates: Sequence[Sequence[Mapping[str, Any] | None]] = (),
                        teacher_indices: Sequence[Sequence[int | None]] = (),
-                       feedback_positions: Sequence[Sequence[int]] = (), breps=None) -> ExpandedForward:
+                       feedback_positions: Sequence[Sequence[int]] = (), breps=None,
+                       pixel_values=None, image_grid_thw=None,
+                       context_positions: Sequence[int] = (),
+                       visual_token_positions: Sequence[Sequence[int]] = (),
+                       visual_features=None) -> ExpandedForward:
         """Loss-bearing autoregressive path for ragged pointer slots.
 
         Each example owns its state, banks, slot types, substates and candidate
@@ -362,7 +446,16 @@ class CRSExpandedPointerCAD(nn.Module):
             mask = attention_mask[batch_index:batch_index + 1] if attention_mask is not None else None
             example_breps = [breps[batch_index]] if isinstance(breps, (list, tuple)) and breps and hasattr(breps[0], "face_keys") else breps
             native_maps = self._native_maps((state,), example_breps)[0] if example_breps is not None else self._native_maps((state,))[0]
-            embeddings, context = self._prepare_embeddings(ids, state, attention_mask=mask, breps=example_breps, native_maps=native_maps)
+            row_pixels = pixel_values[batch_index] if isinstance(pixel_values, (list, tuple)) else pixel_values
+            row_grid = image_grid_thw[batch_index] if isinstance(image_grid_thw, (list, tuple)) else image_grid_thw
+            row_features = visual_features[batch_index] if isinstance(visual_features, (list, tuple)) else visual_features
+            row_visual_positions = visual_token_positions[batch_index] if batch_index < len(visual_token_positions) else ()
+            context_position = context_positions[batch_index] if batch_index < len(context_positions) else 0
+            embeddings, context = self._prepare_embeddings(
+                ids, state, attention_mask=mask, breps=example_breps, native_maps=native_maps,
+                pixel_values=row_pixels, image_grid_thw=row_grid,
+                visual_token_positions=row_visual_positions, context_position=context_position,
+                visual_features=row_features)
             slots = pointer_specs[batch_index]
             substates = decoder_substates[batch_index] if batch_index < len(decoder_substates) else ()
             targets = teacher_indices[batch_index] if batch_index < len(teacher_indices) else ()
@@ -408,7 +501,8 @@ class CRSExpandedPointerCAD(nn.Module):
                 embeddings = embeddings.clone()
             for start, feedback in feedback_by_position.items():
                 embeddings[:, start:, :] = embeddings[:, start:, :] + feedback
-            final_hidden = self.base_model(inputs_embeds=embeddings, attention_mask=mask).last_hidden_state
+            position_ids = self._vlm_position_ids(ids, mask, row_grid)
+            final_hidden = self._backbone_forward(embeddings, mask, position_ids).last_hidden_state
             final_hidden = final_hidden.to(self.grammar_head.weight.dtype)
             for position, pointer_type, bank in banks:
                 h_j = final_hidden[:, position, :].squeeze(0)
@@ -460,10 +554,15 @@ class CRSExpandedPointerCAD(nn.Module):
         return {"hidden_before": before, "hidden_after": after, "feedback": tuple(selected)}
 
     @torch.no_grad()
-    def inference_pointer_decode(self, input_ids, attention_mask, state: ExecutionState, pointer_positions: Sequence[int], pointer_types: Sequence[PointerType], decoder_substates=(), breps=None, *, feedback_positions: Sequence[int], use_cache: bool | None = None, return_logits: bool = False):
+    def inference_pointer_decode(self, input_ids, attention_mask, state: ExecutionState, pointer_positions: Sequence[int], pointer_types: Sequence[PointerType], decoder_substates=(), breps=None, *, feedback_positions: Sequence[int], use_cache: bool | None = None, return_logits: bool = False, pixel_values=None, image_grid_thw=None, context_position: int = 0, visual_token_positions: Sequence[int] = (), visual_features=None):
         """Incremental inference using ``past_key_values`` when available."""
-        embeddings = self.base_model.get_input_embeddings()(input_ids)
         native_maps = self._native_maps((state,), breps)[0]
+        embeddings, _ = self._prepare_embeddings(
+            input_ids, state, attention_mask=attention_mask, breps=breps, native_maps=native_maps,
+            pixel_values=pixel_values, image_grid_thw=image_grid_thw,
+            context_position=context_position, visual_token_positions=visual_token_positions,
+            visual_features=visual_features)
+        position_ids = self._vlm_position_ids(input_ids, attention_mask, image_grid_thw)
         selections = []
         logit_rows = []
         if len(pointer_positions) != len(pointer_types) or len(set(pointer_positions)) != len(pointer_positions):
@@ -498,10 +597,13 @@ class CRSExpandedPointerCAD(nn.Module):
                 kwargs = {"inputs_embeds": current, "past_key_values": past, "use_cache": True}
                 try:
                     kwargs["cache_position"] = torch.tensor([position], device=current.device)
-                    outputs = self.base_model(**kwargs)
+                    outputs = self._backbone_forward(current, None,
+                        position_ids[..., position:position + 1] if position_ids is not None else None,
+                        past_key_values=past, use_cache=True, cache_position=kwargs["cache_position"])
                 except TypeError:
-                    kwargs.pop("cache_position", None)
-                    outputs = self.base_model(**kwargs)
+                    outputs = self._backbone_forward(current, None,
+                        position_ids[..., position:position + 1] if position_ids is not None else None,
+                        past_key_values=past, use_cache=True)
                 hidden = outputs.last_hidden_state[:, -1, :]
                 past = getattr(outputs, "past_key_values", None)
             else:
@@ -509,7 +611,9 @@ class CRSExpandedPointerCAD(nn.Module):
                 if position not in pointer_by_position:
                     continue
                 prefix_mask = attention_mask[:, :position + 1] if attention_mask is not None else None
-                reference = self.base_model(inputs_embeds=uncached_embeddings[:, :position + 1, :], attention_mask=prefix_mask).last_hidden_state
+                reference = self._backbone_forward(
+                    uncached_embeddings[:, :position + 1, :], prefix_mask,
+                    position_ids[..., :position + 1] if position_ids is not None else None).last_hidden_state
                 hidden = reference[:, -1, :]
             if position not in pointer_by_position:
                 continue

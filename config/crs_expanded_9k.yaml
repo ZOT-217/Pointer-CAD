@@ -1,13 +1,13 @@
 # CCI-ready expanded experiment configuration. This task does not launch it.
 mode: CRS_EXPANDED_POINTERCAD
 model:
-  base_model: "Qwen/Qwen2.5-0.5B-Instruct"
+  base_model: "Qwen/Qwen2.5-VL-3B-Instruct"
   dtype: bf16
   use_lora: true
   lora_rank: 8
   lora_alpha: 32
   lora_dropout: 0.1
-  hidden_dim: 896
+  hidden_dim: 2048
   pointer_dim: 128
   grammar_vocab_size: 1024
   use_body_relative_age: true
@@ -21,6 +21,7 @@ model:
   ragged_pointer_batching: true
   autoregressive_pointer_feedback: true
 train:
+  stage2_conditioning: multiview_vlm
   batch_size: 2
   gradient_accumulation_steps: 8
   lr: 1.0e-4
