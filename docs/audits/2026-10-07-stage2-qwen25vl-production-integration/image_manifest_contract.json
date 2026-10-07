@@ -1,0 +1,35 @@
+{
+  "format": "stage2-eight-view-images-v1",
+  "identity_policy": "images are derived modality/cache; never CRS, variant, or authoritative CAD identity",
+  "local_probe_manifests": [
+    "/tmp/stage2-images-validation/manifest.json",
+    "/tmp/stage2-images-expanded-probe/manifest.json"
+  ],
+  "locator_policy": "relative to image manifest directory and must resolve inside it",
+  "missing_policy": "explicit preparation/collation failure",
+  "ordering": "stored list order is exactly 0..7 and passed unchanged to Qwen processor",
+  "record_key": "corpus_identity = [dataset,sample_id,source_variant_id,approved_variant_id]",
+  "renderer_version": "required only for canonical_render",
+  "required_view_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "source_values": [
+    "upstream_original",
+    "canonical_render"
+  ],
+  "view_fields": [
+    "view_index",
+    "locator",
+    "width",
+    "height",
+    "source",
+    "sha256"
+  ]
+}

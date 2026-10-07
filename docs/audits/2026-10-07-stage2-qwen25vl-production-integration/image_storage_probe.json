@@ -1,0 +1,37 @@
+{
+  "caveat": "small simple CAD sample; do not treat linear estimates as production capacity measurement",
+  "encoding": {
+    "jpeg": "quality=95, subsampling=0",
+    "png": "original upstream bytes",
+    "webp": "quality=95, method=6"
+  },
+  "estimated_bytes_per_eight_view_record": {
+    "jpeg": 154245,
+    "png": 35542,
+    "webp": 58612
+  },
+  "estimated_total_bytes": {
+    "100000": {
+      "jpeg": 15424500000,
+      "png": 3554200000,
+      "webp": 5861200000
+    },
+    "500000": {
+      "jpeg": 77122500000,
+      "png": 17771000000,
+      "webp": 29306000000
+    },
+    "9000": {
+      "jpeg": 1388205000,
+      "png": 319878000,
+      "webp": 527508000
+    }
+  },
+  "future_storage_recommendation": "indexed sharded container with atomic publication, checksums and random record access; no full sharder built",
+  "mean_bytes_per_view": {
+    "jpeg": 19280.625,
+    "png": 4442.75,
+    "webp": 7326.5
+  },
+  "sample": "four frozen validation records, 32 original 256x256 RGB views"
+}

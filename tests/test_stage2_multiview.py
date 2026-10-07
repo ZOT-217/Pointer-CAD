@@ -199,3 +199,45 @@ def test_multiview_ragged_zero_and_multi_pointer_batch(processor, images):
     assert len(result.pointer_logits_by_example[1]) == 2
     assert [len(bank) for bank in result.candidate_banks_by_example[1]] == [2, 2]
     assert model.vision_forward_count == 2
+
+
+def test_official_qwen25vl_decoder_receives_visuals_and_mrope(processor, images):
+    from transformers import AutoConfig, Qwen2_5_VLForConditionalGeneration
+    config = AutoConfig.from_pretrained(os.environ["STAGE2_QWEN25VL_MODEL"], local_files_only=True)
+    config.hidden_size = 64
+    config.intermediate_size = 128
+    config.num_hidden_layers = 2
+    config.num_attention_heads = 4
+    config.num_key_value_heads = 2
+    config.rope_scaling["mrope_section"] = [2, 3, 3]
+    config.vision_config.depth = 2
+    config.vision_config.hidden_size = 64
+    config.vision_config.intermediate_size = 128
+    config.vision_config.num_heads = 4
+    config.vision_config.out_hidden_size = 64
+    config.vision_config.fullatt_block_indexes = [1]
+    sequence = collator(processor)(record(images))
+    model = CRSExpandedPointerCAD(base_model=Qwen2_5_VLForConditionalGeneration(config),
+                                  grammar_vocab_size=5, use_native_brep=False,
+                                  registry_context_mode="TYPE_POOLED").eval()
+    ids = sequence.input_ids.unsqueeze(0)
+    body = BodyRecord(ExternalKey("body_a"), 0, "Sketch", geometry={"faces": [{"area": 1.0}]})
+    state = ExecutionState(action_index=1, body_version_registry=BodyVersionRegistry({body.key: body}))
+    output = model.forward_ragged(
+        input_ids=ids, attention_mask=torch.ones_like(ids), states=[state], pointer_specs=[[]],
+        pixel_values=sequence.pixel_values, image_grid_thw=sequence.image_grid_thw,
+        context_positions=[sequence.context_position],
+        visual_token_positions=[sequence.visual_token_positions])
+    assert output.hidden_states.shape == (1, ids.shape[1], 64)
+    assert torch.isfinite(output.grammar_logits).all()
+    assert model.vision_forward_count == 1
+    features = model.encode_visual(sequence.pixel_values, sequence.image_grid_thw)
+    reused = model.forward_ragged(
+        input_ids=ids, attention_mask=torch.ones_like(ids), states=[state], pointer_specs=[[]],
+        pixel_values=sequence.pixel_values, image_grid_thw=sequence.image_grid_thw,
+        context_positions=[sequence.context_position],
+        visual_token_positions=[sequence.visual_token_positions], visual_features=features)
+    assert model.vision_forward_count == 2
+    assert torch.allclose(output.hidden_states, reused.hidden_states)
+    output.grammar_logits[0, sequence.action_boundaries[0].start - 1].sum().backward()
+    assert model.context_projection.weight.grad is not None

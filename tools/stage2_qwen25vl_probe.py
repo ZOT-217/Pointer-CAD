@@ -79,9 +79,14 @@ def main():
                                   grammar_vocab_size=len(vocabulary), registry_context_mode="TYPE_POOLED",
                                   use_native_brep=True).to(device)
     model.train()
+    torch.cuda.reset_peak_memory_stats()
     vision_start = model.vision_forward_count
-    visual = {identity: model.encode_visual(sequence.pixel_values, sequence.image_grid_thw)
-              for identity, sequence in sequences.items()}
+    visual = {}
+    vision_seconds = {}
+    for identity, sequence in sequences.items():
+        sync(); started = time.perf_counter()
+        visual[identity] = model.encode_visual(sequence.pixel_values, sequence.image_grid_thw)
+        sync(); vision_seconds[identity[1]] = time.perf_counter() - started
     vision_forwards = model.vision_forward_count - vision_start
     smoke = next(item for item in action_data if item[0][1] == "00002" and item[3] == 2)
     identity, record, sequence, index, state, brep = smoke
@@ -93,7 +98,6 @@ def main():
         captured["output"] = result
         return result
     model.forward_ragged = capture_forward
-    torch.cuda.reset_peak_memory_stats()
     sync(); started = time.perf_counter()
     loss, parts = training_action_loss(model, sequence, record, index, state, brep,
                                        visual_features=visual[identity])
@@ -103,6 +107,8 @@ def main():
     sync(); started = time.perf_counter()
     loss.backward()
     sync(); backward_seconds = time.perf_counter() - started
+    peak_allocated_bytes = torch.cuda.max_memory_allocated()
+    peak_reserved_bytes = torch.cuda.max_memory_reserved()
     model.forward_ragged = original_forward
     gradients = {}
     for name, parameter in model.named_parameters():
@@ -138,15 +144,15 @@ def main():
         "later_pointer_hidden_max_delta": float((standard.hidden_states[0, pointer_positions[1]] -
                                                  ablated.hidden_states[0, pointer_positions[1]]).abs().max()),
         "candidate_bank_key_parity": all(
-            [entry.key for entry in one] == [entry.key for entry in two]
+            [entry.external_key for entry in one] == [entry.external_key for entry in two]
             for one, two in zip(standard.candidate_banks_by_example[0],
                                 ablated.candidate_banks_by_example[0])),
     }
     smoke_result = {
         "sample": identity[1], "action_index": index, "losses": parts_dict(loss, parts),
         "forward_seconds": forward_seconds, "backward_seconds": backward_seconds,
-        "peak_allocated_bytes": torch.cuda.max_memory_allocated(),
-        "peak_reserved_bytes": torch.cuda.max_memory_reserved(),
+        "peak_allocated_bytes": peak_allocated_bytes,
+        "peak_reserved_bytes": peak_reserved_bytes,
         "image_grid_thw": grid.tolist(), "visual_tokens_per_view":
             [(int(row[0] * row[1] * row[2]) // 4) for row in grid],
         "visual_tokens_total": len(sequence.visual_token_positions),
@@ -154,12 +160,30 @@ def main():
         "multimodal_action_tokens": sequence.conditioning_end + smoke[2].action_boundaries[index].end - smoke[2].action_boundaries[index].start,
         "vision_forwards_for_four_trajectories": vision_forwards,
         "vision_forwards_per_trajectory": vision_forwards / len(sequences),
+        "vision_forward_seconds_by_trajectory": vision_seconds,
         "gradients": gradients,
         "trainable": model.training_config(),
         "feedback_causality": causal,
     }
     args.output.mkdir(parents=True, exist_ok=True)
     (args.output / "real_forward_backward.json").write_text(json.dumps(smoke_result, indent=2) + "\n")
+    cost = {"sample": identity[1], "action_index": index,
+            "source_image_resolution": [prepared.images.entries[identity][0]["width"],
+                                        prepared.images.entries[identity][0]["height"]],
+            "visual_tokens_per_view": smoke_result["visual_tokens_per_view"],
+            "visual_tokens_total": smoke_result["visual_tokens_total"],
+            "command_tokens": smoke_result["command_tokens"],
+            "multimodal_action_tokens": smoke_result["multimodal_action_tokens"],
+            "vision_forward_seconds": vision_seconds[identity[1]],
+            "action_forward_seconds_with_reused_visuals": forward_seconds,
+            "action_backward_seconds": backward_seconds,
+            "action_forward_backward_seconds": forward_seconds + backward_seconds,
+            "peak_allocated_bytes": smoke_result["peak_allocated_bytes"],
+            "peak_reserved_bytes": smoke_result["peak_reserved_bytes"],
+            "vision_forwards_per_trajectory": 1,
+            "actions_in_trajectory": len(sequence.action_boundaries),
+            "batch_size_sweep": False}
+    (args.output / "cost.json").write_text(json.dumps(cost, indent=2) + "\n")
     print(json.dumps({"smoke": smoke_result["losses"], "forward_s": forward_seconds,
                       "backward_s": backward_seconds, "peak_gb": smoke_result["peak_allocated_bytes"] / 1e9}), flush=True)
     if args.smoke_only:

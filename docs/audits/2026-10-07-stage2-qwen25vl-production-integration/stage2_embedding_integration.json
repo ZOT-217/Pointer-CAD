@@ -1,0 +1,39 @@
+{
+  "checks": [
+    "exact image-token/feature count",
+    "context slot outside visual positions",
+    "all targets after conditioning prefix",
+    "feedback strictly after producing pointer position"
+  ],
+  "context_inputs": [
+    "existing ContextView/registry pooled feature",
+    "existing prepared native B-Rep pooled feature"
+  ],
+  "context_position": "dedicated assistant-side token after the eighth image, never an image token",
+  "mrope": "official Qwen2.5-VL get_rope_index computes three-axis position_ids for the full current-action input; decoder receives these IDs unchanged",
+  "pointer_feedback": "existing GT or predicted CandidateKey embedding added only from TokenSpan.end forward",
+  "small_random_qwen25vl_native_fixture": {
+    "backward": true,
+    "context_and_feedback_gradients": true,
+    "frozen_sample": "00002 action 2",
+    "grammar_loss": 4.372010707855225,
+    "images": 8,
+    "model": "official Qwen2_5_VLForConditionalGeneration class with reduced random dimensions, not pretrained 3B",
+    "pointer_loss": 0.529653787612915,
+    "scalar_loss": 0.015365242026746273,
+    "total_loss": 4.917029857635498,
+    "vision_forwards": 1
+  },
+  "unchanged": [
+    "ExecutionState",
+    "ContextView",
+    "CandidateView",
+    "CandidateKey",
+    "six pointer types",
+    "candidate order",
+    "native FACE/EDGE sampling",
+    "graph topology",
+    "L_g/L_p/L_s/L_r"
+  ],
+  "visual_path": "official Qwen2.5-VL visual tower plus merger applied to processor pixel_values and image_grid_thw; Qwen image-token mask receives exactly matching visual features"
+}

@@ -335,7 +335,6 @@ class CRSExpandedPointerCAD(nn.Module):
                 breps=breps,
             )
         native_maps = self._native_maps(states, breps)
-        context = self._context(state, native_maps=native_maps[0] if native_maps else None)
         if input_ids is not None:
             embeddings, context = self._prepare_embeddings(
                 input_ids, state, attention_mask=attention_mask, breps=breps,
@@ -346,6 +345,8 @@ class CRSExpandedPointerCAD(nn.Module):
             hidden_states = self._backbone_forward(embeddings, attention_mask, position_ids).last_hidden_state
         elif hidden_states is None:
             raise ValueError("CRSExpandedPointerCAD requires input_ids or hidden_states")
+        else:
+            context = self._context(state, native_maps=native_maps[0] if native_maps else None)
         hidden_states = self.hidden_projection(hidden_states)
         grammar_logits = self.grammar_head(hidden_states.to(self.grammar_head.weight.dtype))
         scalar_predictions, record_predictions = self.numeric_heads(hidden_states)

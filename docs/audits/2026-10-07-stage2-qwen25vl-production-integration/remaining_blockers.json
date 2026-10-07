@@ -1,0 +1,13 @@
+{
+  "closed_items": [
+    "official pretrained Qwen2.5-VL-3B real forward/backward",
+    "eight-view upstream mapping for all frozen validation records and bounded expanded records",
+    "multimodal micro-overfit learnability gate"
+  ],
+  "known_handoff_items": [
+    "materialize and approve the complete 9K eight-view image manifest before launching the pilot",
+    "integrate this isolated branch with the independent Native V2 branch only after its parity gate",
+    "ensure AFS write capacity for any future branch push"
+  ],
+  "status": "bounded integration gate passed; pilot handoff items remain"
+}

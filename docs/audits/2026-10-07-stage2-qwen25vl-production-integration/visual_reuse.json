@@ -1,0 +1,21 @@
+{
+  "actions_measured": 8,
+  "bounded_measurement": "passed: four trajectories encoded with four visual forwards, exactly one per trajectory; 19 actions in the measured sample",
+  "cache_scope": "in-memory bounded trajectory only; no persistent 500K embedding cache",
+  "exactness_conditions": [
+    "frozen visual parameters",
+    "visual module in eval mode",
+    "same pixel_values and image_grid_thw",
+    "same image token order/count"
+  ],
+  "instrumentation": "CRSExpandedPointerCAD.vision_forward_count",
+  "policy": "frozen vision tower and merger run once per trajectory; exact Qwen2.5-VL merged features retained in memory and reused for every action with the same eight image tokens/grid",
+  "trajectories": 4,
+  "vision_forward_count": 4,
+  "vision_forward_seconds_by_trajectory": {
+    "00002": 1.1559011139906943,
+    "00008": 0.23081149300560355,
+    "00013": 0.1994617390446365,
+    "00015": 0.10426243208348751
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "background": "solid white RGB(255,255,255)",
+  "camera_target": "center of final-shape axis-aligned bounding box",
+  "determinism": "fixed camera order, mesh tessellation tolerance, renderer version and color pipeline required before production use",
+  "forbidden": [
+    "dimensions",
+    "labels",
+    "axes",
+    "source names"
+  ],
+  "framing": "fit maximum projected extent to 80 percent of 256x256 frame with common uniform scale across views",
+  "input": "certified final STEP/BRep",
+  "lighting": "fixed white ambient plus two fixed white directional lights in camera coordinates",
+  "material": "single neutral matte gray, no texture or transparency",
+  "projection": "orthographic",
+  "resolution": [
+    256,
+    256
+  ],
+  "status": "defined only; not implemented or run because original upstream images are locally accessible for the bounded fixtures",
+  "target_datasets": [
+    "Zero2CAD",
+    "CADEvolve",
+    "FutureCAD",
+    "SynCAD",
+    "CadQuarry",
+    "other admitted CQ/STEP sources"
+  ],
+  "version": "canonical-eight-view-v0-provisional",
+  "views": [
+    {
+      "camera_position_direction": [
+        1,
+        1,
+        1
+      ],
+      "index": 0
+    },
+    {
+      "camera_position_direction": [
+        -1,
+        1,
+        1
+      ],
+      "index": 1
+    },
+    {
+      "camera_position_direction": [
+        -1,
+        -1,
+        1
+      ],
+      "index": 2
+    },
+    {
+      "camera_position_direction": [
+        1,
+        -1,
+        1
+      ],
+      "index": 3
+    },
+    {
+      "camera_position_direction": [
+        1,
+        1,
+        -1
+      ],
+      "index": 4
+    },
+    {
+      "camera_position_direction": [
+        -1,
+        1,
+        -1
+      ],
+      "index": 5
+    },
+    {
+      "camera_position_direction": [
+        -1,
+        -1,
+        -1
+      ],
+      "index": 6
+    },
+    {
+      "camera_position_direction": [
+        1,
+        -1,
+        -1
+      ],
+      "index": 7
+    }
+  ],
+  "world_up": [
+    0,
+    0,
+    1
+  ]
+}

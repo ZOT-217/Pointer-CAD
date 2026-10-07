@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
 from typing import Sequence
 
@@ -33,12 +34,17 @@ class Stage2ImageManifest:
             self.entries[identity] = views
 
     def paths_for(self, identity: Sequence[str]) -> tuple[Path, ...]:
-        views = self.entries[tuple(identity)]
+        key = tuple(identity)
+        if key not in self.entries:
+            raise ValueError(f"{key}: missing eight-view image manifest entry")
+        views = self.entries[key]
         paths = []
         for view in views:
             path = (self.root / view["locator"]).resolve()
             if not path.is_relative_to(self.root) or not path.is_file():
                 raise ValueError(f"{tuple(identity)}: missing or escaping image view {view['view_index']}")
+            if "sha256" in view and hashlib.sha256(path.read_bytes()).hexdigest() != view["sha256"]:
+                raise ValueError(f"{tuple(identity)}: image checksum mismatch at view {view['view_index']}")
             with Image.open(path) as image:
                 if image.size != (view["width"], view["height"]):
                     raise ValueError(f"{tuple(identity)}: image size mismatch at view {view['view_index']}")

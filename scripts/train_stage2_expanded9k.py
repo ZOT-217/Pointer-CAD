@@ -219,6 +219,10 @@ def main() -> int:
         if args.resume:
             start_epoch, global_step = _load_checkpoint(args.resume, module, optimizer, scheduler, split_sha)
         corpus = PreparedStage2Corpus(args.corpus, args.prepared, args.image_manifest)
+        if args.stage2_conditioning == "multiview_vlm":
+            missing_images = [row["identity"] for row in rows if row["identity"] not in corpus.images.entries]
+            if missing_images:
+                raise ValueError(f"image manifest is missing {len(missing_images)} prepared records; first={missing_images[0]}")
         train = [r for r in rows if r["split"] == "train"]
         valid = [r for r in rows if r["split"] == "validation"]
         if not args.skip_preflight:

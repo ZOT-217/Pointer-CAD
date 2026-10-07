@@ -1,0 +1,32 @@
+{
+  "measured_counts": "real pretrained Qwen2.5-VL-3B load: 35,810,848 trainable; 3,754,622,976 frozen",
+  "observed_nonzero_gradient_groups": [
+    "language_lora",
+    "grammar_head",
+    "typed_pointer_heads",
+    "context_adapter",
+    "scalar_record_heads",
+    "feedback_adapter",
+    "uvnet_gnn"
+  ],
+  "policy": {
+    "frozen": [
+      "base language-model weights",
+      "vision tower",
+      "vision merger/projector",
+      "LM output head"
+    ],
+    "trainable": [
+      "language LoRA rank 8 alpha 32 dropout 0.1 on seven projection groups",
+      "Stage2 context and B-Rep adapters",
+      "pointer feedback adapter",
+      "UVNet/GNN",
+      "typed pointer heads",
+      "grammar head",
+      "scalar and structured-record heads",
+      "typed semantic and registry encoders"
+    ]
+  },
+  "total_frozen_parameters": 3754622976,
+  "total_trainable_parameters": 35810848
+}

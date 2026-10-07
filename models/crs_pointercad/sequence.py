@@ -89,6 +89,10 @@ class Stage2QwenCollator:
                  stage2_conditioning: str = "multiview_vlm"):
         if stage2_conditioning not in {"text_only", "multiview_vlm"}:
             raise ValueError("unknown Stage2 conditioning mode")
+        if stage2_conditioning == "multiview_vlm" and not all(
+            hasattr(tokenizer, field) for field in ("tokenizer", "image_processor", "apply_chat_template")
+        ):
+            raise TypeError("multiview Stage2 requires an official image-capable processor")
         self.stage2_conditioning = stage2_conditioning
         self.processor = tokenizer if stage2_conditioning == "multiview_vlm" else None
         self.tokenizer = tokenizer.tokenizer if self.processor is not None else tokenizer

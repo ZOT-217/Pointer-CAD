@@ -1,0 +1,149 @@
+{
+  "sample": "00002",
+  "action_index": 2,
+  "losses": {
+    "total": 6.721148490905762,
+    "grammar": 5.781687259674072,
+    "pointer": 0.6657726764678955,
+    "scalar": 0.2736883759498596,
+    "record": 0.0
+  },
+  "forward_seconds": 0.9268770890776068,
+  "backward_seconds": 0.37965677585452795,
+  "peak_allocated_bytes": 12507466240,
+  "peak_reserved_bytes": 12712935424,
+  "image_grid_thw": [
+    [
+      1,
+      18,
+      18
+    ],
+    [
+      1,
+      18,
+      18
+    ],
+    [
+      1,
+      18,
+      18
+    ],
+    [
+      1,
+      18,
+      18
+    ],
+    [
+      1,
+      18,
+      18
+    ],
+    [
+      1,
+      18,
+      18
+    ],
+    [
+      1,
+      18,
+      18
+    ],
+    [
+      1,
+      18,
+      18
+    ]
+  ],
+  "visual_tokens_per_view": [
+    81,
+    81,
+    81,
+    81,
+    81,
+    81,
+    81,
+    81
+  ],
+  "visual_tokens_total": 648,
+  "command_tokens": 32,
+  "multimodal_action_tokens": 737,
+  "vision_forwards_for_four_trajectories": 4,
+  "vision_forwards_per_trajectory": 1.0,
+  "vision_forward_seconds_by_trajectory": {
+    "00002": 1.1559011139906943,
+    "00008": 0.23081149300560355,
+    "00013": 0.1994617390446365,
+    "00015": 0.10426243208348751
+  },
+  "gradients": {
+    "language_lora": {
+      "parameters": 14966784,
+      "nonzero_gradient_parameters": 8257536
+    },
+    "grammar_head": {
+      "parameters": 131136,
+      "nonzero_gradient_parameters": 131136
+    },
+    "typed_pointer_heads": {
+      "parameters": 2244918,
+      "nonzero_gradient_parameters": 684625
+    },
+    "context_adapter": {
+      "parameters": 6045696,
+      "nonzero_gradient_parameters": 5781504
+    },
+    "scalar_record_heads": {
+      "parameters": 77862,
+      "nonzero_gradient_parameters": 2049
+    },
+    "feedback_adapter": {
+      "parameters": 1585152,
+      "nonzero_gradient_parameters": 274432
+    },
+    "uvnet_gnn": {
+      "parameters": 10759300,
+      "nonzero_gradient_parameters": 583040
+    }
+  },
+  "trainable": {
+    "dtype": "torch.bfloat16",
+    "peft_lora": true,
+    "trainable_parameters": 35810848,
+    "frozen_parameters": 3754622976,
+    "lora_target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ],
+    "vlm_backbone": true,
+    "vision_tower": "frozen",
+    "vision_merger": "frozen",
+    "trainable_groups": {
+      "language_lora": 14966784,
+      "context_adapter": 4196352,
+      "brep_adapter": 264192,
+      "feedback_adapter": 1585152,
+      "uvnet_gnn": 10759300,
+      "typed_pointer_heads": 1572870,
+      "semantic_candidate_encoders": 672048,
+      "grammar_head": 131136,
+      "scalar_record_heads": 77862,
+      "registry_context": 1585152
+    }
+  },
+  "feedback_causality": {
+    "pointer_positions": [
+      708,
+      711,
+      714,
+      717
+    ],
+    "first_producing_hidden_max_delta": 0.0,
+    "later_pointer_hidden_max_delta": 105.25,
+    "candidate_bank_key_parity": true
+  }
+}

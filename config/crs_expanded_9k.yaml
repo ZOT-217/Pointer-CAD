@@ -1,4 +1,4 @@
-# CCI-ready expanded experiment configuration. This task does not launch it.
+# Stage2 multiview pilot configuration. Launch requires a complete image manifest.
 mode: CRS_EXPANDED_POINTERCAD
 model:
   base_model: "Qwen/Qwen2.5-VL-3B-Instruct"

@@ -1,0 +1,36 @@
+{
+  "action_backward_seconds": 0.37965677585452795,
+  "action_forward_backward_seconds": 1.3065338649321347,
+  "action_forward_seconds_with_reused_visuals": 0.9268770890776068,
+  "action_index": 2,
+  "actions_in_trajectory": 19,
+  "batch_size_sweep": false,
+  "command_tokens": 32,
+  "fixed_instruction_tokens": 5,
+  "measurement_hardware": "H100 MIG 3g.40gb",
+  "multimodal_action_tokens": 737,
+  "peak_allocated_bytes": 12507466240,
+  "peak_allocated_gb": 12.50746624,
+  "peak_reserved_bytes": 12712935424,
+  "peak_reserved_gb": 12.712935424,
+  "sample": "00002",
+  "source_image_resolution": [
+    256,
+    256
+  ],
+  "system_instruction_tokens": 22,
+  "text_tokens_total": 27,
+  "vision_forward_seconds": 1.1559011139906943,
+  "vision_forwards_per_trajectory": 1,
+  "visual_tokens_per_view": [
+    81,
+    81,
+    81,
+    81,
+    81,
+    81,
+    81,
+    81
+  ],
+  "visual_tokens_total": 648
+}

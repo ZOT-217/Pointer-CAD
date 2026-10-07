@@ -1,0 +1,72 @@
+{
+  "action_input": "processed eight-view prefix plus only current teacher-forced action slice, no earlier/later command tokens",
+  "command_mapping": "each frozen command atom is encoded with the same Qwen tokenizer after the processed multimodal assistant prefix; TokenSpan start/end are final LM indices",
+  "conditioning_prefix_tokens": 705,
+  "context_slot": "one constant assistant-side whitespace token after all visual tokens and before command atoms",
+  "current_action_command_tokens": 32,
+  "feedback": "starts at exact TokenSpan.end, never at pointer atom start or inside a multi-token atom",
+  "full_trajectory_collation_tokens": 4133,
+  "image_grid_thw": [
+    [
+      1,
+      18,
+      18
+    ],
+    [
+      1,
+      18,
+      18
+    ],
+    [
+      1,
+      18,
+      18
+    ],
+    [
+      1,
+      18,
+      18
+    ],
+    [
+      1,
+      18,
+      18
+    ],
+    [
+      1,
+      18,
+      18
+    ],
+    [
+      1,
+      18,
+      18
+    ],
+    [
+      1,
+      18,
+      18
+    ]
+  ],
+  "measured_sample": "00002 action 2",
+  "mode": "multiview_vlm",
+  "processor": "Qwen2_5_VLProcessor.apply_chat_template content-list plus processor(text, images=real PIL RGB images)",
+  "source_image_resolution": [
+    256,
+    256
+  ],
+  "total_current_action_tokens": 737,
+  "user_content_order": [
+    "image_0",
+    "image_1",
+    "image_2",
+    "image_3",
+    "image_4",
+    "image_5",
+    "image_6",
+    "image_7",
+    "text: Construct the CAD model."
+  ],
+  "visual_tokens_per_view": 81,
+  "visual_tokens_total": 648
+}

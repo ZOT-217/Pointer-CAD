@@ -1,0 +1,34 @@
+{
+  "after": {
+    "Pillow": "11.3.0",
+    "accelerate": "1.10.1",
+    "exceptiongroup": "1.3.1",
+    "flash-attn": "2.7.4.post1",
+    "iniconfig": "2.1.0",
+    "peft": "0.15.2",
+    "pluggy": "1.6.0",
+    "pygments": "2.21.0",
+    "pytest": "8.4.2",
+    "qwen-vl-utils": null,
+    "tomli": "2.4.1",
+    "torch": "2.4.1+cu124",
+    "transformers": "4.51.3"
+  },
+  "before": {
+    "Pillow": "11.3.0",
+    "accelerate": "1.10.1",
+    "flash-attn": "2.7.4.post1",
+    "peft": "0.15.2",
+    "pytest": null,
+    "qwen-vl-utils": null,
+    "torch": "2.4.1+cu124",
+    "transformers": "4.51.3"
+  },
+  "dependency_change": "Installed pytest 8.4.2 and its test-runner dependencies only; no model runtime package changed.",
+  "flash_attention_import_passed": true,
+  "flash_attention_real_cuda_forward": "passed: pretrained Qwen2.5-VL-3B forward/backward on H100 MIG",
+  "hardware": "single NVIDIA H100 80GB HBM3 MIG 3g.40gb slice (42,412,802,048 visible bytes)",
+  "pointercad_environment": "/root/miniconda/envs/PointerCAD",
+  "qwen25vl_class_available_before": true,
+  "qwen_vl_utils_required": false
+}

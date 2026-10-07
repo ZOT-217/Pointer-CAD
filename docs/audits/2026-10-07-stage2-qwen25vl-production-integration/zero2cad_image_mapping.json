@@ -1,0 +1,167 @@
+{
+  "bounded_verified": [
+    {
+      "cadquery_sha256": "9cd897e8013f11fc62018e987eddc7346188ccea21d1f3422af56d2a9d287d67",
+      "corpus_identity": [
+        "zero2cad100k-train",
+        "00002",
+        "000",
+        "v000"
+      ],
+      "upstream_row": 2,
+      "upstream_split": "train",
+      "upstream_uuid": "2b5ea8ef-b234-f5cb-dcea-3983577b5ca9",
+      "view_sha256": [
+        "33d696caeea5dedce60b4453ad854dfe43c23ecb611ddf0917c88694731fb2e7",
+        "a975251807d3d2aa384d775a91782048ab2c8b9c512f3d9efdfde363e03a8562",
+        "131b10cac09857678b0c67c61a8164d8dc3d51cb2ac944d206ebae2e06dd1d39",
+        "ff1d27906bc71c14bd1fbd140f8190874e1a5b6cdd236b05e656db8fd18b515b",
+        "6db3bd91023ccb9c45bdc55dc95ee65857ed27c72d700afcd3edfb3ee48801ad",
+        "8ba5be58a2b15ce2b4df540ff2b32b04d3c943cd343fb8b1d021e60336465d23",
+        "b526d24dff9ea7323158902582973eb1100b0de0ec44372e14107d77991b073b",
+        "3cecf38cf584ccc9e97e304953c71b19d0434b779759dde16c96fadd8796a167"
+      ]
+    },
+    {
+      "cadquery_sha256": "ae8b7c2ee4d157ea099bba1ba4ea71a2b17ff89569284f66fe4640ecbb88bb7d",
+      "corpus_identity": [
+        "zero2cad100k-train",
+        "00008",
+        "000",
+        "v000"
+      ],
+      "upstream_row": 8,
+      "upstream_split": "train",
+      "upstream_uuid": "c691d510-62b1-786d-6815-d0bbe5ece63c",
+      "view_sha256": [
+        "596bdf0da7ae4a35b473ce30505bf7ead79e75d92e2f74c289a82c40650598cb",
+        "21b497413052f4f0ec69e6bc942e205847420390173271d5c60831938b6b84fb",
+        "03381d07053d0ecbb1b9b2263006490defac65c509c2e3b2b0ea6f4c261b5eaf",
+        "05e4464bdb1d96988465e82e14eee8b6c71ab8a4a77802a0d973594686a156e9",
+        "0401d7d56401dd8ff08930bcdef392f833ceecf653c43b94b7b6ed5092b64fa7",
+        "7112180460d8290b629c5c4191b60d3b1cb7c8ebf555d653c9f105a602fbb7ff",
+        "9b069c106386c794b5bc49dc10f65bb205740a2e187a15383e033f95f9690854",
+        "454d77c697f45f1098b4464cd023e0addc46bebffa0d20e3a028a0c06f05e97e"
+      ]
+    },
+    {
+      "cadquery_sha256": "5b8e3ab32860cd6e2ee735f30bdc8bbbccc592a79beca4fcd1157e82d2e887a2",
+      "corpus_identity": [
+        "zero2cad100k-train",
+        "00013",
+        "000",
+        "v000"
+      ],
+      "upstream_row": 13,
+      "upstream_split": "train",
+      "upstream_uuid": "1d980b9c-6f58-eba4-eef1-b6a6baaaa765",
+      "view_sha256": [
+        "79a6b1c26598f88f9a18313aab42c75df1d780b43b13df50b97da3187cdfe0dd",
+        "4b0468d5cf29a8be3bf20c5d9c0971a29af035403b2edbb2bd20903f7f6e9bdb",
+        "664423ff7afe8f8a9ae6b78dd947926d68290aae1fb5172f60f97152a58a5997",
+        "88e99924c0adc1a024150ab746951357a5ea026b0c4a89d0d3dd78a4e487ed6d",
+        "6949ae7cc2549ce895608d88190fef917a452252d4640dc2d99c351f268b1ea9",
+        "6bc85608d4649630904afa1495b8a827cf8f1ed9d58189bb1715b500648fe88c",
+        "e4b1c847406ce6359b6dd278ee85102ad981d57ef69a4ca8fd3dfcbf4c7952c6",
+        "cc6d1c43bcd0567f7ffa96eaf779b8c0f54ccab473efa27c4c4a7c0ba55a769f"
+      ]
+    },
+    {
+      "cadquery_sha256": "c17ecd3204b5b3d1a4f4b7881bfd0f6e8a54f77b69c7e9766c2f77e53be200b6",
+      "corpus_identity": [
+        "zero2cad100k-train",
+        "00015",
+        "000",
+        "v000"
+      ],
+      "upstream_row": 15,
+      "upstream_split": "train",
+      "upstream_uuid": "46dc8753-7d12-33eb-7d47-9b5a8421deb9",
+      "view_sha256": [
+        "711b277b75e251a8c55be5def057635d829b046b2c69a86bd88937bc51cdbc23",
+        "7d1fd3a9f84aaa758da91572441f626571b916b3e9bbf487ecff93db0be13981",
+        "a24c59c23bd6bf647b142365737d8ad2f57fefe76b4cd0b8922051e882b5b481",
+        "1e9580b0ca8621d05b99dc6e56d74defd7419d057cae249579d329598ad63aae",
+        "c6447cec90203bc902d8a746d15aa94c0398b8553f7d64815cb818cb4bc9b5f0",
+        "134e68c2e418174bf20aa061b21230edaafa4dba49e2d759050d9d6616618d6d",
+        "d2dfc649dc117a3f4c48738381a6fbeb4eca40e201d61bebe730bb68e2c0b6fa",
+        "ab48e033102d1186038dbd5705d2bcdc2fd6d29e5110b021ed9d1fb9679d07dd"
+      ]
+    },
+    {
+      "cadquery_sha256": "ca079b9b35d0a5f8185b739540d112a7eab5d14277b70d017ff2f3cb93cd1e4a",
+      "corpus_identity": [
+        "zero2cad100k-train",
+        "sample-00000",
+        "000",
+        "v000"
+      ],
+      "upstream_row": 0,
+      "upstream_split": "test",
+      "upstream_uuid": "13d78484-9f4a-4fb7-c2c5-06c51f9c2766",
+      "view_sha256": [
+        "1c81f6647ae1dc133e83ea265eceb4a032fdff5cd703b6776f98ccd17cc97fba",
+        "1db702b3006825e6407ef8c98ad6fa9aa4dd6ef53c4f070711538bdf41183efd",
+        "26de7dc5b94f4888f77cdd512e16b639720ef028dbf413f845853344476612b2",
+        "a736a0d9739c569c40192c268311bd3d4033224899b165e9ea7315b9bf390491",
+        "d991bc1841d253378a40510ec3a781b2b4a74459198e98e8645b360a13a7f4dd",
+        "013bb56583b2cf639a212af2e418d32b5f5bed7ad5760d9712d4496f882b8669",
+        "bed8e4e68c8d61a4836a38a3c652e40c927c5d2c35203632f582d4581f61ea82",
+        "146593acbfb9c58857164cc5fcb7385523329adf5fcbb0ffb6abf46ce15c4312"
+      ]
+    },
+    {
+      "cadquery_sha256": "3fad4557a200eeb7e89890a9bdfd18a6f9b91cb7aeb1fda40c6529c8f06ac01d",
+      "corpus_identity": [
+        "zero2cad100k-train",
+        "sample-00001",
+        "000",
+        "v000"
+      ],
+      "upstream_row": 1,
+      "upstream_split": "test",
+      "upstream_uuid": "43f528fb-1cf9-0403-f87c-89ad92fcb66a",
+      "view_sha256": [
+        "8e185995d93cda04a4990834837ec41b7ec38b2379885bf74f6e20bcbe3e9b8b",
+        "3221b6799d807abf40a8befffc191c45c0637ff4d8c484d3e04fb86461d0b20c",
+        "3be0648c8efb8a34fb2c8ec48b53e112b90eed7012fa6eabb4ab0fa2d53a00fa",
+        "b36b12eaa6795b07fdd263740f22338d123a9ce41ca646dbb10e3033e04cc1a5",
+        "aed9a8f98bd3eaf3630a4728ea260828cc0924d542e5b0d17b5b5e1af1ee6dc6",
+        "771e6fde5137590b967f9a611ebac82182a6d1baf611e5e40f47ed63a306d8fc",
+        "c91f4def0d09ac3da07e4fb6fc58e2585400ce307dcfbb3fc17706f5ec49594f",
+        "aafab99ea9abc00359cd8cb8171481dd5816d7bc0387c866cf50311b3cc0fa13"
+      ]
+    }
+  ],
+  "dimensions": [
+    256,
+    256
+  ],
+  "expanded_9k_rule": "zero2cad100k-train sample_id sample-NNNNN maps to upstream test row int(NNNNN), despite the frozen dataset label",
+  "fields": [
+    "image_0",
+    "image_1",
+    "image_2",
+    "image_3",
+    "image_4",
+    "image_5",
+    "image_6",
+    "image_7"
+  ],
+  "format": "RGB PNG",
+  "frozen_validation_rule": "zero2cad100k-train sample_id NNNNN maps to upstream train row int(NNNNN)",
+  "full_9k_images_materialized": false,
+  "local_arrow_root": "/mnt/afs/L202500475/hf-data/datasets/Zero-To-CAD-100k",
+  "local_split_counts": {
+    "test": 9767,
+    "train": 81015,
+    "validation": 9734
+  },
+  "records_materialized": {
+    "expanded_9k": 2,
+    "validation": 4
+  },
+  "upstream_dataset": "ADSKAILab/Zero-To-CAD-100k",
+  "verification": "exact CadQuery source bytes from current materialized source path equal upstream cadquery_file",
+  "view_order": "numeric field order image_0 through image_7; the upstream paper says four front-facing and four rear-facing angles but does not publish a field-to-camera-direction mapping"
+}
