@@ -3,9 +3,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from types import SimpleNamespace
+from contextlib import nullcontext
+from io import BytesIO
 import json
 from pathlib import Path
 from typing import Any, Mapping
+from zipfile import ZipFile
 
 import numpy as np
 
@@ -188,8 +191,23 @@ def load_prepared_v2_state(root: str | Path, record_root: str | Path):
     from .contracts import ExecutionState
 
     root, record_root = Path(root), Path(record_root)
-    state_data = json.loads((root / "state.json").read_text(encoding="utf-8"))
-    view = json.loads((root / "view.json").read_text(encoding="utf-8"))
+    archive_path = record_root / "record.pack"
+    archive_context = ZipFile(archive_path) if archive_path.is_file() else nullcontext(None)
+    with archive_context as archive:
+        return _load_prepared_v2_state(root, record_root, archive)
+
+
+def _load_prepared_v2_state(root: Path, record_root: Path, archive: ZipFile | None):
+    from .contracts import ExecutionState
+
+    def read_bytes(relative: str) -> bytes:
+        if archive is not None:
+            return archive.read(relative)
+        return (record_root / relative).read_bytes()
+
+    step_prefix = Path(root.name) if root != record_root else Path()
+    state_data = json.loads(read_bytes((step_prefix / "state.json").as_posix()))
+    view = json.loads(read_bytes((step_prefix / "view.json").as_posix()))
     if view.get("format") != "stage2a3-native-view-v2":
         raise ValueError("unsupported native V2 action view")
     owners = state_data["active_bodies"] + state_data["historical_bodies"]
@@ -202,12 +220,13 @@ def load_prepared_v2_state(root: str | Path, record_root: str | Path):
         block_id = owner_view["block"]
         if not isinstance(block_id, str) or not block_id.isdigit() or len(block_id) != 8:
             raise ValueError("invalid native V2 block reference")
-        payload = record_root / "payloads" / block_id
-        meta = json.loads(payload.with_suffix(".json").read_text(encoding="utf-8"))
+        payload_name = f"payloads/{block_id}"
+        meta = json.loads(read_bytes(payload_name + ".json"))
         if meta["owner"] != owner_view["owner"]:
             raise ValueError("native V2 payload owner mismatch")
         face_offset = len(keys[0])
-        with np.load(payload.with_suffix(".npz"), allow_pickle=False) as arrays:
+        array_source = BytesIO(read_bytes(payload_name + ".npz")) if archive is not None else record_root / (payload_name + ".npz")
+        with np.load(array_source, allow_pickle=False) as arrays:
             for index, (array_name, expected_shape) in enumerate((("face_features", (32, 32, 8)),
                                                                    ("edge_features", (32, 12)),
                                                                    ("loose_edge_features", (32, 12)))):

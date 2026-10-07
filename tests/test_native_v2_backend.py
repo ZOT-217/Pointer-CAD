@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
+from zipfile import ZipFile
 
 from models.crs_pointercad.training import PreparedStage2Corpus
 from models.crs_pointercad.brep_bridge import load_prepared_v2_state
@@ -35,6 +36,19 @@ class NativeV2BackendTests(unittest.TestCase):
                                                          "owners": [{"owner": "body_1", "block": "../secret"}]}))
             with self.assertRaisesRegex(ValueError, "block reference"):
                 load_prepared_v2_state(root, root)
+
+    def test_packed_record_uses_virtual_action_path_and_validates_reference(self):
+        with TemporaryDirectory() as directory:
+            record = Path(directory)
+            with ZipFile(record / "record.pack", "w") as archive:
+                archive.writestr("step-000000/state.json", json.dumps({
+                    "active_bodies": ["body_1"], "historical_bodies": []}))
+                archive.writestr("step-000000/view.json", json.dumps({
+                    "format": "stage2a3-native-view-v2",
+                    "owners": [{"owner": "body_1", "block": "../secret"}]}))
+            self.assertFalse((record / "step-000000").exists())
+            with self.assertRaisesRegex(ValueError, "block reference"):
+                load_prepared_v2_state(record / "step-000000", record)
 
     def test_unreleased_migration_manifest_requires_explicit_opt_in(self):
         with TemporaryDirectory() as directory:
